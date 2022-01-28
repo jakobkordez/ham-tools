@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ham_tools/src/models/log_entry.dart';
+import 'package:ham_tools/src/models/mode.dart';
 import 'package:intl/intl.dart';
 
 import 'bloc/log_bloc.dart';
@@ -227,16 +227,14 @@ class _LogListState extends State<LogList> {
 
                       final e = state.logEntries[index];
                       final colVals = [
-                        '${e.id}',
                         formatDate(e.time.toUtc()),
                         formatTime(e.time.toUtc()),
                         e.callsign,
                         describeEnum(e.mode).toUpperCase(),
                         '${formatFreq(e.frequency)} Hz',
                         '${e.power} W',
-                        e.rstR,
-                        e.rstS,
-                        e.qth,
+                        e.rstRecieved,
+                        e.rstSent,
                         e.name,
                         e.note,
                       ];
