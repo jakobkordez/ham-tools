@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "ham_tools",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "callsign_tool",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--web-renderer", "html", "-t", "lib/callsign_main.dart"]
+        }
+    ]
+}

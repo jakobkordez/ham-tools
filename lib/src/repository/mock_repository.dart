@@ -10,7 +10,7 @@ class MockRepository implements Repository {
       100,
       (i) => LogEntry(
             callsign: _genCallsign(),
-            time: DateTime.now().subtract(Duration(minutes: i)),
+            timeOn: DateTime.now().subtract(Duration(minutes: i)),
             frequency: 7005000,
             mode: Mode.cw,
             power: 100,
@@ -23,8 +23,8 @@ class MockRepository implements Repository {
           {DateTime? after, DateTime? before}) async =>
       _log
           .where((e) =>
-              (after?.isBefore(e.time) ?? true) &&
-              (before?.isAfter(e.time) ?? true))
+              (after?.isBefore(e.timeOn) ?? true) &&
+              (before?.isAfter(e.timeOn) ?? true))
           .toList();
 
   static String _genCallsign() {

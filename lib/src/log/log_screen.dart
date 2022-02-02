@@ -227,8 +227,8 @@ class _LogListState extends State<LogList> {
 
                       final e = state.logEntries[index];
                       final colVals = [
-                        formatDate(e.time.toUtc()),
-                        formatTime(e.time.toUtc()),
+                        formatDate(e.timeOn.toUtc()),
+                        formatTime(e.timeOn.toUtc()),
                         e.callsign,
                         describeEnum(e.mode).toUpperCase(),
                         '${formatFreq(e.frequency)} Hz',

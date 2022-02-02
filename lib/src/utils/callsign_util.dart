@@ -3,34 +3,43 @@ import 'package:equatable/equatable.dart';
 
 class CallsignData {
   final String callsign;
-  final DxccEntity? dxccEntity;
-  final DxccEntity? subEntity;
-  final String prefix;
-  final List<String> suffixes;
+  final int? prefixLength;
+  final String? secPrefix;
+  final List<String> secSuffixes;
+  final DxccEntity? prefixDxcc;
+  final DxccEntity? secPrefixDxcc;
 
   CallsignData._({
     required this.callsign,
-    this.dxccEntity,
-    this.subEntity,
-    required this.prefix,
-    this.suffixes = const [],
+    this.prefixLength,
+    this.secPrefix,
+    this.secSuffixes = const [],
+    this.prefixDxcc,
+    this.secPrefixDxcc,
   });
 
   factory CallsignData.parse(String callsign) {
-    final dxcc = DxccEntity.find(callsign);
-    final sub = DxccEntity.findSub(callsign, dxcc);
-    final csSplit =
-        RegExp(r'^(\w{1,3}/)?\w{1,3}\d\w{1,3}(/\w+)*$').allMatches(callsign);
-    // S52KJ
-    // 9K/S52KJ
-    // S52KJ/M
-    // 9K/S52KJ/M
-    // 9K/S52KJ/P/QRP
+    callsign = callsign.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9\/]+'), '');
+    final regMatch = RegExp(
+            r'^([A-Z\d]{1,3}\/)?([A-Z\d]{1,3}\d[A-Z][A-Z\d]*)((\/[A-Z\d]+)*)$')
+        .firstMatch(callsign);
+
+    if (regMatch == null) return CallsignData._(callsign: callsign);
+
+    String? t = regMatch.group(1);
+    final secPrefix = t?.substring(0, t.length - 1);
+
+    t = regMatch.group(2)!;
+    final dxcc = DxccEntity.findSub(t);
+    final prefixLength = dxcc?.prefixRe.matchAsPrefix(t)?.end;
 
     return CallsignData._(
-      callsign: callsign,
-      dxccEntity: dxcc,
-      prefix: throw UnimplementedError(),
+      callsign: t,
+      prefixLength: prefixLength,
+      prefixDxcc: dxcc,
+      secPrefixDxcc: secPrefix != null ? DxccEntity.findSub(secPrefix) : null,
+      secPrefix: secPrefix,
+      secSuffixes: List.unmodifiable(regMatch.group(3)!.split('/').skip(1)),
     );
   }
 }
@@ -68,12 +77,14 @@ class DxccEntity extends Equatable {
     this.sub = const [],
   ]);
 
+  RegExp get prefixRe => RegExp('^$prefix', caseSensitive: false);
+
   static DxccEntity? find(String callsign) =>
-      dxccs.firstWhereOrNull((e) => callsign.startsWith(e.prefix));
+      dxccs.firstWhereOrNull((e) => callsign.startsWith(e.prefixRe));
 
   static DxccEntity? findSub(String callsign, [DxccEntity? p]) {
     final dxcc = (p?.sub ?? dxccs)
-        .firstWhereOrNull((e) => callsign.startsWith(e.prefix));
+        .firstWhereOrNull((e) => callsign.startsWith(e.prefixRe));
     if (dxcc == null) return p;
 
     return findSub(callsign, dxcc);
@@ -106,22 +117,24 @@ class DxccEntity extends Equatable {
     DxccEntity._('Armenia', 14, Continent.asia, 4, 29, 21, 'AM', 'EK'),
     DxccEntity._(
         'Australia', 150, Continent.oceania, 10, 55, 29, 'AU', 'AX|V[H-NZ]', [
-      DxccEntity._(
-          'Christmas Island', 35, Continent.oceania, 7, 54, 29, 'CX', 'VK9X'),
+      DxccEntity._('Christmas Island', 35, Continent.oceania, 7, 54, 29, 'CX',
+          r'VK9(.*\/X|[KNZ]?X)'),
       DxccEntity._('Cocos-Keeling Islands', 38, Continent.oceania, 7, 54, 29,
-          'CC', 'VK9[CY]'),
+          'CC', r'VK9(.*\/Y|[KNZ]?C)'),
       DxccEntity._(
-          'Lord Howe Island', 147, Continent.oceania, 10, 60, 30, 'AU', 'VK9L'),
-      DxccEntity._(
-          'Macquarie Island', 153, Continent.oceania, 11, 60, 30, 'AU', 'VK0'),
-      DxccEntity._(
-          'Mellish Reef', 171, Continent.oceania, 10, 55, 30, 'AU', 'VK9M'),
-      DxccEntity._(
-          'Norfolk Island', 189, Continent.oceania, 12, 60, 32, 'NF', 'VK9N'),
-      DxccEntity._(
-          'Willis Island', 303, Continent.oceania, 10, 55, 30, 'AU', 'VK9[WZ]'),
+          'Heard Islands', 111, Continent.africa, 5, 68, 39, 'AU', r'VK0.*\/H'),
+      DxccEntity._('Lord Howe Island', 147, Continent.oceania, 10, 60, 30, 'AU',
+          r'VK9(.*\/H|[KNZ]?L)'),
+      DxccEntity._('Macquarie Island', 153, Continent.oceania, 11, 60, 30, 'AU',
+          r'VK0.*\/M'),
+      DxccEntity._('Mellish Reef', 171, Continent.oceania, 10, 55, 30, 'AU',
+          r'VK9(.*\/Z|[KNZ]?M)'),
+      DxccEntity._('Norfolk Island', 189, Continent.oceania, 12, 60, 32, 'NF',
+          r'VK9(.*\/N|[KNZ]?N)'),
+      DxccEntity._('Willis Island', 303, Continent.oceania, 10, 55, 30, 'AU',
+          r'VK9(.*\/W|[KNZ]?W)'),
     ]),
-// Notes: Australia covers CQ zones 29 and 30. It also has ITU zones 55, 58 and 59.
+    // Notes: Australia covers CQ zones 29 and 30. It also has ITU zones 55, 58 and 59.
     DxccEntity._('Austria', 206, Continent.europe, 1, 28, 15, 'AT', 'OE'),
     DxccEntity._('Azerbaijan', 18, Continent.asia, 4, 29, 21, 'AZ', '4[JK]'),
     DxccEntity._('Bahamas', 60, Continent.northAmerica, -5, 11, 8, 'BS', 'C6'),
@@ -135,18 +148,24 @@ class DxccEntity extends Equatable {
     DxccEntity._('Bhutan', 306, Continent.asia, 6, 41, 22, 'BT', 'A5'),
     DxccEntity._(
         'Bolivia', 104, Continent.southAmerica, -4, 12, 10, 'BO', 'CP'),
-    DxccEntity._(
-        'Bosnia and Herzegovina', 501, Continent.europe, 1, 28, 15, 'BA', 'E7'),
-// Notes: Prefix T9 is the former Bosnia
-    DxccEntity._('Botswana', 402, Continent.africa, 2, 57, 38, 'BW', '8O|2A'),
+    DxccEntity._('Bosnia and Herzegovina', 501, Continent.europe, 1, 28, 15,
+        'BA', 'E7|T9'),
+    DxccEntity._('Botswana', 402, Continent.africa, 2, 57, 38, 'BW', '8O|A2'),
     DxccEntity._('Brazil', 108, Continent.southAmerica, -3, 12, 11, 'BR',
         'P[P-Y]|Z[V-Z]', [
       DxccEntity._('Fernando de Noronha', 56, Continent.southAmerica, -2, 13,
-          11, 'BR', 'PY0F'),
+          11, 'BR', r'Z[XYZ]0F|P[QUXY]0F|PY0.*\/F'),
       DxccEntity._('St Peter & St Paul Rocks', 253, Continent.southAmerica, -2,
-          13, 11, 'BR', 'PY0P'),
-      DxccEntity._('Trindade and Martim Vaz Island', 273,
-          Continent.southAmerica, -2, 15, 11, 'BR', 'PY0T'),
+          13, 11, 'BR', r'Z[XYZ]0S|P[QUXY]0S|PY0.*\/S'),
+      DxccEntity._(
+          'Trindade and Martim Vaz Island',
+          273,
+          Continent.southAmerica,
+          -2,
+          15,
+          11,
+          'BR',
+          r'Z[XYZ]0T|P[QUXY]0T|PY0.*\/T'),
     ]),
     DxccEntity._('Brunei', 345, Continent.oceania, 8, 54, 28, 'BN', 'V8'),
     DxccEntity._('Bulgaria', 212, Continent.europe, 2, 28, 20, 'BG', 'LZ'),
@@ -168,24 +187,31 @@ class DxccEntity extends Equatable {
     DxccEntity._('Chile', 112, Continent.southAmerica, -4, 14, 12, 'CL',
         '3G|C[A-E]|X[QR]', [
       DxccEntity._('Easter Island', 47, Continent.southAmerica, -7, 63, 12,
-          'CL', 'CE0Y'),
+          'CL', 'CE0[AEFY]|XQ0Y|XR0[YZ]'),
       DxccEntity._('Juan Fernandez Islands', 125, Continent.southAmerica, -4,
-          14, 12, 'CL', 'CE0Z'),
-      DxccEntity._(
-          'San Felix', 217, Continent.southAmerica, -5, 14, 12, 'CL', 'CE0X'),
+          14, 12, 'CL', 'CE0[IZ]|XQ0Z'),
+      DxccEntity._('San Felix', 217, Continent.southAmerica, -5, 14, 12, 'CL',
+          '(CE|XQ)0X'),
     ]),
     DxccEntity._('China', 318, Continent.asia, 8, 33, 23, 'CN',
         '3[H-U]|B[A-Z]|XS|VR|XX', [
-      DxccEntity._('Hong Kong', 321, Continent.asia, 8, 44, 24, 'HK', 'VR'),
+      DxccEntity._(
+          'Hong Kong', 321, Continent.asia, 8, 44, 24, 'HK', 'VR2|VS6'),
       DxccEntity._('Macau', 152, Continent.asia, 8, 44, 24, 'MO', 'XX'),
+      DxccEntity._(
+          'Scarborough Reef', 506, Continent.asia, 8, 50, 27, 'CN', 'BS7'),
+      DxccEntity._(
+          'Taiwan', 386, Continent.asia, 8, 44, 24, 'TW', 'B[M-QU-X]', [
+        DxccEntity._(
+            'Pratas Island', 505, Continent.asia, 8, 44, 24, 'TW', 'BV9P'),
+      ]),
     ]),
     DxccEntity._(
         'Colombia', 116, Continent.southAmerica, -5, 12, 9, 'CO', '[5H][JK]', [
-      // TODO
       DxccEntity._('Malpelo Island', 161, Continent.southAmerica, -5, 12, 9,
-          'CO', 'HK0'),
+          'CO', r'HK0(.*\/)?M'),
       DxccEntity._('San Andres and Providencia', 216, Continent.northAmerica,
-          -6, 11, 7, 'NI', 'H[JK]0'),
+          -6, 11, 7, 'CO', r'HK0(.*\/)?S'),
     ]),
     DxccEntity._('Comoros', 411, Continent.africa, 3, 53, 39, 'KM', 'D6'),
     DxccEntity._('Congo', 412, Continent.africa, 1, 52, 36, 'CG', 'TN'),
@@ -205,7 +231,7 @@ class DxccEntity extends Equatable {
     DxccEntity._(
         'Denmark', 221, Continent.europe, 1, 18, 14, 'DK', '5[PQ]|O[U-Z]|XP', [
       DxccEntity._(
-          'Faroe Islands', 222, Continent.europe, 0, 18, 14, 'FO', 'O[WY]'),
+          'Faroe Islands', 222, Continent.europe, 0, 18, 14, 'FO', 'OY'),
       DxccEntity._(
           'Greenland', 237, Continent.northAmerica, -3, 5, 40, 'GL', 'OX'),
     ]),
@@ -217,10 +243,10 @@ class DxccEntity extends Equatable {
     DxccEntity._(
         'Ecuador', 120, Continent.southAmerica, -5, 12, 10, 'EC', 'H[CD]', [
       DxccEntity._('Galapagos Islands', 71, Continent.southAmerica, -6, 12, 10,
-          'EC', 'HC8'),
+          'EC', 'H[CD]8'),
     ]),
     DxccEntity._(
-        'Egypt', 478, Continent.africa, 2, 38, 34, 'EG', '6[AB]|S[SU]'),
+        'Egypt', 478, Continent.africa, 2, 38, 34, 'EG', '6[AB]|SU|SS[A-M]'),
     DxccEntity._(
         'El Salvador', 74, Continent.northAmerica, -6, 11, 7, 'SV', 'HU|YS'),
     DxccEntity._(
@@ -230,43 +256,46 @@ class DxccEntity extends Equatable {
     ]),
     DxccEntity._('Eritrea', 51, Continent.africa, 3, 48, 37, 'ER', 'E3'),
     DxccEntity._('Estonia', 52, Continent.europe, 2, 29, 15, 'EE', 'ES'),
-    DxccEntity._('Eswatini', 468, Continent.africa, 2, 57, 38, 'SZ', '3D'),
+    DxccEntity._('Eswatini', 468, Continent.africa, 2, 57, 38, 'SZ', '3D[A-M]'),
     DxccEntity._('Ethiopia', 53, Continent.africa, 3, 48, 37, 'ET', '9[EF]|ET'),
-    DxccEntity._('Fiji', 176, Continent.oceania, 12, 56, 32, 'FJ', '3D', [
+    DxccEntity._('Fiji', 176, Continent.oceania, 12, 56, 32, 'FJ', '3D[N-Z2]', [
+      DxccEntity._('Conway Reef', 489, Continent.oceania, 12, 56, 32, 'FJ',
+          r'3D2(.*\/)?C'),
       DxccEntity._(
-          'Conway Reef', 489, Continent.oceania, 12, 56, 32, 'FJ', '3D2'),
-      DxccEntity._('Rotuma', 460, Continent.oceania, 12, 56, 32, 'FJ', '3D2'),
+          'Rotuma', 460, Continent.oceania, 12, 56, 32, 'FJ', r'3D2(.*\/)?R'),
     ]),
     DxccEntity._('Finland', 224, Continent.europe, 2, 18, 15, 'FI', 'O[F-J]', [
       DxccEntity._(
           'Aland Islands', 5, Continent.europe, 2, 18, 15, 'AX', 'O[FGH]0'),
       DxccEntity._(
-          'Market Reef', 167, Continent.europe, 2, 18, 15, 'SE', 'O[HJF]0M?'),
+          'Market Reef', 167, Continent.europe, 2, 18, 15, 'AX', 'OH0M|OJ0'),
     ]),
     DxccEntity._('France', 227, Continent.europe, 1, 27, 14, 'FR',
         'F[A-Z]?|H[WXY]|T[HKMOPQVWX]', [
-      // WHAT
+      // TODO WHAT French Polynesia, Clipperton Island, Marquesas, Austral Island
       DxccEntity._('Amsterdam and St Paul Islands', 10, Continent.africa, 5, 68,
-          39, 'FR', 'FT[0-9]Z'),
+          39, 'FR', 'FT[0258]Z'),
       DxccEntity._(
           'Austral Islands', 508, Continent.oceania, -10, 63, 32, 'PF', 'FO0'),
       DxccEntity._('Clipperton Island', 36, Continent.northAmerica, -7, 10, 7,
           'FR', 'FO0'),
       DxccEntity._('Corsica', 214, Continent.europe, 1, 28, 15, 'FR', 'TK'),
       DxccEntity._(
-          'Crozet Island', 41, Continent.africa, 3, 68, 39, 'FR', 'FT[0-9]W'),
+          'Crozet Island', 41, Continent.africa, 3, 68, 39, 'FR', 'FT[0258]W'),
+      DxccEntity._('Chesterfield Islands', 512, Continent.oceania, 11, 55, 30,
+          'GB', 'TX'),
       DxccEntity._(
-          'French Guiana', 63, Continent.southAmerica, -4, 12, 9, 'GF', 'FY'),
+          'French Guiana', 63, Continent.southAmerica, -4, 12, 9, 'FR', 'FY'),
       DxccEntity._(
           'French Polynesia', 175, Continent.oceania, -10, 63, 32, 'PF', 'FO'),
+      DxccEntity._('Glorioso Islands', 99, Continent.africa, 3, 53, 39, 'FR',
+          r'FR.*\/G'),
       DxccEntity._(
-          'Glorioso Islands', 99, Continent.africa, 3, 53, 39, 'FR', 'FR-/G'),
-      DxccEntity._(
-          'Guadeloupe', 79, Continent.northAmerica, -4, 11, 8, 'GP', 'FG'),
+          'Guadeloupe', 79, Continent.northAmerica, -4, 11, 8, 'FR', 'FG'),
       DxccEntity._('Juan de Nova Island', 124, Continent.africa, 3, 53, 39,
-          'FR', 'FR-/J'),
+          'FR', r'FR.*\/J'),
       DxccEntity._('Kerguelen Islands', 131, Continent.africa, 5, 68, 39, 'FR',
-          'FT[0-9]X'),
+          'FT[0258]X'),
       DxccEntity._('Marquesas Islands', 509, Continent.oceania, -10, 63, 31,
           'FR', 'FO0'),
       DxccEntity._(
@@ -281,8 +310,8 @@ class DxccEntity extends Equatable {
           5, 'CA', 'FP'),
       DxccEntity._(
           'St. Barthelemy', 516, Continent.northAmerica, 0, 0, 0, 'FR', 'FJ'),
-      DxccEntity._(
-          'Tromelin Island', 276, Continent.africa, 4, 53, 39, 'FR', 'FR-/T'),
+      DxccEntity._('Tromelin Island', 276, Continent.africa, 4, 53, 39, 'FR',
+          r'FR.*\/T'),
       DxccEntity._('Wallis and Futuna Islands', 298, Continent.oceania, -11, 62,
           32, 'WF', 'FW'),
     ]),
@@ -293,9 +322,12 @@ class DxccEntity extends Equatable {
     DxccEntity._('Ghana', 424, Continent.africa, 0, 46, 35, 'GH', '9G'),
     DxccEntity._(
         'Greece', 236, Continent.europe, 2, 28, 20, 'GR', 'J4|S[V-Z]', [
-      DxccEntity._('Crete', 40, Continent.europe, 2, 28, 20, 'GR', 'SV9'),
-      DxccEntity._('Dodecanese', 45, Continent.europe, 2, 28, 20, 'GR', 'SV5'),
-      DxccEntity._('Mt Athos', 180, Continent.europe, 2, 28, 20, 'GR', 'SV-/A'),
+      DxccEntity._(
+          'Crete', 40, Continent.europe, 2, 28, 20, 'GR', 'J49|S[VWX]9'),
+      DxccEntity._(
+          'Dodecanese', 45, Continent.europe, 2, 28, 20, 'GR', 'J45|S[VWX]5'),
+      DxccEntity._(
+          'Mt Athos', 180, Continent.europe, 2, 28, 20, 'GR', r'SV.*\/A|SY'),
     ]),
     DxccEntity._('Grenada', 77, Continent.northAmerica, -4, 11, 8, 'GD', 'J3'),
     DxccEntity._(
@@ -312,9 +344,9 @@ class DxccEntity extends Equatable {
     DxccEntity._(
         'India', 324, Continent.asia, 6, 41, 22, 'IN', '8[T-Y]|[AV][T-W]', [
       DxccEntity._('Andaman and Nicobar Islands', 11, Continent.asia, 6, 49, 26,
-          'IN', 'VU4'),
-      DxccEntity._(
-          'Lakshadweep Islands', 142, Continent.asia, 6, 41, 22, 'IN', 'VU7'),
+          'IN', '[8A][TUVW]4|VU4'),
+      DxccEntity._('Lakshadweep Islands', 142, Continent.asia, 6, 41, 22, 'IN',
+          '[8A][TUVW]7|VU7'),
     ]),
     DxccEntity._('Indonesia', 327, Continent.oceania, 8, 51, 28, 'ID',
         '[78][A-I]|JZ|P[K-O]|Y[B-H]'),
@@ -327,14 +359,12 @@ class DxccEntity extends Equatable {
           'Sardinia', 225, Continent.europe, 1, 28, 15, 'IT', 'I[SM]0'),
     ]),
     DxccEntity._('Ivory Coast', 428, Continent.africa, 0, 46, 35, 'CI', 'TU'),
-// Notes: aka C⌠te d'Ivoire
     DxccEntity._('Jamaica', 82, Continent.northAmerica, -5, 11, 8, 'JM', '6Y'),
     DxccEntity._(
         'Japan', 339, Continent.asia, 9, 45, 25, 'JP', '[78][J-N]|J[A-S]', [
-      // TODO
-      DxccEntity._('Minami Torishima', 177, Continent.oceania, 10, 90, 27, 'JP',
-          'JD|7J'),
-      DxccEntity._('Ogasawara', 192, Continent.asia, 10, 45, 27, 'JP', 'JD|7J'),
+      DxccEntity._(
+          'Minami Torishima', 177, Continent.oceania, 10, 90, 27, 'JP', 'JD1M'),
+      DxccEntity._('Ogasawara', 192, Continent.asia, 10, 45, 27, 'JP', 'JD1O'),
     ]),
     DxccEntity._('Jordan', 342, Continent.asia, 2, 39, 20, 'JO', 'JY'),
     DxccEntity._('Kazakhstan', 130, Continent.asia, 6, 29, 17, 'KZ', 'U[N-Q]'),
@@ -376,7 +406,7 @@ class DxccEntity extends Equatable {
     DxccEntity._('Mexico', 50, Continent.northAmerica, -6, 10, 6, 'MX',
         '4[ABC]|6[D-J]|X[A-I]', [
       DxccEntity._('Revillagigedo Islands', 204, Continent.northAmerica, -7, 10,
-          6, 'MX', 'XF4'),
+          6, 'MX', 'XF[04]'),
     ]),
     DxccEntity._('Micronesia', 173, Continent.oceania, 11, 65, 27, 'FM', 'V6'),
     DxccEntity._('Moldova', 179, Continent.europe, 3, 29, 16, 'MD', 'ER'),
@@ -395,9 +425,9 @@ class DxccEntity extends Equatable {
         'Netherlands', 263, Continent.europe, 1, 27, 14, 'NL', 'P[A-J4]', [
       DxccEntity._('Aruba', 91, Continent.southAmerica, -4, 11, 9, 'AW', 'P4'),
       DxccEntity._(
-          'Bonaire', 520, Continent.southAmerica, 0, 11, 9, '?', 'PJ4'),
+          'Bonaire', 520, Continent.southAmerica, 0, 11, 9, 'BQ1', 'PJ4'),
       DxccEntity._(
-          'Curacao', 517, Continent.southAmerica, -4, 11, 9, 'AN', 'PJ2'),
+          'Curacao', 517, Continent.southAmerica, -4, 11, 9, 'CW', 'PJ2'),
       DxccEntity._('Saba, St Eustatius', 519, Continent.northAmerica, -4, 11, 8,
           'AN', 'PJ[56]'),
       DxccEntity._(
@@ -406,17 +436,16 @@ class DxccEntity extends Equatable {
     DxccEntity._('New Zealand', 170, Continent.oceania, 12, 60, 32, 'NZ',
         'Z[KLM]|E[56]', [
       DxccEntity._('Auckland, Campbell Islands', 16, Continent.oceania, 12, 60,
-          32, 'NZ', 'ZL9'),
+          32, 'NZ', 'Z[LM]9'),
       DxccEntity._(
-          'Chatham Islands', 34, Continent.oceania, 13, 60, 32, 'NZ', 'ZL7'),
-      DxccEntity._(
-          'Kermadec Islands', 133, Continent.oceania, 12, 60, 32, 'NZ', 'ZL8'),
-      DxccEntity._('Niue', 188, Continent.oceania, -11, 62, 32, 'NU', 'ZK[29]'),
-      // TODO
+          'Chatham Islands', 34, Continent.oceania, 13, 60, 32, 'NZ', 'Z[LM]7'),
+      DxccEntity._('Kermadec Islands', 133, Continent.oceania, 12, 60, 32, 'NZ',
+          'Z[LM]8'),
+      DxccEntity._('Niue', 188, Continent.oceania, -11, 62, 32, 'NU', 'ZK2'),
       DxccEntity._('North Cook Islands', 191, Continent.oceania, -11, 62, 32,
-          'NZ', 'ZK1|E5'),
+          'NZ', r'ZK1.*\/N'),
       DxccEntity._('South Cook Islands', 234, Continent.oceania, -11, 63, 32,
-          'GS', 'ZK1|E5'),
+          'GS', r'ZK1.*\/S'),
       DxccEntity._(
           'Tokelau Islands', 270, Continent.oceania, -11, 62, 31, 'TK', 'ZK3'),
     ]),
@@ -429,16 +458,14 @@ class DxccEntity extends Equatable {
     DxccEntity._(
         'North Macedonia', 502, Continent.europe, 1, 28, 15, 'MK', 'Z3'),
     DxccEntity._('Northern Cyprus', 901, Continent.asia, 2, 39, 20, 'ZP', '1B'),
-// Notes: Not recgonized by the ITU, ARRL, or UN. Also known as the Turkish Republic of Northern Cyprus
     DxccEntity._(
         'Norway', 266, Continent.europe, 1, 18, 14, 'NO', '3Y|J[WX]|L[A-N]', [
+      DxccEntity._('Bouvet Island', 24, Continent.africa, 0, 67, 38, 'NO',
+          r'3Y5|3Y[^0].*\/B'),
       DxccEntity._(
-          'Bouvet Island', 24, Continent.africa, 0, 67, 38, 'BV', '3Y'),
-      DxccEntity._(
-          'Jan Mayen Island', 118, Continent.europe, -1, 18, 40, 'SJ', 'JX'),
-      // TODO
-      DxccEntity._(
-          'Peter I Island', 199, Continent.antartica, -6, 72, 12, 'NO', '3Y'),
+          'Jan Mayen Island', 118, Continent.europe, -1, 18, 40, 'NO', 'JX'),
+      DxccEntity._('Peter I Island', 199, Continent.antartica, -6, 72, 12, 'NO',
+          r'3Y0|3Y[^5].*\/P'),
       DxccEntity._('Svalbard', 259, Continent.europe, 1, 18, 40, 'NO', 'JW'),
     ]),
     DxccEntity._('Oman', 370, Continent.asia, 4, 39, 21, 'OM', 'A4'),
@@ -458,9 +485,9 @@ class DxccEntity extends Equatable {
     DxccEntity._(
         'Poland', 269, Continent.europe, 1, 28, 15, 'PL', '3Z|HF|S[N-R]'),
     DxccEntity._('Portugal', 272, Continent.europe, 0, 37, 14, 'PT', 'C[Q-U]', [
-      DxccEntity._('Azores', 149, Continent.europe, -1, 36, 14, 'PT', 'CU|CT8'),
-      DxccEntity._('Madeira Island', 256, Continent.africa, -1, 36, 33, 'PT',
-          'CT[39]|C[Q-S]3'),
+      DxccEntity._('Azores', 149, Continent.europe, -1, 36, 14, 'PZ', 'CU'),
+      DxccEntity._('Madeira Island', 256, Continent.africa, -1, 36, 33, 'X2',
+          'C[QRT][39]'),
     ]),
 
     DxccEntity._('Qatar', 376, Continent.asia, 4, 39, 21, 'QA', 'A7'),
@@ -470,11 +497,11 @@ class DxccEntity extends Equatable {
     DxccEntity._(
         'Russia', 54, Continent.europe, 3, 19, 16, 'RU', 'R[A-Z]?|U[A-I]', [
       DxccEntity._('Asiatic Russia', 15, Continent.asia, 7, 20, 16, 'RU',
-          'UA[09]|R[A-Z][089]'),
+          'U[A-I]?[0789]|R[A-Z]?[0789]'),
       DxccEntity._(
           'Franz Josef Land', 61, Continent.europe, 3, 75, 40, 'RU', 'R1FJ'),
-      DxccEntity._(
-          'Kaliningrad', 126, Continent.europe, 2, 29, 15, 'RU', '[UR]A2[FK]?'),
+      DxccEntity._('Kaliningrad', 126, Continent.europe, 2, 29, 15, 'RU',
+          'U[A-I]?2|R[A-Z]?2'),
     ]),
     DxccEntity._('Rwanda', 454, Continent.africa, 3, 52, 36, 'RW', '9X'),
     DxccEntity._('Samoa', 190, Continent.oceania, -11, 62, 32, 'WS', '5W'),
@@ -487,19 +514,15 @@ class DxccEntity extends Equatable {
       DxccEntity._('Saudi Arabia/Iraq Neutral Zone', 1378, Continent.asia, 3,
           39, 21, 'SA', '8Z4'),
     ]),
-    DxccEntity._(
-        'Scarborough Reef', 506, Continent.asia, 8, 50, 27, '?', 'BS7'),
     DxccEntity._('Senegal', 456, Continent.africa, 0, 46, 35, 'SN', '6[VW]'),
     DxccEntity._('Serbia', 296, Continent.europe, 1, 28, 15, 'RS', 'Y[TU]'),
-// Notes: Prefix 4N is the former Serbia
     DxccEntity._('Seychelles', 379, Continent.africa, 4, 53, 39, 'SC', 'S7'),
     DxccEntity._('Sierra Leone', 458, Continent.africa, 0, 46, 35, 'SL', '9L'),
     DxccEntity._('Singapore', 381, Continent.asia, 8, 54, 28, 'SG', '9V|S6'),
     DxccEntity._(
         'Slovak Republic', 504, Continent.europe, 1, 28, 15, 'SK', 'OM'),
     DxccEntity._('Slovenia', 499, Continent.europe, 1, 28, 15, 'SI', 'S5'),
-    DxccEntity._('SMO Malta', 246, Continent.europe, 1, 28, 15, 'MT', '1A0'),
-// Notes: Sovereign Military Order of Malta - DXCC but not a country per se.
+    DxccEntity._('SMO Malta', 246, Continent.europe, 1, 28, 15, 'X1', '1A0'),
     DxccEntity._(
         'Solomon Islands', 185, Continent.oceania, 11, 51, 28, 'SB', 'H4', [
       DxccEntity._('Temotu', 507, Continent.oceania, 11, 51, 28, 'SB', 'H40'),
@@ -508,19 +531,19 @@ class DxccEntity extends Equatable {
     DxccEntity._(
         'South Africa', 462, Continent.africa, 2, 57, 38, 'ZA', 'S8|Z[R-U]', [
       DxccEntity._('Prince Edward and Marion Island', 201, Continent.africa, 3,
-          57, 38, 'ZA', 'ZS8'),
+          57, 38, 'ZA', 'VY[29]|ZS[28]'),
     ]),
     DxccEntity._('South Korea', 137, Continent.asia, 9, 44, 25, 'KR',
         '6[K-N]|D[789ST]|HL'),
     DxccEntity._('South Sudan', 521, Continent.africa, 0, 0, 0, 'SS', 'Z8'),
     DxccEntity._(
         'Spain', 281, Continent.europe, 1, 37, 14, 'ES', 'A[MNO]|E[A-H]', [
-      DxccEntity._(
-          'Balearic Islands', 21, Continent.europe, 1, 37, 14, 'ES', 'EA6'),
-      DxccEntity._(
-          'Canary Islands', 29, Continent.africa, 0, 36, 33, 'ES', 'EA8'),
-      DxccEntity._(
-          'Ceuta and Melilla', 32, Continent.africa, 1, 37, 33, 'ES', 'EA9'),
+      DxccEntity._('Balearic Islands', 21, Continent.europe, 1, 37, 14, 'ES',
+          'A[MNO]6|E[A-H]6'),
+      DxccEntity._('Canary Islands', 29, Continent.africa, 0, 36, 33, 'ES',
+          'A[MNO]8|E[A-H]8'),
+      DxccEntity._('Ceuta and Melilla', 32, Continent.africa, 1, 37, 33, 'ES',
+          'A[MNO]9|E[A-H]9'),
     ]),
     // Abc('Spratly Islands', 247, Continent.Asia, 7, 50, 26, 'PH'),
     DxccEntity._('Sri Lanka', 315, Continent.asia, 6, 41, 22, 'LK', '4[P-S]'),
@@ -531,7 +554,7 @@ class DxccEntity extends Equatable {
     DxccEntity._(
         'St Vincent', 98, Continent.northAmerica, -4, 11, 8, 'VC', 'J8'),
     DxccEntity._(
-        'Sudan', 466, Continent.africa, 2, 48, 34, 'SD', '6[TU]|S[ST]'),
+        'Sudan', 466, Continent.africa, 2, 48, 34, 'SD', '6[TU]|ST|SS[N-Z]'),
     DxccEntity._(
         'Suriname', 140, Continent.southAmerica, -4, 12, 9, 'SR', 'PZ'),
     DxccEntity._(
@@ -542,24 +565,20 @@ class DxccEntity extends Equatable {
           'Liechtenstein', 251, Continent.europe, 1, 28, 14, 'LI', 'HB0'),
     ]),
     DxccEntity._('Syria', 384, Continent.asia, 2, 39, 20, 'SY', '6C|YK'),
-    DxccEntity._('Taiwan', 386, Continent.asia, 8, 44, 24, 'TW', 'B[M-QU-X]', [
-      DxccEntity._(
-          'Pratas Island', 505, Continent.asia, 8, 44, 24, 'TW', 'BV9P'),
-    ]),
+
     DxccEntity._('Tajikistan', 262, Continent.asia, 6, 30, 17, 'TJ', 'EY'),
     DxccEntity._('Tanzania', 470, Continent.africa, 3, 53, 37, 'TZ', '5[HI]'),
     DxccEntity._('Thailand', 387, Continent.asia, 7, 49, 26, 'TH', 'E2|HS'),
     DxccEntity._('The Gambia', 422, Continent.africa, 0, 46, 35, 'GM', 'C5'),
     DxccEntity._('Timor Leste', 511, Continent.oceania, 8, 54, 28, 'TL', '4W'),
-// Notes: A.K.A. East Timor
-    DxccEntity._('Togo', 483, Continent.africa, 0, 46, 35, 'TG', '4W'),
+    DxccEntity._('Togo', 483, Continent.africa, 0, 46, 35, 'TG', '5V'),
     DxccEntity._('Tonga', 160, Continent.oceania, 13, 62, 32, 'TO', 'A3'),
 
     DxccEntity._('Trinidad and Tobago', 90, Continent.southAmerica, -4, 11, 9,
         'TT', '9[YZ]'),
     DxccEntity._('Tunisia', 474, Continent.africa, 1, 37, 33, 'TN', '3V|TS'),
     DxccEntity._('Turkey', 390, Continent.asia, 2, 39, 20, 'TR', 'T[ABC]|YM'),
-    DxccEntity._('Turkmenistan', 280, Continent.asia, 5, 30, 17, 'TM', 'AZ'),
+    DxccEntity._('Turkmenistan', 280, Continent.asia, 5, 30, 17, 'TM', 'EZ'),
     DxccEntity._('Tuvalu', 282, Continent.oceania, 12, 65, 31, 'TV', 'T2'),
     DxccEntity._('Uganda', 286, Continent.africa, 3, 48, 37, 'UG', '5X'),
     DxccEntity._(
@@ -572,7 +591,7 @@ class DxccEntity extends Equatable {
       DxccEntity._(
           'Anguilla', 12, Continent.northAmerica, -4, 11, 8, 'AI', 'VP2E'),
       DxccEntity._(
-          'Ascension Island', 205, Continent.africa, 0, 66, 36, 'UK', 'ZD8'),
+          'Ascension Island', 205, Continent.africa, 0, 66, 36, 'KY', 'ZD8'),
       DxccEntity._(
           'Bermuda', 64, Continent.northAmerica, -4, 11, 5, 'BM', 'VP9'),
       DxccEntity._('British Virgin Islands', 65, Continent.northAmerica, -4, 11,
@@ -581,16 +600,12 @@ class DxccEntity extends Equatable {
           'Cayman Islands', 69, Continent.northAmerica, -5, 11, 8, 'KY', 'ZF'),
       DxccEntity._(
           'Chagos Islands', 33, Continent.africa, 5, 41, 39, 'GB', 'VQ9'),
-      DxccEntity._('Chesterfield Islands', 512, Continent.oceania, 11, 55, 30,
-          'GB', 'TX'),
       DxccEntity._('Cyprus SBA', 283, Continent.asia, 2, 39, 20, 'CY', 'ZC4'),
       DxccEntity._('Falkland Islands', 141, Continent.southAmerica, -4, 16, 13,
-          'FK', 'VP8'),
+          'FK', r'VP8.*\/F'),
       DxccEntity._('Gibraltar', 233, Continent.europe, 1, 37, 14, 'GI', 'ZB'),
       DxccEntity._(
           'Guernsey', 106, Continent.europe, 0, 27, 14, 'GG', '2U|[GM][UP]'),
-      DxccEntity._(
-          'Heard Islands', 111, Continent.africa, 5, 68, 39, 'HM', 'VK0'),
       DxccEntity._(
           'Isle of Man', 114, Continent.europe, 0, 27, 14, 'IM', '[GM][DT]|2D'),
       DxccEntity._(
@@ -602,15 +617,15 @@ class DxccEntity extends Equatable {
       DxccEntity._(
           'Pitcairn Islands', 172, Continent.oceania, -9, 63, 32, 'PN', 'VP6'),
       DxccEntity._(
-          'Scotland', 279, Continent.europe, 0, 27, 14, 'GB', '[GM][MSZ]|2M'),
+          'Scotland', 279, Continent.europe, 0, 27, 14, 'ZC', '[GM][MSZ]|2M'),
       DxccEntity._('South Georgia Islands', 235, Continent.southAmerica, -2, 73,
-          13, 'GS', 'VP8|LU'),
+          13, 'GS', r'VP8.*\/G'),
       DxccEntity._('South Orkney Islands', 238, Continent.southAmerica, -3, 73,
-          13, 'GB', 'VP8|LU'),
+          13, 'GB', r'VP8.*\/O'),
       DxccEntity._('South Sandwich Islands', 240, Continent.southAmerica, -3,
-          73, 13, 'GS', 'VP8|LU'),
+          73, 13, 'GS', r'VP8.*\/SA'),
       DxccEntity._('South Shetland Islands', 241, Continent.southAmerica, -4,
-          73, 13, 'GB', 'VP8|LU'),
+          73, 13, 'GB', r'VP8.*\/SH'),
       DxccEntity._(
           'St Helena Island', 250, Continent.africa, 0, 66, 36, 'SH', 'ZD7'),
       DxccEntity._('Tristan da Cunha and Gough Island', 274, Continent.africa,
@@ -672,7 +687,7 @@ class DxccEntity extends Equatable {
     DxccEntity._('Venezuela', 148, Continent.southAmerica, -4, 12, 9, 'VE',
         '4M|Y[V-Y]', [
       DxccEntity._(
-          'Aves Island', 17, Continent.northAmerica, -4, 11, 8, 'VE', 'YV0'),
+          'Aves Island', 17, Continent.northAmerica, -4, 11, 8, 'VE', 'Y[VX]0'),
     ]),
     DxccEntity._('Vietnam', 293, Continent.asia, 7, 49, 26, 'VN', '3W|XV'),
     DxccEntity._('Malaysia', 299, Continent.asia, 8, 54, 28, 'MY', '9[MW]', [
