@@ -13,5 +13,6 @@ jobs:
       - uses: subosito/flutter-action@v1
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
+          webRenderer: html
           baseHref: /ham-tools/
           customArgs: -t lib/callsign_main.dart
