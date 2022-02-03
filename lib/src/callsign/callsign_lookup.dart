@@ -1,49 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:ham_tools/src/utils/callsign_util.dart';
 
-class DxccList extends StatelessWidget {
-  const DxccList({Key? key}) : super(key: key);
+class CallsignLookup extends StatefulWidget {
+  const CallsignLookup({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: ListView(
-          children: [
-            Material(
-              color: Theme.of(context).colorScheme.primary,
-              elevation: 3,
-              child: Align(
-                alignment: Alignment.center,
-                child: Container(
-                  constraints: const BoxConstraints(maxWidth: 1000),
-                  padding: const EdgeInsets.all(40),
-                  child: const PrefixLookup(),
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.center,
-              child: Container(
-                padding: const EdgeInsets.all(30),
-                constraints: const BoxConstraints(maxWidth: 1000),
-                child: const Card(
-                  elevation: 3,
-                  child: _DxccList(entities: DxccEntity.dxccs),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
+  State<CallsignLookup> createState() => _CallsignLookupState();
 }
 
-class PrefixLookup extends StatefulWidget {
-  const PrefixLookup({Key? key}) : super(key: key);
-
-  @override
-  State<PrefixLookup> createState() => _PrefixLookupState();
-}
-
-class _PrefixLookupState extends State<PrefixLookup> {
+class _CallsignLookupState extends State<CallsignLookup> {
   CallsignData? callsignData;
 
   @override
@@ -54,7 +19,7 @@ class _PrefixLookupState extends State<PrefixLookup> {
     return Column(
       children: [
         Text(
-          'Prefix lookup',
+          'Callsign lookup',
           style: Theme.of(context).textTheme.headline4?.copyWith(
                 color: Theme.of(context).colorScheme.onPrimary,
               ),
@@ -131,6 +96,29 @@ class _PrefixLookupState extends State<PrefixLookup> {
                     dxcc: dxcc,
                     color: Colors.amber.shade800,
                   ),
+                ...callsignData!.secSuffixes.map((e) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 25,
+                      ),
+                      color: Colors.blue.shade800.withAlpha(50),
+                      child: Row(
+                        children: [
+                          Text(
+                            '/$e',
+                            style:
+                                Theme.of(context).textTheme.headline5?.copyWith(
+                                      color: Colors.blue.shade800,
+                                    ),
+                          ),
+                          const SizedBox(width: 15),
+                          Text(
+                            secSuffix(callsignData!, e),
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ],
+                      ),
+                    )),
               ],
             ),
           )
@@ -147,7 +135,7 @@ class _DxccView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(15),
         color: color?.withAlpha(70),
         child: Row(
           children: [
@@ -159,8 +147,8 @@ class _DxccView extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: color?.withAlpha(100),
                 ),
-                child: Image.network(
-                  'https://static.qrz.com/static/flags-iso/flat/64/${dxcc.flag}.png',
+                child: Image.asset(
+                  'flags/64/${dxcc.flag}.png',
                   width: 40,
                 ),
               ),
@@ -175,53 +163,19 @@ class _DxccView extends StatelessWidget {
       );
 }
 
-class _DxccList extends StatelessWidget {
-  final EdgeInsetsGeometry? padding;
-  final List<DxccEntity> entities;
+String secSuffix(CallsignData callsign, String value) {
+  value = value.toUpperCase();
 
-  const _DxccList({
-    Key? key,
-    required this.entities,
-    this.padding,
-  }) : super(key: key);
+  if (value == 'P') return 'Portable';
+  if (value == 'QRP') return 'Low power';
+  if (value == 'M') return 'Mobile';
+  if (value == 'MM') return 'Maritime Mobile';
+  if (value == 'AM') return 'Maritime Mobile';
+  if (value == 'A') return 'Alternative location';
 
-  @override
-  Widget build(BuildContext context) => ListView.separated(
-        padding: padding,
-        shrinkWrap: true,
-        separatorBuilder: (_, __) =>
-            Container(height: 1, color: Colors.grey.shade200),
-        itemCount: entities.length,
-        itemBuilder: (_, i) {
-          final e = entities[i];
+  if (RegExp(r'^\d$').hasMatch(value)) {
+    return 'Own call area, away from primary location';
+  }
 
-          return Column(
-            children: [
-              ListTile(
-                leading: Tooltip(
-                  message: e.flag,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey.shade200,
-                    ),
-                    child: Image.network(
-                      'https://static.qrz.com/static/flags-iso/flat/64/${e.flag}.png',
-                      width: 32,
-                    ),
-                  ),
-                ),
-                title: Text(e.name),
-                subtitle: Text(e.prefix),
-              ),
-              if (e.sub.isNotEmpty)
-                _DxccList(
-                  entities: e.sub,
-                  padding: const EdgeInsets.only(left: 48),
-                ),
-            ],
-          );
-        },
-      );
+  return 'Away from primary location';
 }
