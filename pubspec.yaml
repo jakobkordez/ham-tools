@@ -29,7 +29,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/flags/
+    - assets/flags/64/
 
   fonts:
     - family: RobotoMono
