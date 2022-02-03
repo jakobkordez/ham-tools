@@ -106,10 +106,12 @@ class _CallsignLookupState extends State<CallsignLookup> {
                         children: [
                           Text(
                             '/$e',
-                            style:
-                                Theme.of(context).textTheme.headline5?.copyWith(
-                                      color: Colors.blue.shade800,
-                                    ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline5
+                                ?.copyWith(
+                                    color: Colors.blue.shade800,
+                                    fontFamily: 'RobotoMono'),
                           ),
                           const SizedBox(width: 15),
                           Text(
@@ -148,7 +150,7 @@ class _DxccView extends StatelessWidget {
                   color: color?.withAlpha(100),
                 ),
                 child: Image.asset(
-                  'flags/64/${dxcc.flag}.png',
+                  'assets/flags/64/${dxcc.flag}.png',
                   width: 40,
                 ),
               ),

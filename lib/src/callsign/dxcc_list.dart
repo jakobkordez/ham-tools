@@ -33,7 +33,7 @@ class DxccList extends StatelessWidget {
                       color: Colors.grey.shade200,
                     ),
                     child: Image.asset(
-                      'flags/64/${e.flag}.png',
+                      'assets/flags/64/${e.flag}.png',
                       width: 32,
                     ),
                   ),
