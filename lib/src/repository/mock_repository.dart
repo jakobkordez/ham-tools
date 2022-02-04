@@ -1,8 +1,6 @@
 import 'dart:math';
 
-import 'package:ham_tools/src/models/log_entry.dart';
-import 'package:ham_tools/src/models/mode.dart';
-
+import '../models/log_entry.dart';
 import 'repository.dart';
 
 class MockRepository implements Repository {

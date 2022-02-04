@@ -3,7 +3,7 @@ import 'package:ham_tools/src/utils/adif.dart';
 
 void main() {
   test('tryDecodeAdi', () {
-    final adi = Adif.tryDecodeAdi(adiInput);
+    final adi = Adif.decodeAdi(adiInput);
 
     expect(adi, adiMapList);
   });

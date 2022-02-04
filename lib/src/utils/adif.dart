@@ -6,46 +6,46 @@ import 'dart:convert';
 class Adif {
   const Adif._();
 
-  static List<Map<String, String>>? tryDecodeAdi(String source) {
+  static List<Map<String, String>> decodeAdi(String source) {
     final ret = <Map<String, String>>[];
 
     Map<String, String> vals = {};
 
-    int i = source.indexOf('<');
-    while (i != -1) {
-      if (source[i] != '<') return null;
+    for (int i = source.indexOf('<'); i != -1; i = source.indexOf('<', i)) {
       final j = source.indexOf('>', i + 1);
-      if (j == -1) return null;
+      if (j == -1) break;
 
       final tag = source.substring(i + 1, j);
       i = j + 1;
 
+      // End of header
       if (tag == 'eoh') {
         vals = {};
-      } else if (tag == 'eor') {
-        ret.add(vals);
-        vals = {};
-      } else {
-        final tagSplit = tag.split(':');
-        if (tagSplit.length != 2) return null;
-
-        final key = tagSplit.first;
-        final len = int.tryParse(tagSplit.last);
-        if (len == null) return null;
-
-        String value = '';
-        for (int c = 0; c < len; ++i) {
-          value += source[i];
-          c += utf8.encode(source[i]).length;
-        }
-
-        vals[key] = value;
+        continue;
       }
 
-      i = source.indexOf('<', i);
-    }
+      // End of record
+      if (tag == 'eor') {
+        ret.add(vals);
+        vals = {};
+        continue;
+      }
 
-    if (vals.isNotEmpty) return null;
+      final tagSplit = tag.split(':');
+      if (tagSplit.length != 2) continue;
+
+      final key = tagSplit.first;
+      final len = int.tryParse(tagSplit.last);
+      if (len == null) continue;
+
+      String value = '';
+      for (int c = 0; c < len; ++i) {
+        value += source[i];
+        c += utf8.encode(source[i]).length;
+      }
+
+      vals[key] = value;
+    }
 
     return ret;
   }

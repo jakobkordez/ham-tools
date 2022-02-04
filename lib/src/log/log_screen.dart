@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ham_tools/src/models/mode.dart';
 import 'package:intl/intl.dart';
 
+import '../models/log_entry.dart';
 import 'bloc/log_bloc.dart';
 
 class LogScreen extends StatelessWidget {
@@ -236,7 +236,7 @@ class _LogListState extends State<LogList> {
                         e.rstRecieved,
                         e.rstSent,
                         e.name,
-                        e.note,
+                        e.notes,
                       ];
 
                       return Row(

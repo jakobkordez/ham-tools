@@ -1,3 +1,5 @@
+part of 'log_entry.dart';
+
 enum Band {
   lf2200m,
   mf160m,
@@ -18,6 +20,12 @@ enum Band {
 }
 
 extension BandUtil on Band {
+  static Band? tryParse(String? value) {
+    if (value == null) return null;
+    value = value.toLowerCase();
+    return Band.values.firstWhereOrNull((b) => b.name == value);
+  }
+
   static Band? getBand(int frequency) {
     for (final band in Band.values) {
       if (frequency >= band.lowerBound && frequency <= band.upperBound) {
