@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:ham_tools/src/callsign/callsign_editing_controller.dart';
 import 'package:ham_tools/src/utils/callsign_util.dart';
+import 'package:ham_tools/src/utils/text_input_formatters.dart';
 
 class CallsignLookup extends StatefulWidget {
   const CallsignLookup({Key? key}) : super(key: key);
@@ -9,93 +12,80 @@ class CallsignLookup extends StatefulWidget {
 }
 
 class _CallsignLookupState extends State<CallsignLookup> {
+  final _controller = CallsignEditingController(
+    secPrefixColor: Colors.purple,
+    prefixColor: Colors.amber.shade800,
+    suffixColor: Colors.green,
+    secSuffixColor: Colors.blue.shade800,
+  );
+
   CallsignData? callsignData;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final dxcc = callsignData?.prefixDxcc;
     final secDxcc = callsignData?.secPrefixDxcc;
+    final onPrimary = Theme.of(context).colorScheme.onPrimary;
 
     return Column(
       children: [
         Text(
           'Callsign lookup',
-          style: Theme.of(context).textTheme.headline4?.copyWith(
-                color: Theme.of(context).colorScheme.onPrimary,
-              ),
+          style:
+              Theme.of(context).textTheme.headline4?.copyWith(color: onPrimary),
+        ),
+        Text(
+          'by S52KJ',
+          style: TextStyle(color: onPrimary),
         ),
         const SizedBox(height: 20),
-        TextFormField(
-          textCapitalization: TextCapitalization.characters,
-          textAlign: TextAlign.center,
-          decoration: InputDecoration(
-            hintText: 'Search callsign...',
-            fillColor: Theme.of(context).colorScheme.onPrimary,
-            filled: true,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(50),
-              borderSide: BorderSide.none,
-            ),
-            contentPadding: const EdgeInsets.all(20),
-          ),
-          onChanged: (value) => setState(() {
-            callsignData = value.isEmpty ? null : CallsignData.parse(value);
-          }),
-        ),
-        if (callsignData != null)
-          Card(
-            clipBehavior: Clip.antiAlias,
-            margin: const EdgeInsets.only(top: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: DefaultTextStyle(
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline3!
-                        .copyWith(fontFamily: 'RobotoMono'),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (callsignData!.secPrefix != null)
-                          Text(
-                            '${callsignData!.secPrefix}/',
-                            style: const TextStyle(color: Colors.purple),
-                          ),
-                        if (dxcc == null)
-                          Text(callsignData!.callsign)
-                        else ...[
-                          Text(
-                            callsignData!.callsign
-                                .substring(0, callsignData!.prefixLength!),
-                            style: TextStyle(color: Colors.amber.shade800),
-                          ),
-                          Text(
-                            callsignData!.callsign
-                                .substring(callsignData!.prefixLength!),
-                            style: const TextStyle(color: Colors.green),
-                          ),
-                          ...callsignData!.secSuffixes.map((e) => Text(
-                                '/$e',
-                                style: TextStyle(color: Colors.blue.shade800),
-                              )),
-                        ],
-                      ],
-                    ),
+        Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: TextFormField(
+                  controller: _controller,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9/]')),
+                    UpperCaseTextFormatter(),
+                  ],
+                  onChanged: (value) => setState(() {
+                    callsignData =
+                        value.isEmpty ? null : CallsignData.parse(value);
+                  }),
+                  textAlign: TextAlign.center,
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: InputDecoration(
+                    hintText: 'Enter callsign...',
+                    hintStyle: Theme.of(context).textTheme.headline4,
+                    border: InputBorder.none,
                   ),
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline4!
+                      .copyWith(fontFamily: 'RobotoMono'),
                 ),
-                if (secDxcc != null)
-                  _DxccView(
-                    dxcc: secDxcc,
-                    color: Colors.purple,
-                  ),
-                if (dxcc != null)
-                  _DxccView(
-                    dxcc: dxcc,
-                    color: Colors.amber.shade800,
-                  ),
+              ),
+              if (secDxcc != null)
+                _DxccView(
+                  dxcc: secDxcc,
+                  color: Colors.purple,
+                ),
+              if (dxcc != null)
+                _DxccView(
+                  dxcc: dxcc,
+                  color: Colors.amber.shade800,
+                ),
+              if (callsignData != null)
                 ...callsignData!.secSuffixes.map((e) => Container(
                       padding: const EdgeInsets.symmetric(
                         vertical: 20,
@@ -121,9 +111,9 @@ class _CallsignLookupState extends State<CallsignLookup> {
                         ],
                       ),
                     )),
-              ],
-            ),
-          )
+            ],
+          ),
+        ),
       ],
     );
   }

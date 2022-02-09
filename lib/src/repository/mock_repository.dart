@@ -4,17 +4,21 @@ import '../models/log_entry.dart';
 import 'repository.dart';
 
 class MockRepository implements Repository {
-  final _log = List.generate(
-      100,
-      (i) => LogEntry(
-            callsign: _genCallsign(),
-            timeOn: DateTime.now().subtract(Duration(minutes: i)),
-            frequency: 7005000,
-            mode: Mode.cw,
-            power: 100,
-            rstSent: '599',
-            rstRecieved: '599',
-          )).toList();
+  final List<LogEntry> _log;
+
+  MockRepository([List<LogEntry>? log])
+      : _log = log ??
+            List.generate(
+                50,
+                (i) => LogEntry(
+                      callsign: _genCallsign(),
+                      timeOn: DateTime.now().subtract(Duration(minutes: i)),
+                      frequency: 7005000,
+                      mode: Mode.cw,
+                      power: 100,
+                      rstSent: '599',
+                      rstReceived: '599',
+                    )).toList();
 
   @override
   Future<List<LogEntry>> getLogEntries(

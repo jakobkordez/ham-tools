@@ -2,6 +2,12 @@ import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 
 class CallsignData {
+  static final callsignRegex = RegExp(
+    r'^([A-Z\d]{1,3}\/)?([A-Z\d]{1,3}\d[A-Z][A-Z\d]*)((\/[A-Z\d]+)*)$',
+    caseSensitive: false,
+  );
+
+  final bool isValid;
   final String callsign;
   final int? prefixLength;
   final String? secPrefix;
@@ -10,6 +16,7 @@ class CallsignData {
   final DxccEntity? secPrefixDxcc;
 
   CallsignData._({
+    required this.isValid,
     required this.callsign,
     this.prefixLength,
     this.secPrefix,
@@ -18,28 +25,30 @@ class CallsignData {
     this.secPrefixDxcc,
   });
 
+  static bool isValidCallsign(String callsign) =>
+      callsignRegex.hasMatch(callsign);
+
   factory CallsignData.parse(String callsign) {
-    callsign = callsign.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9\/]+'), '');
-    final regMatch = RegExp(
-            r'^([A-Z\d]{1,3}\/)?([A-Z\d]{1,3}\d[A-Z][A-Z\d]*)((\/[A-Z\d]+)*)$')
-        .firstMatch(callsign);
+    callsign = callsign.toUpperCase();
+    final regMatch = callsignRegex.firstMatch(callsign);
 
-    if (regMatch == null) return CallsignData._(callsign: callsign);
-
-    String? t = regMatch.group(1);
+    String? t = regMatch?.group(1);
     final secPrefix = t?.substring(0, t.length - 1);
 
-    t = regMatch.group(2)!;
+    t = regMatch?.group(2) ?? callsign;
     final dxcc = DxccEntity.findSub(t);
     final prefixLength = dxcc?.prefixRe.matchAsPrefix(t)?.end;
 
     return CallsignData._(
+      isValid: regMatch != null,
       callsign: t,
       prefixLength: prefixLength,
       prefixDxcc: dxcc,
       secPrefixDxcc: secPrefix != null ? DxccEntity.findSub(secPrefix) : null,
       secPrefix: secPrefix,
-      secSuffixes: List.unmodifiable(regMatch.group(3)!.split('/').skip(1)),
+      secSuffixes: regMatch != null
+          ? List.unmodifiable(regMatch.group(3)!.split('/').skip(1))
+          : const [],
     );
   }
 }

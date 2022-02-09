@@ -28,13 +28,14 @@ extension BandUtil on Band {
 
   static Band? getBand(int frequency) {
     for (final band in Band.values) {
-      if (frequency >= band.lowerBound && frequency <= band.upperBound) {
-        return band;
-      }
+      if (band.isInBounds(frequency)) return band;
     }
 
     return null;
   }
+
+  bool isInBounds(int frequency) =>
+      frequency >= lowerBound && frequency <= upperBound;
 
   int get lowerBound {
     switch (this) {

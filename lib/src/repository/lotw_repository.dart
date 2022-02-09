@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:ham_tools/src/models/log_entry.dart';
 import 'package:ham_tools/src/utils/adif.dart';
 import 'package:http/http.dart' show Client;

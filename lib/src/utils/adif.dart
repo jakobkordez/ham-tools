@@ -1,10 +1,19 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 /// Amateur Data Interchange Format
 ///
 /// Encode and decode LogEntries in ADIF format.
 class Adif {
+  static final dateFormat = DateFormat('yyyyMMdd');
+  static final timeFormat = DateFormat('HHmm');
+
   const Adif._();
+
+  /// Parses date and time in `yyyyMMddHHmm` format
+  static DateTime parseDateTime(String v) =>
+      DateTime.parse('${v.substring(0, 8)}T${v.substring(8)}Z');
 
   static List<Map<String, String>> decodeAdi(String source) {
     final ret = <Map<String, String>>[];
