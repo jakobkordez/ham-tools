@@ -13,6 +13,6 @@ jobs:
       - uses: subosito/flutter-action@v1
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
-          webRenderer: html
+          webRenderer: canvaskit
           baseHref: /ham-tools/
           customArgs: -t lib/web_main.dart
