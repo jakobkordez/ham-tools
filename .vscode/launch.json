@@ -7,16 +7,22 @@
             "type": "dart"
         },
         {
-            "name": "callsign_tool canvaskit",
+            "name": "web_app canvaskit",
             "request": "launch",
             "type": "dart",
-            "args": ["--web-renderer", "canvaskit", "-t", "lib/callsign_main.dart"]
+            "args": ["-d", "chrome", "--web-renderer", "canvaskit", "-t", "lib/web_main.dart"]
         },
         {
-            "name": "callsign_tool html",
+            "name": "web_app html",
             "request": "launch",
             "type": "dart",
-            "args": ["--web-renderer", "html", "-t", "lib/callsign_main.dart"]
+            "args": ["-d", "chrome", "--web-renderer", "html", "-t", "lib/web_main.dart"]
+        },
+        {
+            "name": "web_app html profile",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--profile", "-d", "chrome", "--web-renderer", "html", "-t", "lib/web_main.dart"]
         }
     ]
 }

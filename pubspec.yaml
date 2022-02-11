@@ -30,6 +30,8 @@ flutter:
 
   assets:
     - assets/flags/64/
+    - assets/images/
+    - assets/cil.txt
 
   fonts:
     - family: RobotoMono

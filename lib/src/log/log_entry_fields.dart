@@ -259,7 +259,7 @@ class _ModeInput extends StatelessWidget {
           decoration: const InputDecoration(labelText: 'Mode'),
           value: state.mode,
           onChanged: context.read<NewLogEntryCubit>().setMode,
-          items: Mode.values
+          items: ModeUtil.topModes
               .map((e) => DropdownMenuItem(
                     child: Text(e.name.toUpperCase()),
                     value: e,

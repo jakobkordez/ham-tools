@@ -3,6 +3,9 @@ import 'package:ham_tools/src/utils/adif.dart';
 import 'package:http/http.dart' show Client;
 import 'package:intl/intl.dart';
 
+// https://lotw.arrl.org/lotw-help/developer-query-qsos-qsls/
+// https://lotw.arrl.org/lotw-help/developer-submit-qsos/
+
 class LotwRepository {
   static const _baseUrl = 'lotw.arrl.org';
   static const _reportPath = '/lotwuser/lotwreport.adi';

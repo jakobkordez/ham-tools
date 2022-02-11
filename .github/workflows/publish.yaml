@@ -15,4 +15,4 @@ jobs:
         with:
           webRenderer: html
           baseHref: /ham-tools/
-          customArgs: -t lib/callsign_main.dart
+          customArgs: -t lib/web_main.dart

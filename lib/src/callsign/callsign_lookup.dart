@@ -31,90 +31,70 @@ class _CallsignLookupState extends State<CallsignLookup> {
   Widget build(BuildContext context) {
     final dxcc = callsignData?.prefixDxcc;
     final secDxcc = callsignData?.secPrefixDxcc;
-    final onPrimary = Theme.of(context).colorScheme.onPrimary;
+    final textTheme = Theme.of(context).textTheme;
 
-    return Column(
-      children: [
-        Text(
-          'Callsign lookup',
-          style:
-              Theme.of(context).textTheme.headline4?.copyWith(color: onPrimary),
-        ),
-        Text(
-          'by S52KJ',
-          style: TextStyle(color: onPrimary),
-        ),
-        const SizedBox(height: 20),
-        Card(
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(15),
-                child: TextFormField(
-                  controller: _controller,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9/]')),
-                    UpperCaseTextFormatter(),
-                  ],
-                  onChanged: (value) => setState(() {
-                    callsignData =
-                        value.isEmpty ? null : CallsignData.parse(value);
-                  }),
-                  textAlign: TextAlign.center,
-                  textAlignVertical: TextAlignVertical.center,
-                  decoration: InputDecoration(
-                    hintText: 'Enter callsign...',
-                    hintStyle: Theme.of(context).textTheme.headline4,
-                    border: InputBorder.none,
-                  ),
-                  style: Theme.of(context)
-                      .textTheme
-                      .headline4!
-                      .copyWith(fontFamily: 'RobotoMono'),
-                ),
+    return Card(
+      elevation: 2,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15),
+            child: TextFormField(
+              controller: _controller,
+              inputFormatters: [
+                UpperCaseTextFormatter(),
+                FilteringTextInputFormatter.allow(RegExp(r'[A-Z0-9/]')),
+              ],
+              onChanged: (value) => setState(() {
+                callsignData = value.isEmpty ? null : CallsignData.parse(value);
+              }),
+              textAlign: TextAlign.center,
+              textAlignVertical: TextAlignVertical.center,
+              decoration: InputDecoration(
+                hintText: 'Enter callsign...',
+                hintStyle: textTheme.headline4,
+                border: InputBorder.none,
               ),
-              if (secDxcc != null)
-                _DxccView(
-                  dxcc: secDxcc,
-                  color: Colors.purple,
-                ),
-              if (dxcc != null)
-                _DxccView(
-                  dxcc: dxcc,
-                  color: Colors.amber.shade800,
-                ),
-              if (callsignData != null)
-                ...callsignData!.secSuffixes.map((e) => Container(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 20,
-                        horizontal: 25,
-                      ),
-                      color: Colors.blue.shade800.withAlpha(50),
-                      child: Row(
-                        children: [
-                          Text(
-                            '/$e',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headline5
-                                ?.copyWith(
-                                    color: Colors.blue.shade800,
-                                    fontFamily: 'RobotoMono'),
-                          ),
-                          const SizedBox(width: 15),
-                          Text(
-                            secSuffix(callsignData!, e),
-                            style: Theme.of(context).textTheme.headline6,
-                          ),
-                        ],
-                      ),
-                    )),
-            ],
+              style: textTheme.headline4!.copyWith(fontFamily: 'RobotoMono'),
+            ),
           ),
-        ),
-      ],
+          if (secDxcc != null)
+            _DxccView(
+              dxcc: secDxcc,
+              color: Colors.purple,
+            ),
+          if (dxcc != null)
+            _DxccView(
+              dxcc: dxcc,
+              color: Colors.amber.shade800,
+            ),
+          if (callsignData != null)
+            ...callsignData!.secSuffixes.map((e) => Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 20,
+                    horizontal: 25,
+                  ),
+                  color: Colors.blue.shade800.withAlpha(50),
+                  child: Row(
+                    children: [
+                      Text(
+                        '/$e',
+                        style: textTheme.headline5?.copyWith(
+                            color: Colors.blue.shade800,
+                            fontFamily: 'RobotoMono'),
+                      ),
+                      const SizedBox(width: 15),
+                      Text(
+                        secSuffix(callsignData!, e),
+                        style: textTheme.headlineSmall,
+                      ),
+                    ],
+                  ),
+                )),
+        ],
+      ),
     );
   }
 }
@@ -129,26 +109,49 @@ class _DxccView extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(15),
         color: color?.withAlpha(70),
-        child: Row(
+        child: Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 15,
+          runSpacing: 15,
           children: [
-            Tooltip(
-              message: dxcc.flag,
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: color?.withAlpha(100),
+            Row(
+              children: [
+                Tooltip(
+                  message: dxcc.flag,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: color?.withAlpha(100),
+                    ),
+                    child: Image.asset(
+                      'assets/flags/64/${dxcc.flag}.png',
+                      width: 40,
+                    ),
+                  ),
                 ),
-                child: Image.asset(
-                  'assets/flags/64/${dxcc.flag}.png',
-                  width: 40,
+                const SizedBox(width: 15),
+                Text(
+                  dxcc.name,
+                  style: Theme.of(context).textTheme.headline5,
                 ),
-              ),
+              ],
             ),
-            const SizedBox(width: 15),
             Text(
-              dxcc.name,
-              style: Theme.of(context).textTheme.headline5,
+              'DXCC: ${dxcc.dxcc}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Text(
+              'CQ: ${dxcc.cqZone}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Text(
+              'ITU: ${dxcc.ituZone}',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            Text(
+              'Timezone: GMT${dxcc.timezoneOffset.isNegative ? '-' : '+'}${dxcc.timezoneOffset}',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ],
         ),
