@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 
 class CylindricalPainter extends CustomPainter {
   final List<List<Offset>> data;
+  final double top;
+  final double bottom;
   final Offset? point;
 
-  CylindricalPainter(this.data, {this.point});
+  CylindricalPainter(this.data, this.top, this.bottom, {this.point});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -20,13 +22,12 @@ class CylindricalPainter extends CustomPainter {
       ..strokeWidth = 0.4;
 
     final center = Offset(size.width / 2, size.height / 2);
-    final s = min(size.height / 2, size.width / 4);
+    final s = min(size.height, size.width);
 
     canvas.translate(center.dx, center.dy);
-    canvas.scale(s, -s);
-
+    canvas.scale(s, s);
     canvas.drawRect(
-      Rect.fromCenter(center: Offset.zero, width: 4, height: 2),
+      const Rect.fromLTWH(-0.5, -0.5, 1, 1),
       Paint()..color = Colors.lightBlue.shade100,
     );
 

@@ -11,6 +11,16 @@ class CylindricalMapScreen extends StatelessWidget {
           title: const Text('QTH map'),
           centerTitle: true,
         ),
-        body: CylindricalMap(point: LatLon.parseGridSquare('JN76')),
+        body: Padding(
+          padding: const EdgeInsets.all(30),
+          child: Card(
+            margin: EdgeInsets.zero,
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: CylindricalMap(point: LatLon.parseGridSquare('JN76')),
+          ),
+        ),
       );
 }

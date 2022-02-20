@@ -35,6 +35,10 @@ class CylindricalMap extends StatelessWidget {
 
             final data = snapshot.data!;
             final pointOffset = point != null ? pointToOffset(point!) : null;
+            final top =
+                (pi - log(tan(pi / 4 + toRad(85.051129) / 2))) / (2 * pi);
+            final bot =
+                (pi - log(tan(pi / 4 + toRad(-85.051129) / 2))) / (2 * pi);
 
             return InteractiveViewer(
               clipBehavior: Clip.none,
@@ -44,7 +48,12 @@ class CylindricalMap extends StatelessWidget {
                 child: CustomPaint(
                   isComplex: true,
                   size: Size.infinite,
-                  painter: CylindricalPainter(data, point: pointOffset),
+                  painter: CylindricalPainter(
+                    data,
+                    top,
+                    bot,
+                    point: pointOffset,
+                  ),
                 ),
               ),
             );
@@ -58,14 +67,25 @@ class CylindricalMap extends StatelessWidget {
   }
 }
 
-double secDeg(double degrees) =>
-    (degrees.isNegative ? -180 : 180) / pi / cos(degrees * pi / 180);
+// double secDeg(double degrees) =>
+//     (degrees.isNegative ? -180 : 180) / (pi * cos(degrees * pi / 180));
 
-Offset pointToOffset(LatLon p) => Offset(p.lon / 90, secDeg(p.lat) / 90);
+// double test(double deg) => log(tan(pi / 4 + deg * pi / 360)) / pi * 180;
+
+double toRad(double deg) => deg * pi / 180;
+
+Offset pointToOffset(LatLon p) => Offset(
+      (toRad(p.lon) + pi) / (2 * pi) - 0.5,
+      (pi - log(tan(pi / 4 + toRad(p.lat) / 2))) / (2 * pi) - 0.5,
+    );
 
 Future<List<List<Offset>>> _buildMap(String raw) async {
   Offset rowToOffset(String row) {
     final a = row.substring(1).split(' ').map(double.parse).toList();
+    if (a[0] < -180) a[0] += 360;
+    if (a[0] > 180) a[0] -= 360;
+    if (a[1] < -180) a[1] += 360;
+    if (a[1] > 180) a[1] -= 360;
     return pointToOffset(LatLon(a[0], a[1]));
   }
 
@@ -78,21 +98,24 @@ Future<List<List<Offset>>> _buildMap(String raw) async {
 
   for (final seg in data) {
     final pts = <Offset>[];
-    final apts = <Offset>[];
     pts.add(rowToOffset(seg.first));
     for (int i = 1; i < seg.length - 1; i += 1) {
       final pt = rowToOffset(seg.elementAt(i));
-      if (isFurther(pt, pts.last, 1)) {
-        if (apts.isEmpty || isFurther(pt, apts.last, 0.001)) {
-          apts.add(pt);
-        }
+      if (isFurther(pt, pts.last, 0.7)) {
+        final edge = pts.last.dx > 0 ? 0.5 : -0.5;
+        pts.addAll([
+          Offset(edge, pts.last.dy),
+          Offset(edge, 0.5),
+          Offset(-edge, 0.5),
+          Offset(-edge, pts.last.dy),
+          pt,
+        ]);
       } else if (isFurther(pt, pts.last, 0.001)) {
         pts.add(pt);
       }
     }
     pts.add(rowToOffset(seg.last));
     res.add(pts);
-    if (apts.isNotEmpty) res.add(apts);
   }
 
   return res;
