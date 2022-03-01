@@ -16,7 +16,8 @@ Future<void> main(List<String> args) async {
   }
 }
 
-Iterable<String> getFlags([List<DxccEntity> dxccs = DxccEntity.dxccs]) sync* {
+Iterable<String> getFlags([List<DxccEntity>? dxccs]) sync* {
+  dxccs ??= DxccEntity.dxccs;
   for (final e in dxccs) {
     yield e.flag;
     yield* getFlags(e.sub);

@@ -6,6 +6,7 @@ class CallsignData {
     r'^([A-Z\d]{1,3}\/)?([A-Z\d]{1,3}\d[A-Z][A-Z\d]*)((\/[A-Z\d]+)*)$',
     caseSensitive: false,
   );
+  static final _replaceRegex = RegExp(r'[^A-Z0-9/]+', caseSensitive: false);
 
   final bool isValid;
   final String callsign;
@@ -29,7 +30,7 @@ class CallsignData {
       callsignRegex.hasMatch(callsign);
 
   factory CallsignData.parse(String callsign) {
-    callsign = callsign.toUpperCase();
+    callsign = callsign.toUpperCase().replaceAll(_replaceRegex, '');
     final regMatch = callsignRegex.firstMatch(callsign);
 
     String? t = regMatch?.group(1);
@@ -74,7 +75,7 @@ class DxccEntity extends Equatable {
   final String prefix;
   final List<DxccEntity> sub;
 
-  const DxccEntity._(
+  DxccEntity._(
     this.name,
     this.dxcc,
     this.continent,
@@ -86,7 +87,7 @@ class DxccEntity extends Equatable {
     this.sub = const [],
   ]);
 
-  RegExp get prefixRe => RegExp('^$prefix', caseSensitive: false);
+  late final RegExp prefixRe = RegExp('^$prefix', caseSensitive: false);
 
   static DxccEntity? find(String callsign) =>
       dxccs.firstWhereOrNull((e) => callsign.startsWith(e.prefixRe));
@@ -112,7 +113,7 @@ class DxccEntity extends Equatable {
         sub,
       ];
 
-  static const dxccs = <DxccEntity>[
+  static final dxccs = <DxccEntity>[
     DxccEntity._('Afghanistan', 3, Continent.asia, 5, 40, 21, 'AF', 'T6|YA'),
     DxccEntity._('Albania', 7, Continent.europe, 1, 28, 15, 'AL', 'ZA'),
     DxccEntity._('Algeria', 400, Continent.africa, 0, 37, 33, 'DZ', '7[RT-Y]'),
