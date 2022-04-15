@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ham_tools/src/callsign/callsign_screen.dart';
 import 'package:ham_tools/src/map/azimuthal_map_screen.dart';
 import 'package:ham_tools/src/map/cylindrical_map_screen.dart';
+import 'package:ham_tools/src/stats/stats_screen.dart';
 
 void main() => runApp(const WebApp());
 
@@ -23,6 +24,7 @@ class WebApp extends StatelessWidget {
           '/callsign': (_) => const CallsignScreen(),
           '/azmap': (_) => const AzimuthalMapScreen(),
           '/cylmap': (_) => const CylindricalMapScreen(),
+          '/stats': (_) => const StatsScreen(),
         },
       );
 }
@@ -95,6 +97,10 @@ class HomeScreen extends StatelessWidget {
                     _LinkCard(
                       title: const Text('QTH map'),
                       onTap: () => Navigator.pushNamed(context, '/cylmap'),
+                    ),
+                    _LinkCard(
+                      title: const Text('QSO stats'),
+                      onTap: () => Navigator.pushNamed(context, '/stats'),
                     ),
                   ],
                 ),
