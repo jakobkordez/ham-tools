@@ -1,13 +1,37 @@
 part of 'log_entry_form.dart';
 
-class _CallsignInput extends StatelessWidget {
+class _CallsignInput extends StatefulWidget {
   const _CallsignInput({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => BlocBuilder<NewLogEntryCubit, LogEntry>(
-        buildWhen: (p, c) => p.callsign != c.callsign,
-        builder: (context, state) => TextFormField(
-          initialValue: state.callsign,
+  State<_CallsignInput> createState() => _CallsignInputState();
+}
+
+class _CallsignInputState extends State<_CallsignInput> {
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = context.read<NewLogEntryCubit>().state.callsign;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocListener<NewLogEntryCubit, LogEntry>(
+        listener: (context, state) {
+          if (state.callsign != _controller.text) {
+            _controller.text = state.callsign;
+          }
+        },
+        child: TextFormField(
+          controller: _controller,
           onChanged: context.read<NewLogEntryCubit>().setCallsign,
           inputFormatters: [UpperCaseTextFormatter()],
           decoration: InputDecoration(
@@ -126,7 +150,11 @@ class _BandInput extends StatelessWidget {
       BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
         buildWhen: (prev, curr) => prev.band != curr.band,
         builder: (context, state) => DropdownButtonFormField<Band>(
-          decoration: const InputDecoration(labelText: 'Band'),
+          decoration: const InputDecoration(
+            labelText: 'Band',
+            border: OutlineInputBorder(),
+          ),
+          dropdownColor: Colors.white,
           value: state.band,
           onChanged: context.read<NewLogEntryCubit>().setBand,
           items: Band.values
@@ -191,7 +219,11 @@ class _BandRxInput extends StatelessWidget {
       BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
         buildWhen: (prev, curr) => prev.bandRx != curr.bandRx,
         builder: (context, state) => DropdownButtonFormField<Band>(
-          decoration: const InputDecoration(labelText: 'Receive Band'),
+          decoration: const InputDecoration(
+            labelText: 'Receive Band',
+            border: OutlineInputBorder(),
+          ),
+          dropdownColor: Colors.white,
           value: state.bandRx,
           onChanged: context.read<NewLogEntryCubit>().setBandRx,
           items: Band.values
@@ -256,7 +288,11 @@ class _ModeInput extends StatelessWidget {
       BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
         buildWhen: (prev, curr) => prev.mode != curr.mode,
         builder: (context, state) => DropdownButtonFormField<Mode>(
-          decoration: const InputDecoration(labelText: 'Mode'),
+          decoration: const InputDecoration(
+            labelText: 'Mode',
+            border: OutlineInputBorder(),
+          ),
+          dropdownColor: Colors.white,
           value: state.mode,
           onChanged: context.read<NewLogEntryCubit>().setMode,
           items: ModeUtil.topModes
@@ -283,15 +319,40 @@ class _SplitCheckbox extends StatelessWidget {
       );
 }
 
-class _PowerInput extends StatelessWidget {
+class _PowerInput extends StatefulWidget {
   const _PowerInput({Key? key}) : super(key: key);
 
   @override
+  State<_PowerInput> createState() => _PowerInputState();
+}
+
+class _PowerInputState extends State<_PowerInput> {
+  final _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = '${context.read<NewLogEntryCubit>().state.power ?? ''}';
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) =>
-      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
-        builder: (context, state) => TextFormField(
-          initialValue: '${state.power ?? ''}',
-          inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'\d'))],
+      BlocListener<NewLogEntryCubit, NewLogEntryState>(
+        listener: (context, state) {
+          final pstr = '${state.power ?? ''}';
+          if (pstr != _controller.text) {
+            _controller.text = pstr;
+          }
+        },
+        child: TextFormField(
+          controller: _controller,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           onChanged: context.read<NewLogEntryCubit>().setPower,
           decoration: const InputDecoration(
             labelText: 'Power',
@@ -395,7 +456,7 @@ class _RstRecvInputState extends State<_RstRecvInput> {
           controller: _controller,
           onChanged: context.read<NewLogEntryCubit>().setRstRecv,
           decoration: const InputDecoration(
-            labelText: 'RST Received',
+            labelText: 'RST Recv',
           ),
         ),
       );
@@ -457,7 +518,11 @@ class _SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ElevatedButton(
-        onPressed: () {},
+        onPressed: () {
+          final b = context.read<NewLogEntryCubit>();
+          context.read<LogBloc>().add(LogEntryAdded(b.state));
+          b.clear();
+        },
         child: const Text('Submit'),
       );
 }

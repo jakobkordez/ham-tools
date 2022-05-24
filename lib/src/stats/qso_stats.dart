@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../models/log_entry.dart';
 import '../utils/adif.dart';
 
 class QsoStats extends Equatable {
@@ -23,6 +24,18 @@ class QsoStats extends Equatable {
       if (e.containsKey('band')) {
         band.update(e['band']!, (v) => v + 1, ifAbsent: () => 1);
       }
+    }
+
+    return QsoStats._(mode: mode, band: band);
+  }
+
+  factory QsoStats.fromLogEntries(List<LogEntry> log) {
+    final mode = <String, int>{};
+    final band = <String, int>{};
+
+    for (var e in log) {
+      mode.update(e.mode.name, (v) => v + 1, ifAbsent: () => 1);
+      band.update(e.band?.name ?? '?', (v) => v + 1, ifAbsent: () => 1);
     }
 
     return QsoStats._(mode: mode, band: band);

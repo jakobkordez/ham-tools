@@ -18,6 +18,9 @@ dependencies:
   intl: ^0.17.0
   http: ^0.13.4
   collection: ^1.15.0
+  localstorage: ^4.0.0+1
+  timer_builder: ^2.0.0
+  path_provider: ^2.0.9
 
 dev_dependencies:
   flutter_test:

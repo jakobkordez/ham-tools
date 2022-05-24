@@ -62,7 +62,7 @@ class NewLogEntryState extends LogEntry {
         hasTimeOff: hasTimeOff ?? this.hasTimeOff,
         name: name ?? this.name,
         notes: notes ?? this.notes,
-        power: power ?? this.power,
+        power: power == null ? this.power : (power < 0 ? null : power),
       );
 
   @override

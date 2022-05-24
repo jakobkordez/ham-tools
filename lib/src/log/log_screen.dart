@@ -13,6 +13,7 @@ class LogScreen extends StatelessWidget {
           padding: const EdgeInsets.all(15),
           children: [
             Card(
+              clipBehavior: Clip.antiAlias,
               elevation: 3,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

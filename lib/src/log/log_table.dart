@@ -26,7 +26,6 @@ class LogTable extends StatelessWidget {
             DataColumn(label: Text('Call', style: headStyle)),
             DataColumn(label: Text('Freq', style: headStyle)),
             DataColumn(label: Text('Mode', style: headStyle)),
-            DataColumn(label: Text('Flag', style: headStyle)),
             DataColumn(label: Text('Country', style: headStyle)),
             DataColumn(label: Text('Name', style: headStyle)),
             DataColumn(label: Text('Notes', style: headStyle)),
@@ -54,18 +53,28 @@ class DataSource extends DataTableSource {
       DataCell(Text(e.timeOnString)),
       DataCell(Text(e.callsign, style: callsignStyle)),
       DataCell(Text(e.freqMhz)),
-      DataCell(Text(e.mode.name.toUpperCase())),
-      DataCell(Material(
-        color: Colors.grey.withAlpha(50),
-        child: dxcc != null
-            ? Center(child: Image.asset('assets/flags/64/${dxcc.flag}.png'))
-            : const SizedBox.expand(),
-      )),
-      DataCell(Text(
-        dxcc?.name ?? '',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        softWrap: true,
+      DataCell(Center(child: Text(e.mode.name.toUpperCase()))),
+      DataCell(Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Material(
+            color: Colors.grey.withAlpha(50),
+            child: dxcc != null
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Center(
+                        child: Image.asset('assets/flags/64/${dxcc.flag}.png')),
+                  )
+                : const SizedBox.expand(),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            dxcc?.name ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            softWrap: true,
+          ),
+        ],
       )),
       DataCell(Text(
         e.name,

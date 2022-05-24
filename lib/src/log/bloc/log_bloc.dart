@@ -19,5 +19,11 @@ class LogBloc extends Bloc<LogEvent, LogState> {
         ));
       },
     );
+
+    on<LogEntryAdded>((event, emit) async {
+      await repository.addLogEntry(event.entry);
+
+      add(LogFetched());
+    });
   }
 }

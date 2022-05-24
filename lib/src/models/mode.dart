@@ -63,6 +63,7 @@ extension ModeUtil on Mode {
   String? get defaultReport {
     switch (this) {
       case Mode.cw:
+      case Mode.rtty:
         return '599';
       case Mode.ssb:
       case Mode.am:

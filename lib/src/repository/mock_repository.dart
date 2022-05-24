@@ -39,4 +39,16 @@ class MockRepository implements Repository {
     }
     return ret;
   }
+
+  @override
+  Future<void> addLogEntry(LogEntry entry) async {
+    final i = _log.indexWhere((e) => e.timeOn.isBefore(entry.timeOn));
+    _log.insert(i, entry);
+  }
+
+  @override
+  Future<LogEntry?> getLastLogEntry() async {
+    if (_log.isEmpty) return null;
+    return _log.first;
+  }
 }

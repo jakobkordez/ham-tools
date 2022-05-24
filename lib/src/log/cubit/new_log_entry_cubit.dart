@@ -4,7 +4,16 @@ import 'package:ham_tools/src/models/log_entry.dart';
 part 'new_log_entry_state.dart';
 
 class NewLogEntryCubit extends Cubit<NewLogEntryState> {
-  NewLogEntryCubit() : super(NewLogEntryState());
+  NewLogEntryCubit([LogEntry? last])
+      : super(last == null
+            ? NewLogEntryState()
+            : NewLogEntryState(
+                frequency: last.frequency,
+                mode: last.mode,
+                split: last.isSplit,
+                frequencyRx: last.frequencyRx,
+                power: last.power,
+              ));
 
   static int? tryParseTime(String value) {
     final p = int.tryParse(value);
@@ -28,6 +37,14 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
     if (p == null) return null;
     return (p * 1000000).toInt();
   }
+
+  void clear() => emit(NewLogEntryState(
+        frequency: state.frequency,
+        split: state.split,
+        frequencyRx: state.frequencyRx,
+        mode: state.mode,
+        power: state.power,
+      ));
 
   void setTimeOnNow() => _setTimeOn(DateTime.now());
 

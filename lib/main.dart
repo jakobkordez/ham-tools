@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ham_tools/src/app.dart';
-import 'package:ham_tools/src/log/bloc/log_bloc.dart';
-import 'package:ham_tools/src/repository/mock_repository.dart';
+import 'package:ham_tools/src/repository/local_repository.dart';
 import 'package:ham_tools/src/repository/repository.dart';
 
-void main() {
-  final Repository repository = MockRepository();
+Future<void> main() async {
+  final repository = await LocalRepository.init();
 
-  final logBloc = LogBloc(repository)..add(LogFetched());
-
-  runApp(App(logBloc: logBloc));
+  runApp(
+    RepositoryProvider<Repository>.value(
+      value: repository,
+      child: const App(),
+    ),
+  );
 }

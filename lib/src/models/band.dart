@@ -4,6 +4,7 @@ enum Band {
   lf2200m,
   mf160m,
   hf80m,
+  hf60m,
   hf40m,
   hf30m,
   hf20m,
@@ -45,6 +46,8 @@ extension BandUtil on Band {
         return 1800000;
       case Band.hf80m:
         return 3500000;
+      case Band.hf60m:
+        return 5351500;
       case Band.hf40m:
         return 7000000;
       case Band.hf30m:
@@ -82,6 +85,8 @@ extension BandUtil on Band {
         return 2000000;
       case Band.hf80m:
         return 3800000;
+      case Band.hf60m:
+        return 5366500;
       case Band.hf40m:
         return 7200000;
       case Band.hf30m:
@@ -119,6 +124,8 @@ extension BandUtil on Band {
         return '160 m';
       case Band.hf80m:
         return '80 m';
+      case Band.hf60m:
+        return '60 m';
       case Band.hf40m:
         return '40 m';
       case Band.hf30m:
@@ -156,6 +163,8 @@ extension BandUtil on Band {
         return '160m';
       case Band.hf80m:
         return '80m';
+      case Band.hf60m:
+        return '60m';
       case Band.hf40m:
         return '40m';
       case Band.hf30m:

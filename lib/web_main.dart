@@ -94,14 +94,14 @@ class HomeScreen extends StatelessWidget {
                       title: const Text('Azimuthal map'),
                       onTap: () => Navigator.pushNamed(context, '/azmap'),
                     ),
-                    _LinkCard(
-                      title: const Text('QTH map'),
-                      onTap: () => Navigator.pushNamed(context, '/cylmap'),
-                    ),
-                    _LinkCard(
-                      title: const Text('QSO stats'),
-                      onTap: () => Navigator.pushNamed(context, '/stats'),
-                    ),
+                    // _LinkCard(
+                    //   title: const Text('QTH map'),
+                    //   onTap: () => Navigator.pushNamed(context, '/cylmap'),
+                    // ),
+                    // _LinkCard(
+                    //   title: const Text('QSO stats'),
+                    //   onTap: () => Navigator.pushNamed(context, '/stats'),
+                    // ),
                   ],
                 ),
               ),
