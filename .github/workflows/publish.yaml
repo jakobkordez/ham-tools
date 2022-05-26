@@ -14,5 +14,5 @@ jobs:
       - uses: bluefireteam/flutter-gh-pages@v7
         with:
           webRenderer: canvaskit
-          baseHref: /ham-tools/
+          # baseHref: /ham-tools/
           customArgs: -t lib/web_main.dart
