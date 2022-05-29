@@ -645,11 +645,10 @@ class DxccEntity extends Equatable {
       DxccEntity._(
           'Wales', 294, Continent.europe, 0, 27, 14, 'GB', '[GM][WC]|2W'),
     ]),
+    DxccEntity._('United Nations', 289, Continent.northAmerica, -5, 8, 5, 'UN',
+        '4U.+UN'),
     DxccEntity._(
-        'United Nations', 289, Continent.northAmerica, -5, 8, 5, 'UN', '4U', [
-      DxccEntity._(
-          'ITU Geneva', 117, Continent.europe, 1, 28, 14, 'CH', '4U.*ITU'),
-    ]),
+        'ITU Geneva', 117, Continent.europe, 1, 28, 14, 'CH', '4U.+ITU'),
     DxccEntity._('United States', 291, Continent.northAmerica, -5, 0, 0, 'US',
         'A[A-L]|[KNW][A-Z]?', [
       DxccEntity._(
