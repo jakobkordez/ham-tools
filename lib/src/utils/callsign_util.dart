@@ -597,7 +597,7 @@ class DxccEntity extends Equatable {
         'United Arab Emirates', 391, Continent.asia, 4, 39, 21, 'AE', 'A6'),
 
     DxccEntity._('United Kingdom', 223, Continent.europe, 0, 27, 14, 'GB',
-        '[GM]|[2GM][A-Z]|V[PQS]|Z[B-JNOQ]', [
+        '[2GM][A-Z]|V[PQS]|Z[B-JNOQ]|[GM]', [
       DxccEntity._(
           'Anguilla', 12, Continent.northAmerica, -4, 11, 8, 'AI', 'VP2E'),
       DxccEntity._(
