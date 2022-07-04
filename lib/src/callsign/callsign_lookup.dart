@@ -165,7 +165,7 @@ String secSuffix(CallsignData callsign, String value) {
   if (value == 'QRP') return 'Low power';
   if (value == 'M') return 'Mobile';
   if (value == 'MM') return 'Maritime Mobile';
-  if (value == 'AM') return 'Maritime Mobile';
+  if (value == 'AM') return 'Aeronautical Mobile';
   if (value == 'A') return 'Alternative location';
 
   if (RegExp(r'^\d$').hasMatch(value)) {
