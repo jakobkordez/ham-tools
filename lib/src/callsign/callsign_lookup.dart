@@ -56,6 +56,13 @@ class _CallsignLookupState extends State<CallsignLookup> {
                 hintText: 'Enter callsign...',
                 hintStyle: textTheme.headline4,
                 border: InputBorder.none,
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () => setState(() {
+                    _controller.clear();
+                    callsignData = null;
+                  }),
+                ),
               ),
               style: textTheme.headline4!.copyWith(fontFamily: 'RobotoMono'),
             ),
