@@ -7,10 +7,15 @@ class QsoStats extends Equatable {
   final Map<String, int> mode;
   final Map<String, int> band;
 
-  const QsoStats._({
-    required this.mode,
-    required this.band,
-  });
+  QsoStats._({
+    required Map<String, int> band,
+    required Map<String, int> mode,
+  })  : band = Map.fromEntries(band.entries.toList()
+          ..sort((a, b) => Band.values
+              .indexOf(BandUtil.tryParse(a.key)!)
+              .compareTo(Band.values.indexOf(BandUtil.tryParse(b.key)!)))),
+        mode = Map.fromEntries(
+            mode.entries.toList()..sort((a, b) => b.value.compareTo(a.value)));
 
   factory QsoStats.parse(String adif) {
     final mode = <String, int>{};

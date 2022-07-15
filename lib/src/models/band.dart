@@ -1,23 +1,89 @@
 part of 'log_entry.dart';
 
 enum Band {
+  /// 2200m band (136 kHz)
   lf2200m,
+
+  /// 160m band (1.800 MHz)
   mf160m,
+
+  /// 80m band (3.500 MHz)
   hf80m,
+
+  /// 60m band (5.250 MHz)
   hf60m,
+
+  /// 40m band (7.000 MHz)
   hf40m,
+
+  /// 30m band (10.000 MHz)
   hf30m,
+
+  /// 20m band (14.000 MHz)
   hf20m,
+
+  /// 17m band (18.100 MHz)
   hf17m,
+
+  /// 15m band (21.000 MHz)
   hf15m,
+
+  /// 12m band (24.900 MHz)
   hf12m,
+
+  /// 10m band (28.000 MHz)
   hf10m,
+
+  /// 6m band (50 MHz)
   vhf6m,
+
+  /// 4m band (70 MHz)
   vhf4m,
+
+  /// 2m band (144 MHz)
   vhf2m,
+
+  /// 1.25m band (222 MHz)
+  vhf1_25m,
+
+  /// 70cm band (440 MHz)
   uhf70cm,
-  uhf24cm,
+
+  /// 33cm band (902 MHz)
+  uhf33cm,
+
+  /// 23cm band (1.2 GHz)
+  uhf23cm,
+
+  /// 13cm band (2.3 GHz)
   uhf13cm,
+
+  /// 9cm band (3.4 GHz)
+  shf9cm,
+
+  /// 6cm band (5.6 GHz)
+  shf6cm,
+
+  /// 3cm band (10 GHz)
+  shf3cm,
+
+  /// 1.25cm band (24 GHz)
+  shf1_25cm,
+
+  /// 6mm band (47 GHz)
+  ehf6mm,
+
+  /// 4mm band (75 GHz)
+  ehf4mm,
+
+  /// 2.5mm band (122 GHz)
+  ehf2_5mm,
+
+  /// 2mm band (134 GHz)
+  ehf2mm,
+
+  /// 1mm band (241 GHz)
+  ehf1mm,
 }
 
 extension BandUtil on Band {
@@ -68,12 +134,34 @@ extension BandUtil on Band {
         return 70000000;
       case Band.vhf2m:
         return 144000000;
+      case Band.vhf1_25m:
+        return 222000000;
       case Band.uhf70cm:
         return 430000000;
-      case Band.uhf24cm:
+      case Band.uhf33cm:
+        return 902000000;
+      case Band.uhf23cm:
         return 1240000000;
       case Band.uhf13cm:
         return 2300000000;
+      case Band.shf9cm:
+        return 3400000000;
+      case Band.shf6cm:
+        return 5650000000;
+      case Band.shf3cm:
+        return 10000000000;
+      case Band.shf1_25cm:
+        return 24000000000;
+      case Band.ehf6mm:
+        return 47000000000;
+      case Band.ehf4mm:
+        return 75500000000;
+      case Band.ehf2_5mm:
+        return 122000000000;
+      case Band.ehf2mm:
+        return 134000000000;
+      case Band.ehf1mm:
+        return 241000000000;
     }
   }
 
@@ -107,12 +195,34 @@ extension BandUtil on Band {
         return 70450000;
       case Band.vhf2m:
         return 146000000;
+      case Band.vhf1_25m:
+        return 225000000;
       case Band.uhf70cm:
         return 440000000;
-      case Band.uhf24cm:
+      case Band.uhf33cm:
+        return 928000000;
+      case Band.uhf23cm:
         return 1300000000;
       case Band.uhf13cm:
         return 2450000000;
+      case Band.shf9cm:
+        return 3475000000;
+      case Band.shf6cm:
+        return 58500000000;
+      case Band.shf3cm:
+        return 10500000000;
+      case Band.shf1_25cm:
+        return 24250000000;
+      case Band.ehf6mm:
+        return 47200000000;
+      case Band.ehf4mm:
+        return 81500000000;
+      case Band.ehf2_5mm:
+        return 123000000000;
+      case Band.ehf2mm:
+        return 141000000000;
+      case Band.ehf1mm:
+        return 250000000000;
     }
   }
 
@@ -146,12 +256,34 @@ extension BandUtil on Band {
         return '4 m';
       case Band.vhf2m:
         return '2 m';
+      case Band.vhf1_25m:
+        return '1.25 m';
       case Band.uhf70cm:
         return '70 cm';
-      case Band.uhf24cm:
-        return '24 cm';
+      case Band.uhf33cm:
+        return '33 cm';
+      case Band.uhf23cm:
+        return '23 cm';
       case Band.uhf13cm:
         return '13 cm';
+      case Band.shf9cm:
+        return '9 cm';
+      case Band.shf6cm:
+        return '6 cm';
+      case Band.shf3cm:
+        return '3 cm';
+      case Band.shf1_25cm:
+        return '1.25 cm';
+      case Band.ehf6mm:
+        return '6 mm';
+      case Band.ehf4mm:
+        return '4 mm';
+      case Band.ehf2_5mm:
+        return '2.5 mm';
+      case Band.ehf2mm:
+        return '2 mm';
+      case Band.ehf1mm:
+        return '1 mm';
     }
   }
 
@@ -185,12 +317,34 @@ extension BandUtil on Band {
         return '4m';
       case Band.vhf2m:
         return '2m';
+      case Band.vhf1_25m:
+        return '1.25m';
       case Band.uhf70cm:
         return '70cm';
-      case Band.uhf24cm:
-        return '24cm';
+      case Band.uhf33cm:
+        return '33cm';
+      case Band.uhf23cm:
+        return '23cm';
       case Band.uhf13cm:
         return '13cm';
+      case Band.shf9cm:
+        return '9cm';
+      case Band.shf6cm:
+        return '6cm';
+      case Band.shf3cm:
+        return '3cm';
+      case Band.shf1_25cm:
+        return '1.25cm';
+      case Band.ehf6mm:
+        return '6mm';
+      case Band.ehf4mm:
+        return '4mm';
+      case Band.ehf2_5mm:
+        return '2.5mm';
+      case Band.ehf2mm:
+        return '2mm';
+      case Band.ehf1mm:
+        return '1mm';
     }
   }
 }
