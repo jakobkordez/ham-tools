@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../models/log_entry.dart';
 import '../utils/color_util.dart';
 import 'cubit/stats_cubit.dart';
 
@@ -24,28 +25,42 @@ class StatsScreen extends StatelessWidget {
               alignment: Alignment.center,
               child: Container(
                 constraints: const BoxConstraints(maxWidth: 800),
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    Row(
-                      children: [
-                        if (!kIsWeb) Expanded(child: _LotwInput()),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.bottomCenter,
-                            child: _OpenFile(),
-                          ),
+                child: BlocListener<StatsCubit, StatsState>(
+                  listenWhen: (previous, current) =>
+                      previous.error != current.error,
+                  listener: (context, state) {
+                    if (state.error != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(state.error!),
+                          backgroundColor: Colors.red,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    _AdiInput(),
-                    const SizedBox(height: 10),
-                    _Counter(),
-                    const SizedBox(height: 20),
-                    _ParseButton(),
-                    _QsoData(),
-                  ],
+                      );
+                    }
+                  },
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      Row(
+                        children: [
+                          if (!kIsWeb) Expanded(child: _LotwInput()),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: _OpenFile(),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      _AdiInput(),
+                      const SizedBox(height: 10),
+                      _Counter(),
+                      const SizedBox(height: 20),
+                      _ParseButton(),
+                      _QsoData(),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -56,11 +71,13 @@ class StatsScreen extends StatelessWidget {
 
 class _DataCard extends StatelessWidget {
   final Map<String, int> data;
+  final Map<String, Color?>? colors;
   final int sum;
 
   _DataCard({
     Key? key,
     required this.data,
+    this.colors,
   })  : sum = data.values.reduce((a, b) => a + b),
         super(key: key);
 
@@ -102,7 +119,8 @@ class _DataCard extends StatelessWidget {
                       .map((e) => PieChartSectionData(
                             value: e.value + 0,
                             title: e.value > (sum ~/ 95) ? e.key : '',
-                            color: ColorUtil.randomPrimary(e.key.hashCode),
+                            color: colors?[e.key] ??
+                                ColorUtil.randomPrimary(e.key.hashCode),
                             titlePositionPercentageOffset: 1.5,
                           ))
                       .toList(),
@@ -288,8 +306,14 @@ class _QsoData extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _DataCard(data: state.qsoStats!.mode),
-                    _DataCard(data: state.qsoStats!.band),
+                    if (state.qsoStats!.mode.isNotEmpty)
+                      _DataCard(data: state.qsoStats!.mode),
+                    if (state.qsoStats!.band.isNotEmpty)
+                      _DataCard(
+                        data: state.qsoStats!.band,
+                        colors: state.qsoStats!.band.map((band, _) =>
+                            MapEntry(band, BandUtil.tryParse(band)?.color)),
+                      ),
                   ],
                 ),
               ),

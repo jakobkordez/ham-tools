@@ -11,6 +11,14 @@ class StatsCubit extends Cubit<StatsState> {
   StatsCubit() : super(StatsState());
 
   void parse() {
+    if (state.adi.isEmpty) {
+      emit(state.copyWith(
+        status: StatsStateStatus.error,
+        error: 'ADI field is empty',
+      ));
+      return;
+    }
+
     final stats = QsoStats.parse(state.adi);
     emit(state.copyWith(
       status: StatsStateStatus.loaded,
