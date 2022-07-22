@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ham_tools/src/utils/callsign_util.dart';
+
+import '../utils/dxcc_entity.dart';
 
 class DxccList extends StatelessWidget {
   final EdgeInsetsGeometry? padding;

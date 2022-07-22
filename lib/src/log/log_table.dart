@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ham_tools/src/models/log_entry.dart';
-import 'package:ham_tools/src/utils/callsign_util.dart';
 
+import '../models/log_entry.dart';
+import '../utils/dxcc_entity.dart';
 import 'bloc/log_bloc.dart';
 
 class LogTable extends StatelessWidget {

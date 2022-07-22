@@ -99,6 +99,7 @@ class HomeScreen extends StatelessWidget {
                     constraints: const BoxConstraints(maxWidth: 1000),
                     child: GridView.extent(
                       shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
                       maxCrossAxisExtent: 400,
                       mainAxisSpacing: 10,
                       crossAxisSpacing: 10,

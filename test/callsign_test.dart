@@ -1,11 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ham_tools/src/utils/callsign_util.dart';
+import 'package:ham_tools/src/utils/callsign_data.dart';
+import 'package:ham_tools/src/utils/dxcc_entity.dart';
 
 void main() {
   test('Prefix overlap', () {
     final letNum = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-    final prefixes = DxccEntity.dxccs.map((e) => e.prefixRe);
-    Iterable<RegExp> res;
+    // final prefixes = DxccEntity.dxccs.map((e) => e.prefixRe);
+    Iterable<DxccEntity> res;
+    List<String> errors = [];
 
     Iterable<String> genPrefixes([String prev = '', int depth = 4]) sync* {
       for (final l in letNum) {
@@ -17,10 +19,14 @@ void main() {
     }
 
     for (final p in genPrefixes()) {
-      res = prefixes.where((e) => p.startsWith(e));
+      res = DxccEntity.dxccs.where((e) => p.startsWith(e.prefixRe));
       if (res.length > 1) {
-        fail('$p :\n${res.join('\n')}');
+        errors.add('$p :\n${res.join('\n')}');
       }
+    }
+
+    if (errors.isNotEmpty) {
+      fail(errors.join('\n\n'));
     }
   });
 
@@ -52,7 +58,7 @@ void main() {
       expect(cs.prefixDxcc?.name, 'Slovenia');
       expect(cs.secPrefix, isNull);
       expect(cs.secPrefixDxcc, isNull);
-      expect(cs.secSuffixes, ['M']);
+      expect(cs.secSuffixes, [SecondarySuffix.mobile]);
     });
 
     test('9K/S52KJ/M', () {
@@ -62,7 +68,7 @@ void main() {
       expect(cs.prefixDxcc?.name, 'Slovenia');
       expect(cs.secPrefix, '9K');
       expect(cs.secPrefixDxcc?.name, 'Kuwait');
-      expect(cs.secSuffixes, ['M']);
+      expect(cs.secSuffixes, [SecondarySuffix.mobile]);
     });
 
     test('9K/S52KJ/P/QRP', () {
@@ -72,7 +78,8 @@ void main() {
       expect(cs.prefixDxcc?.name, 'Slovenia');
       expect(cs.secPrefix, '9K');
       expect(cs.secPrefixDxcc?.name, 'Kuwait');
-      expect(cs.secSuffixes, ['P', 'QRP']);
+      expect(
+          cs.secSuffixes, [SecondarySuffix.portable, SecondarySuffix.lowPower]);
     });
 
     test('9k/s52kj /p/ qrp', () {
@@ -82,7 +89,8 @@ void main() {
       expect(cs.prefixDxcc?.name, 'Slovenia');
       expect(cs.secPrefix, '9K');
       expect(cs.secPrefixDxcc?.name, 'Kuwait');
-      expect(cs.secSuffixes, ['P', 'QRP']);
+      expect(
+          cs.secSuffixes, [SecondarySuffix.portable, SecondarySuffix.lowPower]);
     });
   });
 }

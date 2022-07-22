@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ham_tools/src/callsign/callsign_editing_controller.dart';
-import 'package:ham_tools/src/utils/callsign_util.dart';
-import 'package:ham_tools/src/utils/text_input_formatters.dart';
+
+import '../utils/callsign_data.dart';
+import '../utils/dxcc_entity.dart';
+import '../utils/text_input_formatters.dart';
+import 'callsign_editing_controller.dart';
 
 class CallsignLookup extends StatefulWidget {
   const CallsignLookup({Key? key}) : super(key: key);
@@ -85,17 +87,26 @@ class _CallsignLookupState extends State<CallsignLookup> {
                   ),
                   color: Colors.blue.shade800.withAlpha(50),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
                     children: [
-                      Text(
-                        '/$e',
-                        style: textTheme.headline5?.copyWith(
+                      Flexible(
+                        child: Text(
+                          '/${e.suffix}',
+                          style: textTheme.headline5?.copyWith(
                             color: Colors.blue.shade800,
-                            fontFamily: 'RobotoMono'),
+                            fontFamily: 'RobotoMono',
+                          ),
+                          maxLines: 5,
+                          softWrap: true,
+                        ),
                       ),
                       const SizedBox(width: 15),
-                      Text(
-                        secSuffix(callsignData!, e),
-                        style: textTheme.headlineSmall,
+                      Flexible(
+                        child: Text(
+                          e.description,
+                          style: textTheme.headlineSmall,
+                        ),
                       ),
                     ],
                   ),
@@ -157,27 +168,10 @@ class _DxccView extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Text(
-              'Timezone: GMT${dxcc.timezoneOffset.isNegative ? '-' : '+'}${dxcc.timezoneOffset}',
+              'Timezone: GMT${dxcc.timezoneOffset.isNegative ? '' : '+'}${dxcc.timezoneOffset}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ],
         ),
       );
-}
-
-String secSuffix(CallsignData callsign, String value) {
-  value = value.toUpperCase();
-
-  if (value == 'P') return 'Portable';
-  if (value == 'QRP') return 'Low power';
-  if (value == 'M') return 'Mobile';
-  if (value == 'MM') return 'Maritime Mobile';
-  if (value == 'AM') return 'Aeronautical Mobile';
-  if (value == 'A') return 'Alternative location';
-
-  if (RegExp(r'^\d$').hasMatch(value)) {
-    return 'Own call area, away from primary location';
-  }
-
-  return 'Away from primary location';
 }

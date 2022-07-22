@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ham_tools/src/utils/callsign_util.dart';
+
+import '../utils/callsign_data.dart';
 
 /// Custom Callsign TextEditingController
 ///
@@ -44,15 +45,15 @@ class CallsignEditingController extends TextEditingController {
           TextSpan(text: data.callsign)
         else ...[
           TextSpan(
-            text: data.callsign.substring(0, data.prefixLength),
+            text: data.callsign.substring(0, data.prefixLength ?? 0),
             style: TextStyle(color: prefixColor),
           ),
           TextSpan(
-            text: data.callsign.substring(data.prefixLength!),
+            text: data.callsign.substring(data.prefixLength ?? 0),
             style: data.isValid ? TextStyle(color: suffixColor) : null,
           ),
           ...data.secSuffixes.map((e) => TextSpan(
-                text: '/$e',
+                text: '/${e.suffix}',
                 style: TextStyle(color: secSuffixColor),
               )),
         ],
