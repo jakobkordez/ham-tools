@@ -221,20 +221,24 @@ class _LotwSubmit extends StatelessWidget {
 class _OpenFile extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ElevatedButton.icon(
-        onPressed: () async {
-          final result = await FilePicker.platform.pickFiles();
-          final data = result?.files.single.bytes;
-          if (data != null) {
-            final adi = String.fromCharCodes(data);
-            context.read<StatsCubit>().updateAdi(adi, true);
-            return;
-          }
-          final path = result?.files.single.path;
-          if (path != null) {
-            final adi = await File(path).readAsString();
-            context.read<StatsCubit>().updateAdi(adi, true);
-            return;
-          }
+        onPressed: () {
+          final cubit = context.read<StatsCubit>();
+
+          Future(() async {
+            final result = await FilePicker.platform.pickFiles();
+            final data = result?.files.single.bytes;
+            if (data != null) {
+              final adi = String.fromCharCodes(data);
+              cubit.updateAdi(adi, true);
+              return;
+            }
+            final path = result?.files.single.path;
+            if (path != null) {
+              final adi = await File(path).readAsString();
+              cubit.updateAdi(adi, true);
+              return;
+            }
+          });
         },
         icon: const Icon(Icons.file_open),
         label: const Text('Open ADI file'),

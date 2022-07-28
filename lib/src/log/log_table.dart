@@ -48,12 +48,12 @@ class DataSource extends DataTableSource {
     final e = data[index];
     final dxcc = DxccEntity.findSub(e.callsign);
 
-    return DataRow(cells: [
+    return DataRow(onLongPress: () {}, cells: [
       DataCell(Text(e.dateOnString)),
       DataCell(Text(e.timeOnString)),
       DataCell(Text(e.callsign, style: callsignStyle)),
       DataCell(Text(e.freqMhz)),
-      DataCell(Center(child: Text(e.mode.name.toUpperCase()))),
+      DataCell(Center(child: Text(e.subMode?.name ?? e.mode.name))),
       DataCell(Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -65,7 +65,7 @@ class DataSource extends DataTableSource {
                     child: Center(
                         child: Image.asset('assets/flags/64/${dxcc.flag}.png')),
                   )
-                : const SizedBox.expand(),
+                : const SizedBox.shrink(),
           ),
           const SizedBox(width: 8),
           Text(

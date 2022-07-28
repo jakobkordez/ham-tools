@@ -28,7 +28,7 @@ class Cabrillo {
     sb.write(header.toString());
 
     // QSO DATA
-    final tab = [for (final e in entries) <String>[]];
+    final tab = List.generate(entries.length, (_) => <String>[]);
 
     const w = [5, 2, 10, 4, 13, 3, 6, 13, 3, 6];
 

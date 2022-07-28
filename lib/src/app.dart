@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'contest/contest_screen.dart';
 import 'log/bloc/log_bloc.dart';
+import 'log/log_screen.dart';
 import 'repository/repository.dart';
 
 class App extends StatelessWidget {
@@ -16,13 +16,14 @@ class App extends StatelessWidget {
           title: 'Ham tools',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSwatch(
-              primarySwatch: Colors.deepOrange,
-              // backgroundColor: const Color(0xffffb28f),
-            ).copyWith(
-                // primary: const Color(0xfff34d00),
-                ),
+                    // primarySwatch: Colors.deepOrange,
+                    // backgroundColor: const Color(0xffffb28f),
+                    )
+                .copyWith(
+                    // primary: const Color(0xfff34d00),
+                    ),
           ),
-          home: const ContestScreen(),
+          home: const LogScreen(),
         ),
       );
 }

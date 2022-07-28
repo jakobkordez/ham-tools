@@ -27,12 +27,16 @@ class AdiToCabrilloScreen extends StatelessWidget {
 class _OpenAdiFileButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ElevatedButton.icon(
-        onPressed: () async {
-          final result = await FilePicker.platform.pickFiles();
-          final data = result?.files.single.bytes;
-          if (data == null) return;
-          final adi = String.fromCharCodes(data);
-          context.read<AdiToCabCubit>().updateAdiFile(adi, true);
+        onPressed: () {
+          final cubit = context.read<AdiToCabCubit>();
+
+          Future(() async {
+            final result = await FilePicker.platform.pickFiles();
+            final data = result?.files.single.bytes;
+            if (data == null) return;
+            final adi = String.fromCharCodes(data);
+            cubit.updateAdiFile(adi, true);
+          });
         },
         icon: const Icon(Icons.file_open),
         label: const Text('Open ADI file'),

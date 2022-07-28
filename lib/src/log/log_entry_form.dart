@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ham_tools/src/log/bloc/log_bloc.dart';
-import 'package:ham_tools/src/log/circle_timer.dart';
-import 'package:ham_tools/src/log/cubit/new_log_entry_cubit.dart';
-import 'package:ham_tools/src/models/log_entry.dart';
-import 'package:ham_tools/src/repository/repository.dart';
-import 'package:ham_tools/src/utils/text_input_formatters.dart';
+
+import '../models/log_entry.dart';
+import '../repository/repository.dart';
+import '../utils/text_input_formatters.dart';
+import 'bloc/log_bloc.dart';
+import 'circle_timer.dart';
+import 'cubit/new_log_entry_cubit.dart';
 
 part 'log_entry_fields.dart';
 
@@ -28,8 +29,6 @@ class LogEntryForm extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(width: 200, child: _CallsignInput()),
-                      const SizedBox(height: 15),
                       Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         runSpacing: 8,
@@ -55,8 +54,6 @@ class LogEntryForm extends StatelessWidget {
                           const SizedBox(width: 120, child: _BandInput()),
                           const SizedBox(width: 10),
                           const SizedBox(width: 200, child: _FrequencyInput()),
-                          const SizedBox(width: 10),
-                          const SizedBox(width: 100, child: _ModeInput()),
                           const SizedBox(width: 20),
                           Row(
                             mainAxisSize: MainAxisSize.min,
@@ -91,6 +88,20 @@ class LogEntryForm extends StatelessWidget {
                         crossAxisAlignment: WrapCrossAlignment.center,
                         runSpacing: 8,
                         children: const [
+                          SizedBox(width: 100, child: _PowerInput()),
+                          SizedBox(width: 10),
+                          SizedBox(width: 100, child: _ModeInput()),
+                          SizedBox(width: 10),
+                          SizedBox(width: 150, child: _SubModeInput()),
+                        ],
+                      ),
+                      const SizedBox(height: 25),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        runSpacing: 8,
+                        children: const [
+                          SizedBox(width: 200, child: _CallsignInput()),
+                          SizedBox(width: 20),
                           SizedBox(width: 100, child: _RstSentInput()),
                           SizedBox(width: 10),
                           _RstSentButton(),
@@ -98,8 +109,6 @@ class LogEntryForm extends StatelessWidget {
                           SizedBox(width: 100, child: _RstRecvInput()),
                           SizedBox(width: 10),
                           _RstRecvButton(),
-                          SizedBox(width: 20),
-                          SizedBox(width: 100, child: _PowerInput()),
                         ],
                       ),
                       // const SizedBox(height: 15),

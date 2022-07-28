@@ -177,7 +177,7 @@ class CabrilloHeader {
           sb.writeln(line);
           line = 'OPERATORS:';
         }
-        line += ' ' + op;
+        line += ' $op';
       }
       sb.writeln(line);
     }

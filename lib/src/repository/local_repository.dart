@@ -16,7 +16,7 @@ class LocalRepository implements Repository {
     String? path;
     if (!kIsWeb) {
       var pathd = await getApplicationDocumentsDirectory();
-      pathd = Directory(pathd.path + '/HamTools');
+      pathd = Directory('${pathd.path}/HamTools');
       if (!await pathd.exists()) await pathd.create(recursive: true);
       path = pathd.path;
     }

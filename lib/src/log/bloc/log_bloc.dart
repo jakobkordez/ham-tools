@@ -1,7 +1,8 @@
-import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:ham_tools/src/models/log_entry.dart';
-import 'package:ham_tools/src/repository/repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../models/log_entry.dart';
+import '../../repository/repository.dart';
 
 part 'log_event.dart';
 part 'log_state.dart';

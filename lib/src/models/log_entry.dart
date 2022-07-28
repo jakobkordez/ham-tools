@@ -1,7 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
-import 'package:ham_tools/src/utils/adif.dart';
 import 'package:intl/intl.dart';
+
+import '../utils/adif.dart';
 
 part 'band.dart';
 part 'mode.dart';
@@ -17,7 +18,8 @@ class LogEntry extends Equatable {
   final DateTime timeOff;
   final int frequency;
   final int frequencyRx;
-  final Mode mode; // TODO Submode
+  final Mode mode;
+  final SubMode? subMode;
   final int? power;
   final String rstSent;
   final String rstReceived;
@@ -34,6 +36,7 @@ class LogEntry extends Equatable {
     int? frequencyRx,
     Band? bandRx,
     required this.mode,
+    this.subMode,
     int? power,
     required this.rstSent,
     required this.rstReceived,
@@ -70,6 +73,7 @@ class LogEntry extends Equatable {
         frequency,
         frequencyRx,
         mode,
+        subMode,
         power,
         rstSent,
         rstReceived,
@@ -81,6 +85,7 @@ class LogEntry extends Equatable {
         'call': callsign,
         'freq': '${frequency / 1000000}',
         'mode': mode.name,
+        if (subMode != null) 'submode': subMode!.name,
         'qso_date': Adif.dateFormat.format(timeOn),
         'time_on': Adif.timeFormat.format(timeOn),
         if (operatorCall != null) 'operator': operatorCall!,
@@ -119,6 +124,7 @@ class LogEntry extends Equatable {
       timeOn: DateTime.parse('${date}T${time}Z'),
       timeOff: DateTime.parse('${dateOff}T${timeOff}Z'),
       mode: ModeUtil.tryParse(adi['mode']!)!,
+      subMode: SubModeUtil.tryParse(adi['submode']),
       power: adi['tx_pwr'] != null ? int.parse(adi['tx_pwr']!) : null,
       rstSent: adi['rst_sent'] ?? '',
       rstReceived: adi['rst_rcvd'] ?? '',
