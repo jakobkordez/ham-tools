@@ -47,6 +47,8 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
         power: int.tryParse(state.power),
       ));
 
+  void setAutoTime(bool? value) => emit(state.copyWith(autoTime: value));
+
   void setTimeOnNow() {
     final now = DateTime.now().toUtc();
     emit(state.copyWith(

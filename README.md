@@ -1,8 +1,8 @@
 # Ham tools
 
-Just a few tools for amature radio operators
+Just a few tools for amateur radio operators
 
-Some demos are available at [jakobkordez.github.io/ham-tools/](https://jakobkordez.github.io/ham-tools/).
+Some demos are available at [cq.jkob.cc](https://cq.jkob.cc).
 
 Suggestions are welcome!
 
@@ -11,7 +11,10 @@ Suggestions are welcome!
 - [ ] Log book
   - [x] LOTW support
   - [x] ADIF
-  - [ ] Cabrillo
+  - [ ] Contest mode
+  - [ ] Mobile app friendly (Field activations)
+  - [ ] flrig support
+  - [ ] WSJT-X support
 
 ## Side products
 
@@ -19,3 +22,5 @@ Suggestions are welcome!
 - [ ] Maps
   - [x] Azimuthal projection
   - [ ] QTH
+- [x] ADI to QSO stats (Band & Mode)
+- [ ] ADI to Cabrillo converter (In Progress)

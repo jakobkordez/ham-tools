@@ -1,7 +1,10 @@
 part of 'new_log_entry_cubit.dart';
 
 class NewLogEntryState extends Equatable {
+  final bool clean;
+
   final bool hasTimeOff;
+  final bool autoTime;
   final String dateOn;
   final String timeOn;
   final String dateOff;
@@ -24,6 +27,7 @@ class NewLogEntryState extends Equatable {
       BandUtil.getBand(NewLogEntryCubit.tryParseFreq(frequencyRx) ?? -1);
 
   factory NewLogEntryState({
+    bool autoTime = true,
     DateTime? timeOn,
     DateTime? timeOff,
     int? frequency,
@@ -48,7 +52,9 @@ class NewLogEntryState extends Equatable {
     String ff(double freq) => LogEntry.freqFormat.format(freq);
 
     return NewLogEntryState._(
+      clean: true,
       hasTimeOff: timeOff != null,
+      autoTime: autoTime,
       dateOn: df(timeOn),
       timeOn: tf(timeOn),
       dateOff: df(timeOff ?? timeOn),
@@ -66,7 +72,9 @@ class NewLogEntryState extends Equatable {
   }
 
   NewLogEntryState._({
+    required this.clean,
     required this.hasTimeOff,
+    required this.autoTime,
     required this.dateOn,
     required this.timeOn,
     required this.dateOff,
@@ -83,6 +91,8 @@ class NewLogEntryState extends Equatable {
   });
 
   NewLogEntryState copyWith({
+    bool? clean,
+    bool? autoTime,
     bool? hasTimeOff,
     String? dateOn,
     String? timeOn,
@@ -100,7 +110,9 @@ class NewLogEntryState extends Equatable {
     final newFreq = frequency ?? this.frequency;
 
     return NewLogEntryState._(
+      clean: clean ?? false,
       hasTimeOff: hasTimeOff ?? this.hasTimeOff,
+      autoTime: autoTime ?? this.autoTime,
       dateOn: dateOn ?? this.dateOn,
       timeOn: timeOn ?? this.timeOn,
       dateOff: dateOff ?? this.dateOff,
@@ -122,9 +134,11 @@ class NewLogEntryState extends Equatable {
     required SubMode? subMode,
   }) =>
       NewLogEntryState._(
+        clean: false,
         mode: mode ?? this.mode,
         subMode: subMode,
         hasTimeOff: hasTimeOff,
+        autoTime: autoTime,
         dateOn: dateOn,
         timeOn: timeOn,
         dateOff: dateOff,
@@ -140,7 +154,9 @@ class NewLogEntryState extends Equatable {
 
   @override
   List<Object?> get props => [
+        clean,
         hasTimeOff,
+        autoTime,
         dateOn,
         timeOn,
         dateOff,

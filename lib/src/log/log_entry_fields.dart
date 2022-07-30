@@ -1,23 +1,44 @@
 part of 'log_entry_form.dart';
 
-class _CallsignInput extends StatelessWidget {
+class _CallsignInput extends StatefulWidget {
   const _CallsignInput({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => _FieldUpdater(
-        getValue: (state) => state.callsign,
-        builder: (context, controller) => TextFormField(
-          controller: controller,
-          autofocus: true,
-          onChanged: context.read<NewLogEntryCubit>().setCallsign,
-          inputFormatters: [UpperCaseTextFormatter()],
-          decoration: InputDecoration(
-            labelText: 'Callsign',
-            labelStyle: TextStyle(
-              fontFamily: Theme.of(context).textTheme.bodyText2?.fontFamily,
+  State<_CallsignInput> createState() => _CallsignInputState();
+}
+
+class _CallsignInputState extends State<_CallsignInput> {
+  final focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocListener<NewLogEntryCubit, NewLogEntryState>(
+        listenWhen: (previous, current) => previous.clean != current.clean,
+        listener: (context, state) {
+          if (state.clean) focusNode.requestFocus();
+        },
+        child: _FieldUpdater(
+          getValue: (state) => state.callsign,
+          builder: (context, controller) => TextFormField(
+            focusNode: focusNode,
+            controller: controller,
+            autofocus: true,
+            onChanged: context.read<NewLogEntryCubit>().setCallsign,
+            inputFormatters: [UpperCaseTextFormatter()],
+            decoration: InputDecoration(
+              labelText: 'Callsign',
+              labelStyle: TextStyle(
+                fontFamily: Theme.of(context).textTheme.bodyText2?.fontFamily,
+              ),
             ),
+            style: const TextStyle(fontFamily: 'RobotoMono'),
           ),
-          style: const TextStyle(fontFamily: 'RobotoMono'),
         ),
       );
 }
@@ -56,6 +77,35 @@ class _TimeOnInput extends StatelessWidget {
               value != null && NewLogEntryCubit.tryParseTime(value) == null
                   ? 'Invalid time'
                   : null,
+        ),
+      );
+}
+
+class _TimeUpdater extends StatelessWidget {
+  const _TimeUpdater({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+        buildWhen: (previous, current) => previous.autoTime != current.autoTime,
+        builder: (context, state) => Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            state.autoTime
+                ? SizedBox(
+                    width: 20,
+                    child: CircleTimer(
+                      onMinute: context.read<NewLogEntryCubit>().setTimeOnNow,
+                    ),
+                  )
+                : const _TimeOnNowButton(),
+            const SizedBox(width: 8),
+            Checkbox(
+              value: state.autoTime,
+              onChanged: context.read<NewLogEntryCubit>().setAutoTime,
+            ),
+            const Text('Auto'),
+          ],
         ),
       );
 }
@@ -295,6 +345,7 @@ class _RstSentButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+        buildWhen: (previous, current) => previous.mode != current.mode,
         builder: (context, state) {
           final def = state.mode.defaultReport;
           if (def == null) return const SizedBox.shrink();
@@ -350,6 +401,7 @@ class _RstRecvButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+        buildWhen: (previous, current) => previous.mode != current.mode,
         builder: (context, state) {
           final def = state.mode.defaultReport;
           if (def == null) return const SizedBox.shrink();

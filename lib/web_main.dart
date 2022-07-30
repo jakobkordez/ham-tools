@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'src/cabrillo/adi_to_cabrillo_screen.dart';
 import 'src/callsign/callsign_screen.dart';
 import 'src/components/utc_clock.dart';
+import 'src/log/log_demo.dart';
 import 'src/map/azimuthal_map_screen.dart';
 import 'src/map/cylindrical_map_screen.dart';
 import 'src/stats/stats_screen.dart';
@@ -30,6 +31,7 @@ class WebApp extends StatelessWidget {
           '/cylmap': (_) => const CylindricalMapScreen(),
           '/stats': (_) => const StatsScreen(),
           '/adi2cab': (_) => const AdiToCabrilloScreen(),
+          '/logdemo': (_) => const LogDemo(),
         },
       );
 }
