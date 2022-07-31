@@ -9,6 +9,9 @@ import '../utils/text_input_formatters.dart';
 import 'bloc/log_bloc.dart';
 import 'circle_timer.dart';
 import 'cubit/new_log_entry_cubit.dart';
+import 'models/date_input.dart';
+import 'models/frequency_input.dart';
+import 'models/time_input.dart';
 
 part 'log_entry_fields.dart';
 
@@ -24,7 +27,8 @@ class LogEntryForm extends StatelessWidget {
                 child: Center(child: CircularProgressIndicator()),
               )
             : BlocProvider(
-                create: (_) => NewLogEntryCubit(snap.data),
+                create: (context) =>
+                    NewLogEntryCubit(context.read<LogBloc>(), snap.data),
                 child: Padding(
                   padding: const EdgeInsets.all(25),
                   child: Column(
@@ -35,16 +39,45 @@ class LogEntryForm extends StatelessWidget {
                         runSpacing: 8,
                         spacing: 10,
                         children: const [
-                          SizedBox(width: 150, child: _DateOnInput()),
-                          SizedBox(width: 100, child: _TimeOnInput()),
-                          _TimeUpdater(),
-                          // SizedBox(width: 20),
-                          // Checkbox(value: false, onChanged: (_) {}),
-                          // SizedBox(width: 5),
-                          // Text('Seperate time off'),
+                          SizedBox(width: 120, child: _DateOnInput()),
+                          SizedBox(width: 80, child: _TimeOnInput()),
+                          _TimeOnUpdater(),
                         ],
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 5),
+                      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+                        buildWhen: (previous, current) =>
+                            previous.hasTimeOff != current.hasTimeOff,
+                        builder: (context, state) => Row(
+                          children: [
+                            Checkbox(
+                              value: state.hasTimeOff,
+                              onChanged: context
+                                  .read<NewLogEntryCubit>()
+                                  .setHasTimeOff,
+                            ),
+                            const SizedBox(width: 5),
+                            const Text('Seperate time off'),
+                          ],
+                        ),
+                      ),
+                      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+                        buildWhen: (previous, current) =>
+                            previous.hasTimeOff != current.hasTimeOff,
+                        builder: (context, state) => state.hasTimeOff
+                            ? Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                runSpacing: 8,
+                                spacing: 10,
+                                children: const [
+                                  SizedBox(width: 120, child: _DateOffInput()),
+                                  SizedBox(width: 80, child: _TimeOffInput()),
+                                  _TimeOffUpdater(),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                      const SizedBox(height: 10),
                       _Hide(
                         // TODO Remove
                         initiallyHidden: kDebugMode,

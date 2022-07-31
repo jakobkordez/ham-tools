@@ -8,8 +8,8 @@ class UtcClock extends StatelessWidget {
   UtcClock({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => TimerBuilder(
-        generator: fromIterable(_scheduler()),
+  Widget build(BuildContext context) => TimerBuilder.periodic(
+        const Duration(seconds: 1),
         builder: (context) {
           final now = DateTime.now().toUtc();
           final tTheme =
@@ -35,19 +35,4 @@ class UtcClock extends StatelessWidget {
           );
         },
       );
-
-  Iterable<DateTime> _scheduler() sync* {
-    var now = DateTime.now().toUtc();
-    now = DateTime.utc(
-      now.year,
-      now.month,
-      now.day,
-      now.hour,
-      now.minute,
-      now.second,
-    );
-    while (true) {
-      yield now = now.add(const Duration(seconds: 1));
-    }
-  }
 }

@@ -42,8 +42,8 @@ class _CircleTimerState extends State<CircleTimer> {
   @override
   Widget build(BuildContext context) => AspectRatio(
         aspectRatio: 1,
-        child: TimerBuilder(
-          generator: fromIterable(_scheduler()),
+        child: TimerBuilder.periodic(
+          const Duration(seconds: 1),
           builder: (context) {
             final now = DateTime.now().toUtc().second;
             return TweenAnimationBuilder<double>(
@@ -57,19 +57,4 @@ class _CircleTimerState extends State<CircleTimer> {
           },
         ),
       );
-
-  Iterable<DateTime> _scheduler() sync* {
-    var now = DateTime.now().toUtc();
-    now = DateTime.utc(
-      now.year,
-      now.month,
-      now.day,
-      now.hour,
-      now.minute,
-      now.second,
-    );
-    while (true) {
-      yield now = now.add(const Duration(seconds: 1));
-    }
-  }
 }

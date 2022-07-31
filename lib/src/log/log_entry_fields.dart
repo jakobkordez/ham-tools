@@ -38,6 +38,7 @@ class _CallsignInputState extends State<_CallsignInput> {
               ),
             ),
             style: const TextStyle(fontFamily: 'RobotoMono'),
+            onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
           ),
         ),
       );
@@ -48,16 +49,21 @@ class _DateOnInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
-        getValue: (state) => state.dateOn,
-        builder: (context, controller) => TextFormField(
-          controller: controller,
-          onChanged: context.read<NewLogEntryCubit>().setDateOn,
-          decoration: const InputDecoration(labelText: 'Date'),
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) =>
-              value != null && NewLogEntryCubit.tryParseDate(value) == null
-                  ? 'Invalid date'
-                  : null,
+        getValue: (state) => state.dateOn.value,
+        builder: (context, controller) =>
+            BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+          builder: (context, state) => TextFormField(
+            controller: controller,
+            onChanged: context.read<NewLogEntryCubit>().setDateOn,
+            decoration: InputDecoration(
+              labelText: 'Date',
+              errorText: state.dateOn.error == null
+                  ? null
+                  : state.dateOn.error == DateInputError.empty
+                      ? 'Date is required'
+                      : 'Invalid date',
+            ),
+          ),
         ),
       );
 }
@@ -67,45 +73,89 @@ class _TimeOnInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
-        getValue: (state) => state.timeOn,
-        builder: (context, controller) => TextFormField(
-          controller: controller,
-          onChanged: context.read<NewLogEntryCubit>().setTimeOn,
-          decoration: const InputDecoration(labelText: 'Time'),
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          validator: (value) =>
-              value != null && NewLogEntryCubit.tryParseTime(value) == null
-                  ? 'Invalid time'
-                  : null,
+        getValue: (state) => state.timeOn.value,
+        builder: (context, controller) =>
+            BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+          builder: (context, state) => TextFormField(
+            controller: controller,
+            onChanged: context.read<NewLogEntryCubit>().setTimeOn,
+            decoration: InputDecoration(
+              labelText: 'Time',
+              errorText: state.timeOn.error == null
+                  ? null
+                  : state.timeOn.error == TimeInputError.empty
+                      ? 'Time is required'
+                      : 'Invalid time',
+            ),
+          ),
         ),
       );
 }
 
-class _TimeUpdater extends StatelessWidget {
-  const _TimeUpdater({Key? key}) : super(key: key);
+class _TimeOnUpdater extends StatelessWidget {
+  const _TimeOnUpdater({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) =>
       BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
-        buildWhen: (previous, current) => previous.autoTime != current.autoTime,
+        buildWhen: (previous, current) =>
+            previous.autoTime != current.autoTime ||
+            previous.hasTimeOff != current.hasTimeOff,
         builder: (context, state) => Row(
           mainAxisSize: MainAxisSize.min,
-          children: [
-            state.autoTime
-                ? SizedBox(
-                    width: 20,
-                    child: CircleTimer(
-                      onMinute: context.read<NewLogEntryCubit>().setTimeOnNow,
-                    ),
-                  )
-                : const _TimeOnNowButton(),
-            const SizedBox(width: 8),
-            Checkbox(
-              value: state.autoTime,
-              onChanged: context.read<NewLogEntryCubit>().setAutoTime,
-            ),
-            const Text('Auto'),
-          ],
+          children: state.hasTimeOff
+              ? [const _TimeOnNowButton()]
+              : [
+                  state.autoTime
+                      ? SizedBox(
+                          width: 20,
+                          child: CircleTimer(
+                            onMinute:
+                                context.read<NewLogEntryCubit>().setTimeOnNow,
+                          ),
+                        )
+                      : const _TimeOnNowButton(),
+                  const SizedBox(width: 8),
+                  Checkbox(
+                    value: state.autoTime,
+                    onChanged: context.read<NewLogEntryCubit>().setAutoTime,
+                  ),
+                  const Text('Auto'),
+                ],
+        ),
+      );
+}
+
+class _TimeOffUpdater extends StatelessWidget {
+  const _TimeOffUpdater({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+        buildWhen: (previous, current) =>
+            previous.autoTime != current.autoTime ||
+            previous.hasTimeOff != current.hasTimeOff,
+        builder: (context, state) => Row(
+          mainAxisSize: MainAxisSize.min,
+          children: state.hasTimeOff
+              ? [
+                  state.autoTime
+                      ? SizedBox(
+                          width: 20,
+                          child: CircleTimer(
+                            onMinute:
+                                context.read<NewLogEntryCubit>().setTimeOffNow,
+                          ),
+                        )
+                      : const _TimeOnNowButton(),
+                  const SizedBox(width: 8),
+                  Checkbox(
+                    value: state.autoTime,
+                    onChanged: context.read<NewLogEntryCubit>().setAutoTime,
+                  ),
+                  const Text('Auto'),
+                ]
+              : [const _TimeOffNowButton()],
         ),
       );
 }
@@ -116,6 +166,64 @@ class _TimeOnNowButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ElevatedButton(
         onPressed: context.read<NewLogEntryCubit>().setTimeOnNow,
+        child: const Text('Now'),
+      );
+}
+
+class _DateOffInput extends StatelessWidget {
+  const _DateOffInput({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => _FieldUpdater(
+        getValue: (state) => state.dateOff.value,
+        builder: (context, controller) =>
+            BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+          builder: (context, state) => TextFormField(
+            controller: controller,
+            onChanged: context.read<NewLogEntryCubit>().setDateOff,
+            decoration: InputDecoration(
+              labelText: 'Date off',
+              errorText: state.dateOff.error == null
+                  ? null
+                  : state.dateOff.error == DateInputError.empty
+                      ? 'Date is required'
+                      : 'Invalid date',
+            ),
+          ),
+        ),
+      );
+}
+
+class _TimeOffInput extends StatelessWidget {
+  const _TimeOffInput({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => _FieldUpdater(
+        getValue: (state) => state.timeOff.value,
+        builder: (context, controller) =>
+            BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+          builder: (context, state) => TextFormField(
+            controller: controller,
+            onChanged: context.read<NewLogEntryCubit>().setTimeOff,
+            decoration: InputDecoration(
+              labelText: 'Time off',
+              errorText: state.timeOff.error == null
+                  ? null
+                  : state.timeOff.error == TimeInputError.empty
+                      ? 'Time is required'
+                      : 'Invalid time',
+            ),
+          ),
+        ),
+      );
+}
+
+class _TimeOffNowButton extends StatelessWidget {
+  const _TimeOffNowButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => ElevatedButton(
+        onPressed: context.read<NewLogEntryCubit>().setTimeOffNow,
         child: const Text('Now'),
       );
 }
@@ -150,14 +258,22 @@ class _FrequencyInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
-        getValue: (state) => state.frequency,
-        builder: (context, controller) => TextFormField(
-          controller: controller,
-          inputFormatters: [DoubleTextFormatter()],
-          onChanged: context.read<NewLogEntryCubit>().setFreq,
-          decoration: const InputDecoration(
-            labelText: 'Frequency',
-            suffixText: 'MHz',
+        getValue: (state) => state.frequency.value,
+        builder: (context, controller) =>
+            BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+          builder: (context, state) => TextFormField(
+            controller: controller,
+            inputFormatters: [DoubleTextFormatter()],
+            onChanged: context.read<NewLogEntryCubit>().setFreq,
+            decoration: InputDecoration(
+              labelText: 'Frequency',
+              suffixText: 'MHz',
+              errorText: state.frequency.error == null
+                  ? null
+                  : state.frequency.error == FrequencyInputError.empty
+                      ? 'Empty'
+                      : 'Invalid value',
+            ),
           ),
         ),
       );
@@ -203,14 +319,22 @@ class _FrequencyRxInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
-        getValue: (state) => state.frequencyRx,
-        builder: (context, controller) => TextFormField(
-          controller: controller,
-          inputFormatters: [DoubleTextFormatter()],
-          onChanged: context.read<NewLogEntryCubit>().setFreqRx,
-          decoration: const InputDecoration(
-            labelText: 'Receive frequency',
-            suffixText: 'MHz',
+        getValue: (state) => state.frequencyRx.value,
+        builder: (context, controller) =>
+            BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+          builder: (context, state) => TextFormField(
+            controller: controller,
+            inputFormatters: [DoubleTextFormatter()],
+            onChanged: context.read<NewLogEntryCubit>().setFreqRx,
+            decoration: InputDecoration(
+              labelText: 'Receive frequency',
+              suffixText: 'MHz',
+              errorText: state.frequencyRx.error == null
+                  ? null
+                  : state.frequencyRx.error == FrequencyInputError.empty
+                      ? 'Empty'
+                      : 'Invalid value',
+            ),
           ),
         ),
       );
@@ -334,6 +458,7 @@ class _RstSentInput extends StatelessWidget {
             decoration: const InputDecoration(
               labelText: 'RST Sent',
             ),
+            onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
           ),
         ),
       );
@@ -390,6 +515,7 @@ class _RstRecvInput extends StatelessWidget {
             decoration: const InputDecoration(
               labelText: 'RST Rcvd',
             ),
+            onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
           ),
         ),
       );
@@ -456,11 +582,7 @@ class _SubmitButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ElevatedButton(
-        onPressed: () {
-          final b = context.read<NewLogEntryCubit>();
-          context.read<LogBloc>().add(LogEntryAdded(b.state.asLogEntry()));
-          b.clear();
-        },
+        onPressed: context.read<NewLogEntryCubit>().submit,
         child: const Text('Submit'),
       );
 }

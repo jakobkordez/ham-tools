@@ -5,16 +5,16 @@ class NewLogEntryState extends Equatable {
 
   final bool hasTimeOff;
   final bool autoTime;
-  final String dateOn;
-  final String timeOn;
-  final String dateOff;
-  final String timeOff;
+  final DateInput dateOn;
+  final TimeInput timeOn;
+  final DateInput dateOff;
+  final TimeInput timeOff;
 
   final bool split;
-  final String frequency;
+  final FrequencyInput frequency;
   final Mode mode;
   final SubMode? subMode;
-  final String frequencyRx;
+  final FrequencyInput frequencyRx;
   final String power;
 
   final String callsign;
@@ -22,9 +22,9 @@ class NewLogEntryState extends Equatable {
   final String rstRcvd;
 
   late final Band? band =
-      BandUtil.getBand(NewLogEntryCubit.tryParseFreq(frequency) ?? -1);
+      BandUtil.getBand(NewLogEntryCubit.tryParseFreq(frequency.value) ?? -1);
   late final Band? bandRx =
-      BandUtil.getBand(NewLogEntryCubit.tryParseFreq(frequencyRx) ?? -1);
+      BandUtil.getBand(NewLogEntryCubit.tryParseFreq(frequencyRx.value) ?? -1);
 
   factory NewLogEntryState({
     bool autoTime = true,
@@ -47,23 +47,19 @@ class NewLogEntryState extends Equatable {
     rstSent ??= '';
     rstRcvd ??= '';
 
-    String df(DateTime dt) => LogEntry.dateFormat.format(dt);
-    String tf(DateTime dt) => LogEntry.timeFormat.format(dt);
-    String ff(double freq) => LogEntry.freqFormat.format(freq);
-
     return NewLogEntryState._(
       clean: true,
       hasTimeOff: timeOff != null,
       autoTime: autoTime,
-      dateOn: df(timeOn),
-      timeOn: tf(timeOn),
-      dateOff: df(timeOff ?? timeOn),
-      timeOff: tf(timeOff ?? timeOn),
+      dateOn: DateInput.pure(timeOn),
+      timeOn: TimeInput.pure(timeOn),
+      dateOff: DateInput.pure(timeOff ?? timeOn),
+      timeOff: TimeInput.pure(timeOff ?? timeOn),
       split: frequencyRx != null && frequency != frequencyRx,
-      frequency: ff(frequency / 1000000),
+      frequency: FrequencyInput.pure(frequency),
       mode: mode,
       subMode: subMode,
-      frequencyRx: ff((frequencyRx ?? frequency) / 1000000),
+      frequencyRx: FrequencyInput.pure(frequencyRx ?? frequency),
       power: '${power ?? ''}',
       callsign: callsign,
       rstSent: rstSent,
@@ -94,13 +90,13 @@ class NewLogEntryState extends Equatable {
     bool? clean,
     bool? autoTime,
     bool? hasTimeOff,
-    String? dateOn,
-    String? timeOn,
-    String? dateOff,
-    String? timeOff,
+    DateInput? dateOn,
+    TimeInput? timeOn,
+    DateInput? dateOff,
+    TimeInput? timeOff,
     bool? split,
-    String? frequency,
-    String? frequencyRx,
+    FrequencyInput? frequency,
+    FrequencyInput? frequencyRx,
     String? power,
     String? callsign,
     String? rstSent,
@@ -109,14 +105,18 @@ class NewLogEntryState extends Equatable {
     final newSplit = split ?? this.split;
     final newFreq = frequency ?? this.frequency;
 
+    final newHasTimeOff = hasTimeOff ?? this.hasTimeOff;
+    final newDateOn = dateOn ?? this.dateOn;
+    final newTimeOn = timeOn ?? this.timeOn;
+
     return NewLogEntryState._(
       clean: clean ?? false,
-      hasTimeOff: hasTimeOff ?? this.hasTimeOff,
+      hasTimeOff: newHasTimeOff,
       autoTime: autoTime ?? this.autoTime,
-      dateOn: dateOn ?? this.dateOn,
-      timeOn: timeOn ?? this.timeOn,
-      dateOff: dateOff ?? this.dateOff,
-      timeOff: timeOff ?? this.timeOff,
+      dateOn: newDateOn,
+      timeOn: newTimeOn,
+      dateOff: newHasTimeOff ? (dateOff ?? this.dateOff) : newDateOn,
+      timeOff: newHasTimeOff ? (timeOff ?? this.timeOff) : newTimeOn,
       split: newSplit,
       frequency: newFreq,
       mode: mode,
@@ -174,14 +174,14 @@ class NewLogEntryState extends Equatable {
 
   LogEntry asLogEntry() => LogEntry(
         callsign: callsign,
-        timeOn: DateTime.parse('${dateOn}T${timeOn}Z'),
-        timeOff: DateTime.parse('${dateOff}T${timeOff}Z'),
+        timeOn: DateTime.parse('${dateOn.value}T${timeOn.value}Z'),
+        timeOff: DateTime.parse('${dateOff.value}T${timeOff.value}Z'),
         mode: mode,
         subMode: subMode,
         rstSent: rstSent,
         rstReceived: rstRcvd,
-        frequency: NewLogEntryCubit.tryParseFreq(frequency),
-        frequencyRx: NewLogEntryCubit.tryParseFreq(frequencyRx),
+        frequency: NewLogEntryCubit.tryParseFreq(frequency.value),
+        frequencyRx: NewLogEntryCubit.tryParseFreq(frequencyRx.value),
         power: int.tryParse(power),
       );
 }

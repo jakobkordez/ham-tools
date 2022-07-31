@@ -1,11 +1,18 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:ham_tools/src/models/log_entry.dart';
+
+import '../../models/log_entry.dart';
+import '../bloc/log_bloc.dart';
+import '../models/date_input.dart';
+import '../models/frequency_input.dart';
+import '../models/time_input.dart';
 
 part 'new_log_entry_state.dart';
 
 class NewLogEntryCubit extends Cubit<NewLogEntryState> {
-  NewLogEntryCubit([LogEntry? last])
+  final LogBloc logBloc;
+
+  NewLogEntryCubit(this.logBloc, [LogEntry? last])
       : super(last == null
             ? NewLogEntryState()
             : NewLogEntryState(
@@ -15,6 +22,17 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
                 frequencyRx: last.frequencyRx,
                 power: last.power,
               ));
+
+  void submit() {
+    logBloc.add(LogEntryAdded(state.asLogEntry()));
+    emit(NewLogEntryState(
+      frequency: tryParseFreq(state.frequency.value),
+      frequencyRx: tryParseFreq(state.frequencyRx.value),
+      mode: state.mode,
+      subMode: state.subMode,
+      power: int.tryParse(state.power),
+    ));
+  }
 
   static int? tryParseTime(String value) {
     final p = int.tryParse(value);
@@ -39,58 +57,85 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
     return (p * 1000000).toInt();
   }
 
-  void clear() => emit(NewLogEntryState(
-        frequency: tryParseFreq(state.frequency),
-        frequencyRx: tryParseFreq(state.frequencyRx),
-        mode: state.mode,
-        subMode: state.subMode,
-        power: int.tryParse(state.power),
-      ));
+  void setAutoTime(bool? value) {
+    if (value != true) {
+      emit(state.copyWith(autoTime: value));
+      return;
+    }
 
-  void setAutoTime(bool? value) => emit(state.copyWith(autoTime: value));
+    emit(state.copyWith(autoTime: value));
+
+    if (state.hasTimeOff) {
+      setTimeOffNow();
+    } else {
+      setTimeOnNow();
+    }
+  }
+
+  void setHasTimeOff(bool? value) => emit(state.copyWith(hasTimeOff: value));
 
   void setTimeOnNow() {
     final now = DateTime.now().toUtc();
     emit(state.copyWith(
-      dateOn: LogEntry.dateFormat.format(now),
-      timeOn: LogEntry.timeFormat.format(now),
+      dateOn: DateInput.pure(now),
+      timeOn: TimeInput.pure(now),
     ));
   }
 
   void setTimeOffNow() {
     final now = DateTime.now().toUtc();
     emit(state.copyWith(
-      dateOff: LogEntry.dateFormat.format(now),
-      timeOff: LogEntry.timeFormat.format(now),
+      dateOff: DateInput.pure(now),
+      timeOff: TimeInput.pure(now),
     ));
   }
 
-  void setDateOn(String value) => emit(state.copyWith(dateOn: value));
+  void setDateOn(String value) => emit(state.copyWith(
+        autoTime: state.hasTimeOff ? null : false,
+        dateOn: DateInput.dirty(value),
+      ));
 
-  void setTimeOn(String value) => emit(state.copyWith(timeOn: value));
+  void setTimeOn(String value) => emit(state.copyWith(
+        autoTime: state.hasTimeOff ? null : false,
+        timeOn: TimeInput.dirty(value),
+      ));
 
-  void setDateOff(String value) => emit(state.copyWith(dateOff: value));
+  void setDateOff(String value) => emit(state.copyWith(
+        autoTime: false,
+        dateOff: DateInput.dirty(value),
+      ));
 
-  void setTimeOff(String value) => emit(state.copyWith(timeOff: value));
+  void setTimeOff(String value) => emit(state.copyWith(
+        autoTime: false,
+        timeOff: TimeInput.dirty(value),
+      ));
 
   void setCallsign(String value) => emit(state.copyWith(callsign: value));
 
-  String? _newFreqFromBand(Band? band, int? freq) =>
-      band?.isInBounds(freq ?? -1) == false
-          ? LogEntry.freqFormat.format(band!.lowerBound / 1000000)
-          : null;
+  int? _newFreqFromBand(Band? band, int? freq) =>
+      band?.isInBounds(freq ?? -1) == false ? band!.lowerBound : null;
 
-  void setBand(Band? value) => emit(state.copyWith(
-        frequency: _newFreqFromBand(value, tryParseFreq(state.frequency)),
-      ));
+  void setBand(Band? value) {
+    final freq = _newFreqFromBand(value, tryParseFreq(state.frequency.value));
+    if (freq == null) return;
+    emit(state.copyWith(
+      frequency: FrequencyInput.pure(freq),
+    ));
+  }
 
-  void setFreq(String value) => emit(state.copyWith(frequency: value));
+  void setFreq(String value) =>
+      emit(state.copyWith(frequency: FrequencyInput.dirty(value)));
 
-  void setBandRx(Band? value) => emit(state.copyWith(
-        frequencyRx: _newFreqFromBand(value, tryParseFreq(state.frequencyRx)),
-      ));
+  void setBandRx(Band? value) {
+    final freq = _newFreqFromBand(value, tryParseFreq(state.frequencyRx.value));
+    if (freq == null) return;
+    emit(state.copyWith(
+      frequencyRx: FrequencyInput.pure(freq),
+    ));
+  }
 
-  void setFreqRx(String value) => emit(state.copyWith(frequencyRx: value));
+  void setFreqRx(String value) =>
+      emit(state.copyWith(frequencyRx: FrequencyInput.dirty(value)));
 
   void setMode(Mode? value) => emit(state.copyWithMode(
         mode: value,
