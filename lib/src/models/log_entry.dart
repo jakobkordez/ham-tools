@@ -26,6 +26,22 @@ class LogEntry extends Equatable {
   final String name;
   final String notes;
 
+  // Contest fields
+  /// Contest ID
+  final String? contestId;
+
+  /// Contest serial number received
+  final int? srx;
+
+  /// Contest serial number sent
+  final int? stx;
+
+  /// Contest information received
+  final String? srxString;
+
+  /// Contest information sent
+  final String? stxString;
+
   LogEntry({
     required String callsign,
     this.operatorCall,
@@ -42,6 +58,11 @@ class LogEntry extends Equatable {
     required this.rstReceived,
     this.name = '',
     this.notes = '',
+    this.contestId,
+    this.srx,
+    this.stx,
+    this.srxString,
+    this.stxString,
   })  : assert(frequency != null || band != null),
         callsign = callsign.toUpperCase(),
         timeOn = timeOn.toUtc(),
@@ -79,6 +100,11 @@ class LogEntry extends Equatable {
         rstReceived,
         name,
         notes,
+        contestId,
+        srx,
+        stx,
+        srxString,
+        stxString,
       ];
 
   Map<String, String> toAdiMap() => {
@@ -98,6 +124,11 @@ class LogEntry extends Equatable {
         if (rstReceived.isNotEmpty) 'rst_rcvd': rstReceived,
         if (name.isNotEmpty) 'name': name,
         if (notes.isNotEmpty) 'notes': notes,
+        if (contestId != null) 'contest_id': contestId!,
+        if (srx != null) 'srx': '$srx',
+        if (stx != null) 'stx': '$stx',
+        if (srxString != null) 'srx_string': srxString!,
+        if (stxString != null) 'stx_string': stxString!,
       };
 
   factory LogEntry.fromAdiMap(Map<String, String> adi) {
@@ -130,6 +161,11 @@ class LogEntry extends Equatable {
       rstReceived: adi['rst_rcvd'] ?? '',
       name: adi['name'] ?? '',
       notes: adi['notes'] ?? '',
+      contestId: adi['contest_id'],
+      srx: adi['srx'] != null ? int.parse(adi['srx']!) : null,
+      stx: adi['stx'] != null ? int.parse(adi['stx']!) : null,
+      srxString: adi['srx_string'],
+      stxString: adi['stx_string'],
     );
   }
 }
