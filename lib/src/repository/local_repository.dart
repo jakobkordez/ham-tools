@@ -20,6 +20,7 @@ class LocalRepository implements Repository {
       if (!await pathd.exists()) await pathd.create(recursive: true);
       path = pathd.path;
     }
+
     return LocalRepository._(LocalStorage('qso_log.json', path));
   }
 

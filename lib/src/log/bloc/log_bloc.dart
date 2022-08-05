@@ -9,17 +9,15 @@ part 'log_state.dart';
 
 class LogBloc extends Bloc<LogEvent, LogState> {
   LogBloc(Repository repository) : super(const LogState()) {
-    on<LogFetched>(
-      (event, emit) async {
-        final log = await repository.getLogEntries();
+    on<LogFetched>((event, emit) async {
+      final log = await repository.getLogEntries();
 
-        emit(LogState(
-          status: LogStatus.success,
-          hasReachedLast: true,
-          logEntries: log,
-        ));
-      },
-    );
+      emit(LogState(
+        status: LogStatus.success,
+        hasReachedLast: true,
+        logEntries: log,
+      ));
+    });
 
     on<LogEntryAdded>((event, emit) async {
       await repository.addLogEntry(event.entry);

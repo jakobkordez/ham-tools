@@ -145,12 +145,16 @@ class LogEntryForm extends StatelessWidget {
                           ),
                           if (showContest) ...[
                             const SizedBox(height: 15),
-                            _Divider(
-                              icon: const Icon(Icons.close),
-                              onPressed: () => context
-                                  .read<NewLogEntryCubit>()
-                                  .setShowContest(false),
-                              label: const Text('Contest'),
+                            Focus(
+                              descendantsAreFocusable: false,
+                              skipTraversal: true,
+                              child: _Divider(
+                                icon: const Icon(Icons.close),
+                                onPressed: () => context
+                                    .read<NewLogEntryCubit>()
+                                    .setShowContest(false),
+                                label: const Text('Contest'),
+                              ),
                             ),
                             _Wrap(
                               children: const [
