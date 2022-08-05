@@ -1,15 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 
-enum Continent {
-  europe,
-  asia,
-  africa,
-  southAmerica,
-  northAmerica,
-  oceania,
-  antartica,
-}
+import 'continent.dart';
 
 class DxccEntity extends Equatable {
   final String name;
@@ -23,18 +15,6 @@ class DxccEntity extends Equatable {
   final List<DxccEntity> sub;
 
   DxccEntity._(
-    this.name,
-    this.dxcc,
-    this.continent,
-    this.timezoneOffset,
-    this.ituZone,
-    this.cqZone,
-    this.flag,
-    this.prefix, [
-    this.sub = const [],
-  ]);
-
-  DxccEntity(
     this.name,
     this.dxcc,
     this.continent,
@@ -78,7 +58,7 @@ class DxccEntity extends Equatable {
   static const _sa = Continent.southAmerica;
   static const _na = Continent.northAmerica;
   static const _oc = Continent.oceania;
-  static const _an = Continent.antartica;
+  static const _an = Continent.antarctica;
 
   static DxccEntity _ctor(
     String name,

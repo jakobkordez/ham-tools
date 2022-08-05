@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/log_entry.dart';
 import '../bloc/log_bloc.dart';
+import '../models/callsign_input.dart';
 import '../models/date_input.dart';
 import '../models/frequency_input.dart';
 import '../models/time_input.dart';
@@ -21,29 +22,22 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
                 subMode: last.subMode,
                 frequencyRx: last.frequencyRx,
                 power: last.power,
+                stx: last.stx != null ? last.stx! + 1 : null,
+                stxString: last.stxString,
               ));
 
   void submit() {
-    logBloc.add(LogEntryAdded(state.asLogEntry()));
+    final e = state.asLogEntry();
+    logBloc.add(LogEntryAdded(e));
     emit(NewLogEntryState(
-      frequency: tryParseFreq(state.frequency.value),
-      frequencyRx: tryParseFreq(state.frequencyRx.value),
-      mode: state.mode,
-      subMode: state.subMode,
-      power: int.tryParse(state.power),
+      frequency: e.frequency,
+      mode: e.mode,
+      subMode: e.subMode,
+      frequencyRx: e.frequencyRx,
+      power: e.power,
+      stx: e.stx != null ? e.stx! + 1 : null,
+      stxString: e.stxString,
     ));
-  }
-
-  static int? tryParseTime(String value) {
-    final p = int.tryParse(value);
-    if (p == null || p.isNegative || p >= 2400 || p % 100 >= 60) return null;
-    return p;
-  }
-
-  static DateTime? tryParseDate(String value) {
-    value = value.replaceAll(RegExp(r'\D+'), '');
-    if (value.length != 8) return null;
-    return DateTime.parse('${value}T00Z');
   }
 
   static int? tryParseFreq(String value) {
@@ -110,7 +104,8 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
         timeOff: TimeInput.dirty(value),
       ));
 
-  void setCallsign(String value) => emit(state.copyWith(callsign: value));
+  void setCallsign(String value) =>
+      emit(state.copyWith(callsign: CallsignInput.dirty(value)));
 
   int? _newFreqFromBand(Band? band, int? freq) =>
       band?.isInBounds(freq ?? -1) == false ? band!.lowerBound : null;
@@ -153,4 +148,22 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
   void setRstRecv(String value) => emit(state.copyWith(rstRcvd: value));
 
   void setPower(String value) => emit(state.copyWith(power: value));
+
+  void setShowContest(bool value) => emit(state.copyWith(
+        showContest: value,
+        contestSrx: value ? null : '',
+        contestStx: value ? null : '',
+        contestSrxString: value ? null : '',
+        contestStxString: value ? null : '',
+      ));
+
+  void setContestSrx(String value) => emit(state.copyWith(contestSrx: value));
+
+  void setContestStx(String value) => emit(state.copyWith(contestStx: value));
+
+  void setContestSrxString(String value) =>
+      emit(state.copyWith(contestSrxString: value));
+
+  void setContestStxString(String value) =>
+      emit(state.copyWith(contestStxString: value));
 }

@@ -36,5 +36,22 @@ void main() {
       expect(entry.timeOff, DateTime.utc(2022, 2, 8, 12, 45));
       expect(entry.mode, Mode.ssb);
     });
+
+    test('lowercase', () {
+      final entry = LogEntry.fromAdiMap(const {
+        'call': 's52kj',
+        'band': '20M',
+        'qso_date': '20220208',
+        'time_on': '1245',
+        'mode': 'ssb',
+      });
+
+      expect(entry.callsign, 'S52KJ');
+      expect(entry.frequency, Band.hf20m.lowerBound);
+      expect(entry.band, Band.hf20m);
+      expect(entry.timeOn, DateTime.utc(2022, 2, 8, 12, 45));
+      expect(entry.timeOff, DateTime.utc(2022, 2, 8, 12, 45));
+      expect(entry.mode, Mode.ssb);
+    });
   });
 }

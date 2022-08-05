@@ -5,8 +5,8 @@ class CabrilloQsoData {
   final String time;
   final String callsignSent;
   final List<String> exchangeSent;
-  final String callsignRecieved;
-  final List<String> exchangeRecieved;
+  final String callsignReceived;
+  final List<String> exchangeReceived;
   final int? transmitterId;
 
   const CabrilloQsoData({
@@ -16,8 +16,8 @@ class CabrilloQsoData {
     required this.time,
     required this.callsignSent,
     this.exchangeSent = const [],
-    required this.callsignRecieved,
-    this.exchangeRecieved = const [],
+    required this.callsignReceived,
+    this.exchangeReceived = const [],
     this.transmitterId,
   });
 }

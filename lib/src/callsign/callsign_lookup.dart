@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../utils/callsign_data.dart';
-import '../utils/dxcc_entity.dart';
+import '../models/callsign_data.dart';
+import '../models/dxcc_entity.dart';
 import '../utils/text_input_formatters.dart';
 import 'callsign_editing_controller.dart';
 

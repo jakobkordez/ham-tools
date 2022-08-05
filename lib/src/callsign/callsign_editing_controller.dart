@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/callsign_data.dart';
+import '../models/callsign_data.dart';
 
 /// Custom Callsign TextEditingController
 ///

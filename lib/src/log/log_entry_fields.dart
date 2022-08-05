@@ -18,13 +18,14 @@ class _CallsignInputState extends State<_CallsignInput> {
 
   @override
   Widget build(BuildContext context) =>
-      BlocListener<NewLogEntryCubit, NewLogEntryState>(
+      BlocConsumer<NewLogEntryCubit, NewLogEntryState>(
         listenWhen: (previous, current) => previous.clean != current.clean,
         listener: (context, state) {
           if (state.clean) focusNode.requestFocus();
         },
-        child: _FieldUpdater(
-          getValue: (state) => state.callsign,
+        buildWhen: (previous, current) => previous.callsign != current.callsign,
+        builder: (context, state) => _FieldUpdater(
+          getValue: (state) => state.callsign.value,
           builder: (context, controller) => TextFormField(
             focusNode: focusNode,
             controller: controller,
@@ -36,6 +37,9 @@ class _CallsignInputState extends State<_CallsignInput> {
               labelStyle: TextStyle(
                 fontFamily: Theme.of(context).textTheme.bodyText2?.fontFamily,
               ),
+              errorText: state.callsign.status == FormzInputStatus.invalid
+                  ? 'Callsign cannot be empty'
+                  : null,
             ),
             style: const TextStyle(fontFamily: 'RobotoMono'),
             onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
@@ -573,6 +577,96 @@ class _NotesInput extends StatelessWidget {
   Widget build(BuildContext context) => TextFormField(
         decoration: const InputDecoration(
           labelText: 'Notes',
+        ),
+      );
+}
+
+class _ShowContestButton extends StatelessWidget {
+  const _ShowContestButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+        buildWhen: (previous, current) =>
+            previous.showContest != current.showContest,
+        builder: (context, state) => !state.showContest
+            ? Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: TextButton.icon(
+                  onPressed: () =>
+                      context.read<NewLogEntryCubit>().setShowContest(true),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Contest'),
+                ),
+              )
+            : const SizedBox.shrink(),
+      );
+}
+
+class _ContestSrxInput extends StatelessWidget {
+  const _ContestSrxInput({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => _FieldUpdater(
+        getValue: (state) => state.contestSrx,
+        builder: (context, controller) => TextFormField(
+          controller: controller,
+          onChanged: context.read<NewLogEntryCubit>().setContestSrx,
+          decoration: const InputDecoration(
+            labelText: 'Serial received',
+          ),
+          onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
+        ),
+      );
+}
+
+class _ContestStxInput extends StatelessWidget {
+  const _ContestStxInput({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => _FieldUpdater(
+        getValue: (state) => state.contestStx,
+        builder: (context, controller) => TextFormField(
+          controller: controller,
+          onChanged: context.read<NewLogEntryCubit>().setContestStx,
+          decoration: const InputDecoration(
+            labelText: 'Serial sent',
+          ),
+          onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
+        ),
+      );
+}
+
+class _ContestSrxStringInput extends StatelessWidget {
+  const _ContestSrxStringInput({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => _FieldUpdater(
+        getValue: (state) => state.contestSrxString,
+        builder: (context, controller) => TextFormField(
+          controller: controller,
+          onChanged: context.read<NewLogEntryCubit>().setContestSrxString,
+          decoration: const InputDecoration(
+            labelText: 'Info received',
+          ),
+          onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
+        ),
+      );
+}
+
+class _ContestStxStringInput extends StatelessWidget {
+  const _ContestStxStringInput({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => _FieldUpdater(
+        getValue: (state) => state.contestStxString,
+        builder: (context, controller) => TextFormField(
+          controller: controller,
+          onChanged: context.read<NewLogEntryCubit>().setContestStxString,
+          decoration: const InputDecoration(
+            labelText: 'Info sent',
+          ),
+          onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
         ),
       );
 }

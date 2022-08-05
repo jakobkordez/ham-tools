@@ -12,8 +12,19 @@ class LogEntry extends Equatable {
   static final timeFormat = DateFormat('HHmm');
   static final freqFormat = NumberFormat(r'#.000#');
 
+  /// The contacted station's Callsign
   final String callsign;
+
+  /// The logging operator's callsign
+  /// - if [stationCall] is absent, [operatorCall] shall be treated as both the
+  /// logging station's callsign and the logging operator's callsign
   final String? operatorCall;
+
+  /// The logging station's callsign (the callsign used over the air)
+  /// - if [stationCall] is absent, [operatorCall] shall be treated as both the
+  /// logging station's callsign and the logging operator's callsign
+  final String? stationCall;
+
   final DateTime timeOn;
   final DateTime timeOff;
   final int frequency;
@@ -23,8 +34,13 @@ class LogEntry extends Equatable {
   final int? power;
   final String rstSent;
   final String rstReceived;
+
+  /// The contacted station's grid square
+  final String? gridsquare;
+
+  /// The contacted station's operator's name
   final String name;
-  final String notes;
+  final String comment;
 
   // Contest fields
   /// Contest ID
@@ -42,9 +58,12 @@ class LogEntry extends Equatable {
   /// Contest information sent
   final String? stxString;
 
+  // TODO Fields: CHECK, CLASS, PRECEDENCE
+
   LogEntry({
     required String callsign,
     this.operatorCall,
+    this.stationCall,
     required DateTime timeOn,
     DateTime? timeOff,
     int? frequency,
@@ -56,8 +75,9 @@ class LogEntry extends Equatable {
     int? power,
     required this.rstSent,
     required this.rstReceived,
+    this.gridsquare,
     this.name = '',
-    this.notes = '',
+    this.comment = '',
     this.contestId,
     this.srx,
     this.stx,
@@ -89,6 +109,7 @@ class LogEntry extends Equatable {
   List<Object?> get props => [
         callsign,
         operatorCall,
+        stationCall,
         timeOn,
         timeOff,
         frequency,
@@ -98,8 +119,9 @@ class LogEntry extends Equatable {
         power,
         rstSent,
         rstReceived,
+        gridsquare,
         name,
-        notes,
+        comment,
         contestId,
         srx,
         stx,
@@ -108,64 +130,71 @@ class LogEntry extends Equatable {
       ];
 
   Map<String, String> toAdiMap() => {
-        'call': callsign,
-        'freq': '${frequency / 1000000}',
-        'mode': mode.name,
-        if (subMode != null) 'submode': subMode!.name,
-        'qso_date': Adif.dateFormat.format(timeOn),
-        'time_on': Adif.timeFormat.format(timeOn),
-        if (operatorCall != null) 'operator': operatorCall!,
-        if (frequencyRx != frequency) 'freq_rx': '${frequencyRx / 1000000}',
+        'CALL': callsign,
+        'FREQ': '${frequency / 1000000}',
+        if (band != null) 'BAND': band!.name,
+        'MODE': mode.name,
+        if (subMode != null) 'SUBMODE': subMode!.name,
+        'QSO_DATE': Adif.dateFormat.format(timeOn),
+        'TIME_ON': Adif.timeFormat.format(timeOn),
+        if (operatorCall != null) 'OPERATOR': operatorCall!,
+        if (stationCall != null) 'STATION_CALLSIGN': stationCall!,
+        if (frequencyRx != frequency) 'FREQ_RX': '${frequencyRx / 1000000}',
+        if (bandRx != band) 'BAND_RX': bandRx!.name,
         if (timeOff.compareTo(timeOn) != 0)
-          'qso_date_off': Adif.dateFormat.format(timeOff),
+          'QSO_DATE_OFF': Adif.dateFormat.format(timeOff),
         if (timeOff.compareTo(timeOn) != 0)
-          'time_off': Adif.timeFormat.format(timeOff),
-        if (rstSent.isNotEmpty) 'rst_sent': rstSent,
-        if (rstReceived.isNotEmpty) 'rst_rcvd': rstReceived,
-        if (name.isNotEmpty) 'name': name,
-        if (notes.isNotEmpty) 'notes': notes,
-        if (contestId != null) 'contest_id': contestId!,
-        if (srx != null) 'srx': '$srx',
-        if (stx != null) 'stx': '$stx',
-        if (srxString != null) 'srx_string': srxString!,
-        if (stxString != null) 'stx_string': stxString!,
+          'TIME_OFF': Adif.timeFormat.format(timeOff),
+        if (rstSent.isNotEmpty) 'RST_SENT': rstSent,
+        if (rstReceived.isNotEmpty) 'RST_RCVD': rstReceived,
+        if (gridsquare?.isNotEmpty == true) 'GRIDSQUARE': gridsquare!,
+        if (power != null) 'TX_PWR': '$power',
+        if (name.isNotEmpty) 'NAME': name,
+        if (comment.isNotEmpty) 'COMMENT': comment,
+        if (contestId != null) 'CONTEST_ID': contestId!,
+        if (srx != null) 'SRX': '$srx',
+        if (stx != null) 'STX': '$stx',
+        if (srxString != null) 'SRX_STRING': srxString!,
+        if (stxString != null) 'STX_STRING': stxString!,
       };
 
   factory LogEntry.fromAdiMap(Map<String, String> adi) {
     adi = <String, String>{
-      for (final kv in adi.entries) kv.key.toLowerCase(): kv.value
+      for (final kv in adi.entries) kv.key.toUpperCase(): kv.value
     };
 
-    final date = adi['qso_date']!;
-    final time = adi['time_on']!;
-    final dateOff = adi['qso_date_off'] ?? date;
-    final timeOff = adi['time_off'] ?? time;
+    final date = adi['QSO_DATE']!;
+    final time = adi['TIME_ON']!;
+    final dateOff = adi['QSO_DATE_OFF'] ?? date;
+    final timeOff = adi['TIME_OFF'] ?? time;
 
     return LogEntry(
-      callsign: adi['call']!.toUpperCase(),
-      operatorCall: adi['operator'],
-      frequency: adi['freq'] != null
-          ? (double.parse(adi['freq']!) * 1000000).toInt()
+      callsign: adi['CALL']!.toUpperCase(),
+      operatorCall: adi['OPERATOR'],
+      stationCall: adi['STATION_CALLSIGN'],
+      frequency: adi['FREQ'] != null
+          ? (double.parse(adi['FREQ']!) * 1000000).toInt()
           : null,
-      band: BandUtil.tryParse(adi['band']),
-      frequencyRx: adi['freq_rx'] != null
-          ? (double.parse(adi['freq_rx']!) * 1000000).toInt()
+      band: BandUtil.tryParse(adi['BAND']),
+      frequencyRx: adi['FREQ_RX'] != null
+          ? (double.parse(adi['FREQ_RX']!) * 1000000).toInt()
           : null,
-      bandRx: BandUtil.tryParse(adi['band_rx']),
+      bandRx: BandUtil.tryParse(adi['BAND_RX']),
       timeOn: DateTime.parse('${date}T${time}Z'),
       timeOff: DateTime.parse('${dateOff}T${timeOff}Z'),
-      mode: ModeUtil.tryParse(adi['mode']!)!,
-      subMode: SubModeUtil.tryParse(adi['submode']),
-      power: adi['tx_pwr'] != null ? int.parse(adi['tx_pwr']!) : null,
-      rstSent: adi['rst_sent'] ?? '',
-      rstReceived: adi['rst_rcvd'] ?? '',
-      name: adi['name'] ?? '',
-      notes: adi['notes'] ?? '',
-      contestId: adi['contest_id'],
-      srx: adi['srx'] != null ? int.parse(adi['srx']!) : null,
-      stx: adi['stx'] != null ? int.parse(adi['stx']!) : null,
-      srxString: adi['srx_string'],
-      stxString: adi['stx_string'],
+      mode: ModeUtil.tryParse(adi['MODE']!)!,
+      subMode: SubModeUtil.tryParse(adi['SUBMODE']),
+      power: adi['TX_PWR'] != null ? int.parse(adi['TX_PWR']!) : null,
+      rstSent: adi['RST_SENT'] ?? '',
+      rstReceived: adi['RST_RCVD'] ?? '',
+      gridsquare: adi['GRIDSQUARE'],
+      name: adi['NAME'] ?? '',
+      comment: adi['COMMENT'] ?? '',
+      contestId: adi['CONTEST_ID'],
+      srx: adi['SRX'] != null ? int.parse(adi['SRX']!) : null,
+      stx: adi['STX'] != null ? int.parse(adi['STX']!) : null,
+      srxString: adi['SRX_STRING'],
+      stxString: adi['STX_STRING'],
     );
   }
 }

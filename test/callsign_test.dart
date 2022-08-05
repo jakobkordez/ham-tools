@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:ham_tools/src/utils/callsign_data.dart';
-import 'package:ham_tools/src/utils/dxcc_entity.dart';
+import 'package:ham_tools/src/models/callsign_data.dart';
+import 'package:ham_tools/src/models/dxcc_entity.dart';
 
 void main() {
   test('Prefix overlap', () {

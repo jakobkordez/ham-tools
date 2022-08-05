@@ -10,18 +10,20 @@ void main(List<String> args) {
   final file = File(args[0]).readAsStringSync();
   final entries = Adif.decodeAdi(file);
 
-  final qsos = entries
-      .map((e) => CabrilloQsoData(
-            frequency: '${(double.parse(e['freq']!) * 1000).round()}',
-            mode: _encodeMode(e['mode']!),
-            date: _convertDate(e['qso_date']!),
-            time: e['time_on']!,
-            callsignSent: e['station_callsign']!,
-            exchangeSent: [e['rst_sent']!, e['stx_string']!],
-            callsignRecieved: e['call']!,
-            exchangeRecieved: [e['rst_rcvd']!, e['srx_string']!],
-          ))
-      .toList();
+  final qsos = entries.map((e) {
+    e = {for (final ee in e.entries) ee.key.toUpperCase(): ee.value};
+
+    return CabrilloQsoData(
+      frequency: '${(double.parse(e['FREQ']!) * 1000).round()}',
+      mode: _encodeMode(e['MODE']!),
+      date: _convertDate(e['QSO_DATE']!),
+      time: e['TIME_ON']!,
+      callsignSent: e['STATION_CALLSIGN'] ?? e['OPERATOR']!,
+      exchangeSent: [e['RST_SENT']!, e['STX_STRING']!],
+      callsignReceived: e['CALL']!,
+      exchangeReceived: [e['RST_RCVD']!, e['SRX_STRING']!],
+    );
+  }).toList();
 
   File(args[1]).writeAsStringSync(Cabrillo.encodeCabrillo(qsos));
 }

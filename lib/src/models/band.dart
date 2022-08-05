@@ -4,6 +4,12 @@ enum Band {
   /// 2200m band (136 kHz)
   lf2200m,
 
+  /// 630m band (472 kHz)
+  mf630m,
+
+  /// 560m band (501 kHz)
+  mf560m,
+
   /// 160m band (1.800 MHz)
   mf160m,
 
@@ -108,12 +114,16 @@ extension BandUtil on Band {
     switch (this) {
       case Band.lf2200m:
         return 135700;
+      case Band.mf630m:
+        return 472000;
+      case Band.mf560m:
+        return 501000;
       case Band.mf160m:
         return 1800000;
       case Band.hf80m:
         return 3500000;
       case Band.hf60m:
-        return 5351500;
+        return 5060000;
       case Band.hf40m:
         return 7000000;
       case Band.hf30m:
@@ -137,7 +147,7 @@ extension BandUtil on Band {
       case Band.vhf1_25m:
         return 222000000;
       case Band.uhf70cm:
-        return 430000000;
+        return 420000000;
       case Band.uhf33cm:
         return 902000000;
       case Band.uhf23cm:
@@ -145,7 +155,7 @@ extension BandUtil on Band {
       case Band.uhf13cm:
         return 2300000000;
       case Band.shf9cm:
-        return 3400000000;
+        return 3300000000;
       case Band.shf6cm:
         return 5650000000;
       case Band.shf3cm:
@@ -157,9 +167,9 @@ extension BandUtil on Band {
       case Band.ehf4mm:
         return 75500000000;
       case Band.ehf2_5mm:
-        return 122000000000;
+        return 119980000000;
       case Band.ehf2mm:
-        return 134000000000;
+        return 142000000000;
       case Band.ehf1mm:
         return 241000000000;
     }
@@ -169,14 +179,18 @@ extension BandUtil on Band {
     switch (this) {
       case Band.lf2200m:
         return 137800;
+      case Band.mf630m:
+        return 479000;
+      case Band.mf560m:
+        return 504000;
       case Band.mf160m:
         return 2000000;
       case Band.hf80m:
-        return 3800000;
+        return 4000000;
       case Band.hf60m:
-        return 5366500;
+        return 5450000;
       case Band.hf40m:
-        return 7200000;
+        return 7300000;
       case Band.hf30m:
         return 10150000;
       case Band.hf20m:
@@ -190,15 +204,15 @@ extension BandUtil on Band {
       case Band.hf10m:
         return 29700000;
       case Band.vhf6m:
-        return 52000000;
+        return 54000000;
       case Band.vhf4m:
-        return 70450000;
+        return 71000000;
       case Band.vhf2m:
-        return 146000000;
+        return 148000000;
       case Band.vhf1_25m:
         return 225000000;
       case Band.uhf70cm:
-        return 440000000;
+        return 450000000;
       case Band.uhf33cm:
         return 928000000;
       case Band.uhf23cm:
@@ -206,9 +220,9 @@ extension BandUtil on Band {
       case Band.uhf13cm:
         return 2450000000;
       case Band.shf9cm:
-        return 3475000000;
+        return 3500000000;
       case Band.shf6cm:
-        return 58500000000;
+        return 5925000000;
       case Band.shf3cm:
         return 10500000000;
       case Band.shf1_25cm:
@@ -220,7 +234,7 @@ extension BandUtil on Band {
       case Band.ehf2_5mm:
         return 123000000000;
       case Band.ehf2mm:
-        return 141000000000;
+        return 149000000000;
       case Band.ehf1mm:
         return 250000000000;
     }
@@ -230,6 +244,10 @@ extension BandUtil on Band {
     switch (this) {
       case Band.lf2200m:
         return '2200 m';
+      case Band.mf630m:
+        return '630 m';
+      case Band.mf560m:
+        return '560 m';
       case Band.mf160m:
         return '160 m';
       case Band.hf80m:
@@ -290,7 +308,11 @@ extension BandUtil on Band {
   String get name {
     switch (this) {
       case Band.lf2200m:
-        return '2200m';
+        return '2190m';
+      case Band.mf630m:
+        return '630m';
+      case Band.mf560m:
+        return '560m';
       case Band.mf160m:
         return '160m';
       case Band.hf80m:

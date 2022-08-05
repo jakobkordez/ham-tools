@@ -1,16 +1,18 @@
 import 'package:ham_tools/src/models/log_entry.dart';
 import 'package:ham_tools/src/utils/adif.dart';
 import 'package:http/http.dart' show Client;
-import 'package:intl/intl.dart';
 
 // https://lotw.arrl.org/lotw-help/developer-query-qsos-qsls/
 // https://lotw.arrl.org/lotw-help/developer-submit-qsos/
+// https://lotw.arrl.org/lotw-help/developer-query-lotw-users/
 
 class LotwClient {
   static const _baseUrl = 'lotw.arrl.org';
   static const _reportPath = '/lotwuser/lotwreport.adi';
+  static const _userActivityPath = '/lotw-user-activity.csv';
   static const _contentType = 'application/x-arrl-adif';
-  static final _dateFormat = DateFormat('yyyy-MM-dd');
+
+  static const _cacheLifetime = Duration(hours: 1);
 
   final Client client;
 
@@ -117,6 +119,38 @@ class LotwClient {
     }
 
     return res.body;
+  }
+
+  // User activity cache
+  Map<String, String>? _userActivityCache;
+  DateTime? _userActivityCacheLastUpdated;
+
+  Future<DateTime?> getUserLastUpload(
+    String callsign, [
+    bool updateCache = false,
+  ]) async {
+    if (updateCache ||
+        (_userActivityCacheLastUpdated
+                ?.add(_cacheLifetime)
+                .isBefore(DateTime.now()) ??
+            true)) {
+      final res = await client.get(Uri.https(_baseUrl, _userActivityPath));
+
+      if (res.statusCode != 200) {
+        throw Exception('Request failed: ${res.statusCode} ${res.body}');
+      }
+
+      _userActivityCache = Map.fromEntries(res.body.trim().split('\n').map((e) {
+        final i = e.indexOf(',');
+        return MapEntry(e.substring(0, i), e.substring(i + 1));
+      }));
+      _userActivityCacheLastUpdated = DateTime.now();
+    }
+
+    final user = _userActivityCache![callsign];
+    if (user == null) return null;
+
+    return DateTime.parse('${user.replaceAll(',', 'T')}Z');
   }
 
   String _formatDate(DateTime dt) => dt.toIso8601String().substring(0, 10);

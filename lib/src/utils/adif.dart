@@ -28,13 +28,13 @@ class Adif {
       i = j + 1;
 
       // End of header
-      if (tag == 'eoh') {
+      if (tag.toUpperCase() == 'EOH') {
         vals = {};
         continue;
       }
 
       // End of record
-      if (tag == 'eor') {
+      if (tag.toUpperCase() == 'EOR') {
         ret.add(vals);
         vals = {};
         continue;

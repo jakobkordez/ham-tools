@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:ham_tools/src/utils/dxcc_entity.dart';
+import 'package:ham_tools/src/models/dxcc_entity.dart';
 
 const res = '64';
 const uri = 'https://static.qrz.com/static/flags-iso/flat/$res/';

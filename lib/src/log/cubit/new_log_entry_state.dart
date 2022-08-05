@@ -17,9 +17,17 @@ class NewLogEntryState extends Equatable {
   final FrequencyInput frequencyRx;
   final String power;
 
-  final String callsign;
+  final CallsignInput callsign;
   final String rstSent;
   final String rstRcvd;
+
+  // Contest
+  final bool showContest;
+  // final String contest;
+  final String contestSrx;
+  final String contestStx;
+  final String contestSrxString;
+  final String contestStxString;
 
   late final Band? band =
       BandUtil.getBand(NewLogEntryCubit.tryParseFreq(frequency.value) ?? -1);
@@ -38,12 +46,15 @@ class NewLogEntryState extends Equatable {
     String? callsign,
     String? rstSent,
     String? rstRcvd,
+    int? srx,
+    int? stx,
+    String? srxString,
+    String? stxString,
   }) {
     frequency ??= Band.hf40m.lowerBound;
     mode ??= Mode.ssb;
     timeOn = (timeOn ?? DateTime.now()).toUtc();
     timeOff = timeOff?.toUtc();
-    callsign ??= '';
     rstSent ??= '';
     rstRcvd ??= '';
 
@@ -61,9 +72,19 @@ class NewLogEntryState extends Equatable {
       subMode: subMode,
       frequencyRx: FrequencyInput.pure(frequencyRx ?? frequency),
       power: '${power ?? ''}',
-      callsign: callsign,
+      callsign: callsign == null
+          ? CallsignInput.pure()
+          : CallsignInput.dirty(callsign),
       rstSent: rstSent,
       rstRcvd: rstRcvd,
+      showContest: srx != null ||
+          stx != null ||
+          srxString?.isNotEmpty == true ||
+          stxString?.isNotEmpty == true,
+      contestSrx: '${srx ?? ''}',
+      contestStx: '${stx ?? ''}',
+      contestSrxString: srxString ?? '',
+      contestStxString: stxString ?? '',
     );
   }
 
@@ -84,6 +105,11 @@ class NewLogEntryState extends Equatable {
     required this.callsign,
     required this.rstSent,
     required this.rstRcvd,
+    required this.showContest,
+    required this.contestSrx,
+    required this.contestStx,
+    required this.contestSrxString,
+    required this.contestStxString,
   });
 
   NewLogEntryState copyWith({
@@ -98,9 +124,14 @@ class NewLogEntryState extends Equatable {
     FrequencyInput? frequency,
     FrequencyInput? frequencyRx,
     String? power,
-    String? callsign,
+    CallsignInput? callsign,
     String? rstSent,
     String? rstRcvd,
+    bool? showContest,
+    String? contestSrx,
+    String? contestStx,
+    String? contestSrxString,
+    String? contestStxString,
   }) {
     final newSplit = split ?? this.split;
     final newFreq = frequency ?? this.frequency;
@@ -126,6 +157,11 @@ class NewLogEntryState extends Equatable {
       callsign: callsign ?? this.callsign,
       rstSent: rstSent ?? this.rstSent,
       rstRcvd: rstRcvd ?? this.rstRcvd,
+      showContest: showContest ?? this.showContest,
+      contestSrx: contestSrx ?? this.contestSrx,
+      contestStx: contestStx ?? this.contestStx,
+      contestSrxString: contestSrxString ?? this.contestSrxString,
+      contestStxString: contestStxString ?? this.contestStxString,
     );
   }
 
@@ -150,6 +186,11 @@ class NewLogEntryState extends Equatable {
         callsign: callsign,
         rstSent: rstSent,
         rstRcvd: rstRcvd,
+        showContest: showContest,
+        contestSrx: contestSrx,
+        contestStx: contestStx,
+        contestSrxString: contestSrxString,
+        contestStxString: contestStxString,
       );
 
   @override
@@ -170,10 +211,15 @@ class NewLogEntryState extends Equatable {
         callsign,
         rstSent,
         rstRcvd,
+        showContest,
+        contestSrx,
+        contestStx,
+        contestSrxString,
+        contestStxString,
       ];
 
   LogEntry asLogEntry() => LogEntry(
-        callsign: callsign,
+        callsign: callsign.value,
         timeOn: DateTime.parse('${dateOn.value}T${timeOn.value}Z'),
         timeOff: DateTime.parse('${dateOff.value}T${timeOff.value}Z'),
         mode: mode,
@@ -183,5 +229,9 @@ class NewLogEntryState extends Equatable {
         frequency: NewLogEntryCubit.tryParseFreq(frequency.value),
         frequencyRx: NewLogEntryCubit.tryParseFreq(frequencyRx.value),
         power: int.tryParse(power),
+        srx: int.tryParse(contestSrx),
+        stx: int.tryParse(contestStx),
+        srxString: contestSrxString.isEmpty ? null : contestSrxString,
+        stxString: contestStxString.isEmpty ? null : contestStxString,
       );
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../models/log_entry.dart';
-import '../utils/dxcc_entity.dart';
+import '../models/dxcc_entity.dart';
 import 'bloc/log_bloc.dart';
 
 class LogTable extends StatelessWidget {
@@ -82,7 +82,7 @@ class DataSource extends DataTableSource {
         overflow: TextOverflow.ellipsis,
         softWrap: true,
       )),
-      DataCell(Text(e.notes)),
+      DataCell(Text(e.comment)),
     ]);
   }
 
