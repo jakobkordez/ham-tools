@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:ham_tools/src/models/log_entry.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../models/log_entry.dart';
 import 'repository.dart';
 
 class LocalRepository implements Repository {

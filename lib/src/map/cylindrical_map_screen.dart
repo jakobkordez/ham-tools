@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:ham_tools/src/map/cylindrical_map.dart';
-import 'package:ham_tools/src/models/lat_lon.dart';
+
+import '../models/lat_lon.dart';
+import 'cylindrical_map.dart';
 
 class CylindricalMapScreen extends StatelessWidget {
   const CylindricalMapScreen({Key? key}) : super(key: key);

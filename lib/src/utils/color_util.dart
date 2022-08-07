@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:ham_tools/src/models/log_entry.dart';
+
+import '../models/log_entry.dart';
 
 extension ColorUtil on Color {
   static Color genRandomColor(int seed, [Color mix = const Color(0xffaaaaaa)]) {

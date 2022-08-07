@@ -3,9 +3,9 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ham_tools/src/map/cylindrical_painter.dart';
 
 import '../models/lat_lon.dart';
+import 'cylindrical_painter.dart';
 
 class CylindricalMap extends StatelessWidget {
   final LatLon? point;

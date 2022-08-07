@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ham_tools/src/map/azimuthal_map.dart';
-import 'package:ham_tools/src/models/lat_lon.dart';
-import 'package:ham_tools/src/utils/text_input_formatters.dart';
+
+import '../models/lat_lon.dart';
+import '../utils/text_input_formatters.dart';
+import 'azimuthal_map.dart';
 
 // https://ns6t.net/word/?page_id=10
 // https://www.evl.uic.edu/pape/data/WDB/

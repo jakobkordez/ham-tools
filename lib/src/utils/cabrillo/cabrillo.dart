@@ -1,7 +1,6 @@
-import 'package:ham_tools/src/utils/cabrillo/qso_data.dart';
 import 'package:intl/intl.dart';
 
-import 'cabrillo_header.dart';
+import 'cabrillo.dart';
 
 export 'cabrillo_header.dart';
 export 'qso_data.dart';
