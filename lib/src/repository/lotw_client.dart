@@ -1,6 +1,8 @@
-import 'package:ham_tools/src/models/log_entry.dart';
-import 'package:ham_tools/src/utils/adif.dart';
-import 'package:http/http.dart' show Client;
+import 'package:collection/collection.dart';
+import 'package:dio/dio.dart';
+
+import '../models/log_entry.dart';
+import '../utils/adif.dart';
 
 // https://lotw.arrl.org/lotw-help/developer-query-qsos-qsls/
 // https://lotw.arrl.org/lotw-help/developer-submit-qsos/
@@ -14,9 +16,9 @@ class LotwClient {
 
   static const _cacheLifetime = Duration(hours: 1);
 
-  final Client client;
+  final Dio client;
 
-  LotwClient({Client? httpClient}) : client = httpClient ?? Client();
+  LotwClient({Dio? dioClient}) : client = dioClient ?? Dio();
 
   /// Gets QSO's from LOTW
   ///
@@ -111,14 +113,19 @@ class LotwClient {
       if (withOwn) 'qso_withown': 'yes',
     };
 
-    final res = await client.get(Uri.https(_baseUrl, _reportPath, queryParams));
+    final res = await client
+        .get(Uri.https(_baseUrl, _reportPath, queryParams).toString());
 
-    if (res.statusCode != 200) {
-      // || res.headers['Content-Type']?.startsWith('$_contentType;') != true) {
-      throw Exception('Request failed: ${res.statusCode} ${res.body}');
+    final contentType = res.headers.map.entries
+        .firstWhereOrNull((e) => e.key.toLowerCase() == 'content-type')
+        ?.value;
+
+    if (res.statusCode != 200 ||
+        contentType?.any((e) => e.contains('$_contentType;')) != true) {
+      throw Exception('Request failed: ${res.statusCode} ${res.data}');
     }
 
-    return res.body;
+    return res.data;
   }
 
   // User activity cache
@@ -134,13 +141,15 @@ class LotwClient {
                 ?.add(_cacheLifetime)
                 .isBefore(DateTime.now()) ??
             true)) {
-      final res = await client.get(Uri.https(_baseUrl, _userActivityPath));
+      final res =
+          await client.get(Uri.https(_baseUrl, _userActivityPath).toString());
 
       if (res.statusCode != 200) {
-        throw Exception('Request failed: ${res.statusCode} ${res.body}');
+        throw Exception('Request failed: ${res.statusCode} ${res.data}');
       }
 
-      _userActivityCache = Map.fromEntries(res.body.trim().split('\n').map((e) {
+      _userActivityCache =
+          Map.fromEntries((res.data as String).trim().split('\n').map((e) {
         final i = e.indexOf(',');
         return MapEntry(e.substring(0, i), e.substring(i + 1));
       }));

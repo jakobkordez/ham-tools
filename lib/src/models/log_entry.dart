@@ -12,6 +12,11 @@ class LogEntry extends Equatable {
   static final timeFormat = DateFormat('HHmm');
   static final freqFormat = NumberFormat(r'#.000#');
 
+  // Server data
+  final String? id;
+  final String? ownerId;
+  final DateTime? createdAt;
+
   /// The contacted station's Callsign
   final String callsign;
 
@@ -61,6 +66,9 @@ class LogEntry extends Equatable {
   // TODO Fields: CHECK, CLASS, PRECEDENCE
 
   LogEntry({
+    this.id,
+    this.ownerId,
+    this.createdAt,
     required String callsign,
     this.operatorCall,
     this.stationCall,
@@ -107,6 +115,9 @@ class LogEntry extends Equatable {
 
   @override
   List<Object?> get props => [
+        id,
+        ownerId,
+        createdAt,
         callsign,
         operatorCall,
         stationCall,
@@ -158,7 +169,12 @@ class LogEntry extends Equatable {
         if (stxString != null) 'STX_STRING': stxString!,
       };
 
-  factory LogEntry.fromAdiMap(Map<String, String> adi) {
+  factory LogEntry.fromAdiMap(
+    Map<String, String> adi, {
+    String? id,
+    String? ownerId,
+    DateTime? createdAt,
+  }) {
     adi = <String, String>{
       for (final kv in adi.entries) kv.key.toUpperCase(): kv.value
     };
@@ -169,6 +185,9 @@ class LogEntry extends Equatable {
     final timeOff = adi['TIME_OFF'] ?? time;
 
     return LogEntry(
+      id: id,
+      ownerId: ownerId,
+      createdAt: createdAt,
       callsign: adi['CALL']!.toUpperCase(),
       operatorCall: adi['OPERATOR'],
       stationCall: adi['STATION_CALLSIGN'],
@@ -197,4 +216,13 @@ class LogEntry extends Equatable {
       stxString: adi['STX_STRING'],
     );
   }
+
+  factory LogEntry.fromJson(Map<String, dynamic> json) => LogEntry.fromAdiMap(
+        (json['data'] as Map<String, dynamic>).cast(),
+        id: json['_id'],
+        ownerId: json['owner'],
+        createdAt: json['created_at'] != null
+            ? DateTime.parse(json['created_at'])
+            : null,
+      );
 }
