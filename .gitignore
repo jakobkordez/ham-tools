@@ -1,3 +1,5 @@
+lib/src/repository/server_client.g.dart
+
 # Miscellaneous
 *.class
 *.log

@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
-import '../models/jwt_token.dart';
+import '../models/server/jwt_token.dart';
 import '../models/log_entry.dart';
 import '../models/server/dto/create_log_entry_dto.dart';
 import '../models/server/dto/login_dto.dart';
