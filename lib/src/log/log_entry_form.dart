@@ -36,11 +36,13 @@ class LogEntryForm extends StatelessWidget {
                     buildWhen: (previous, current) =>
                         previous.hasTimeOff != current.hasTimeOff ||
                         previous.split != current.split ||
-                        previous.showContest != current.showContest,
+                        previous.showContest != current.showContest ||
+                        previous.showComment != current.showComment,
                     builder: (context, state) {
                       final hasTimeOff = state.hasTimeOff;
                       final split = state.split;
                       final showContest = state.showContest;
+                      final showComment = state.showComment;
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,15 +177,15 @@ class LogEntryForm extends StatelessWidget {
                               ],
                             ),
                           ],
+                          if (showComment) ...[
+                            const SizedBox(height: 15),
+                            const _CommentInput(),
+                          ],
                           const SizedBox(height: 25),
                           _Wrap(
                             children: [
-                              const _ShowContestButton(),
-                              TextButton.icon(
-                                onPressed: null,
-                                icon: const Icon(Icons.add),
-                                label: const Text('Comment'),
-                              ),
+                              if (!showContest) const _ShowContestButton(),
+                              if (!showComment) const _ShowCommentButton(),
                             ],
                           ),
                           const Align(

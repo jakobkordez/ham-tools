@@ -166,4 +166,11 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
 
   void setContestStxString(String value) =>
       emit(state.copyWith(contestStxString: value));
+
+  void setShowComment(bool value) => emit(state.copyWith(
+        showComment: value,
+        comment: value ? null : '',
+      ));
+
+  void setComment(String value) => emit(state.copyWith(comment: value));
 }

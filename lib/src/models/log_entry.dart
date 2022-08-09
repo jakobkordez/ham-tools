@@ -37,15 +37,19 @@ class LogEntry extends Equatable {
   final Mode mode;
   final SubMode? subMode;
   final int? power;
-  final String rstSent;
-  final String rstReceived;
+  final String? rstSent;
+  final String? rstReceived;
 
   /// The contacted station's grid square
   final String? gridsquare;
 
   /// The contacted station's operator's name
-  final String name;
-  final String comment;
+  final String? name;
+  final String? comment;
+
+  // SOTA
+  final String? sotaRef;
+  final String? mySotaRef;
 
   // Contest fields
   /// Contest ID
@@ -84,8 +88,10 @@ class LogEntry extends Equatable {
     required this.rstSent,
     required this.rstReceived,
     this.gridsquare,
-    this.name = '',
-    this.comment = '',
+    this.name,
+    this.comment,
+    this.sotaRef,
+    this.mySotaRef,
     this.contestId,
     this.srx,
     this.stx,
@@ -133,6 +139,8 @@ class LogEntry extends Equatable {
         gridsquare,
         name,
         comment,
+        sotaRef,
+        mySotaRef,
         contestId,
         srx,
         stx,
@@ -156,12 +164,14 @@ class LogEntry extends Equatable {
           'QSO_DATE_OFF': Adif.dateFormat.format(timeOff),
         if (timeOff.compareTo(timeOn) != 0)
           'TIME_OFF': Adif.timeFormat.format(timeOff),
-        if (rstSent.isNotEmpty) 'RST_SENT': rstSent,
-        if (rstReceived.isNotEmpty) 'RST_RCVD': rstReceived,
+        if (rstSent?.isNotEmpty == true) 'RST_SENT': rstSent!,
+        if (rstReceived?.isNotEmpty == true) 'RST_RCVD': rstReceived!,
         if (gridsquare?.isNotEmpty == true) 'GRIDSQUARE': gridsquare!,
         if (power != null) 'TX_PWR': '$power',
-        if (name.isNotEmpty) 'NAME': name,
-        if (comment.isNotEmpty) 'COMMENT': comment,
+        if (name?.isNotEmpty == true) 'NAME': name!,
+        if (comment?.isNotEmpty == true) 'COMMENT': comment!,
+        if (sotaRef?.isNotEmpty == true) 'SOTA_REF': sotaRef!,
+        if (mySotaRef?.isNotEmpty == true) 'MY_SOTA_REF': mySotaRef!,
         if (contestId != null) 'CONTEST_ID': contestId!,
         if (srx != null) 'SRX': '$srx',
         if (stx != null) 'STX': '$stx',
@@ -204,11 +214,13 @@ class LogEntry extends Equatable {
       mode: ModeUtil.tryParse(adi['MODE']!)!,
       subMode: SubModeUtil.tryParse(adi['SUBMODE']),
       power: adi['TX_PWR'] != null ? int.parse(adi['TX_PWR']!) : null,
-      rstSent: adi['RST_SENT'] ?? '',
-      rstReceived: adi['RST_RCVD'] ?? '',
+      rstSent: adi['RST_SENT'],
+      rstReceived: adi['RST_RCVD'],
       gridsquare: adi['GRIDSQUARE'],
-      name: adi['NAME'] ?? '',
-      comment: adi['COMMENT'] ?? '',
+      name: adi['NAME'],
+      comment: adi['COMMENT'],
+      sotaRef: adi['SOTA_REF'],
+      mySotaRef: adi['MY_SOTA_REF'],
       contestId: adi['CONTEST_ID'],
       srx: adi['SRX'] != null ? int.parse(adi['SRX']!) : null,
       stx: adi['STX'] != null ? int.parse(adi['STX']!) : null,

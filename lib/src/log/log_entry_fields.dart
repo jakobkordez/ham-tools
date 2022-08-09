@@ -570,14 +570,31 @@ class _NameInput extends StatelessWidget {
       );
 }
 
-class _NotesInput extends StatelessWidget {
-  const _NotesInput({Key? key}) : super(key: key);
+class _CommentInput extends StatelessWidget {
+  const _CommentInput({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => TextFormField(
-        decoration: const InputDecoration(
-          labelText: 'Notes',
+  Widget build(BuildContext context) => _FieldUpdater(
+        getValue: (state) => state.comment,
+        builder: (context, controller) => TextFormField(
+          controller: controller,
+          onChanged: context.read<NewLogEntryCubit>().setComment,
+          decoration: const InputDecoration(
+            labelText: 'Comment',
+          ),
+          onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
         ),
+      );
+}
+
+class _ShowCommentButton extends StatelessWidget {
+  const _ShowCommentButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => TextButton.icon(
+        onPressed: () => context.read<NewLogEntryCubit>().setShowComment(true),
+        icon: const Icon(Icons.add),
+        label: const Text('Comment'),
       );
 }
 
@@ -585,21 +602,10 @@ class _ShowContestButton extends StatelessWidget {
   const _ShowContestButton({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) =>
-      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
-        buildWhen: (previous, current) =>
-            previous.showContest != current.showContest,
-        builder: (context, state) => !state.showContest
-            ? Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: TextButton.icon(
-                  onPressed: () =>
-                      context.read<NewLogEntryCubit>().setShowContest(true),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Contest'),
-                ),
-              )
-            : const SizedBox.shrink(),
+  Widget build(BuildContext context) => TextButton.icon(
+        onPressed: () => context.read<NewLogEntryCubit>().setShowContest(true),
+        icon: const Icon(Icons.add),
+        label: const Text('Contest'),
       );
 }
 

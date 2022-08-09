@@ -21,6 +21,9 @@ class NewLogEntryState extends Equatable {
   final String rstSent;
   final String rstRcvd;
 
+  final bool showComment;
+  final String comment;
+
   // Contest
   final bool showContest;
   // final String contest;
@@ -46,6 +49,7 @@ class NewLogEntryState extends Equatable {
     String? callsign,
     String? rstSent,
     String? rstRcvd,
+    String? comment,
     int? srx,
     int? stx,
     String? srxString,
@@ -77,6 +81,8 @@ class NewLogEntryState extends Equatable {
           : CallsignInput.dirty(callsign),
       rstSent: rstSent,
       rstRcvd: rstRcvd,
+      showComment: comment?.isNotEmpty ?? false,
+      comment: comment ?? '',
       showContest: srx != null ||
           stx != null ||
           srxString?.isNotEmpty == true ||
@@ -105,6 +111,8 @@ class NewLogEntryState extends Equatable {
     required this.callsign,
     required this.rstSent,
     required this.rstRcvd,
+    required this.showComment,
+    required this.comment,
     required this.showContest,
     required this.contestSrx,
     required this.contestStx,
@@ -127,6 +135,8 @@ class NewLogEntryState extends Equatable {
     CallsignInput? callsign,
     String? rstSent,
     String? rstRcvd,
+    bool? showComment,
+    String? comment,
     bool? showContest,
     String? contestSrx,
     String? contestStx,
@@ -157,6 +167,8 @@ class NewLogEntryState extends Equatable {
       callsign: callsign ?? this.callsign,
       rstSent: rstSent ?? this.rstSent,
       rstRcvd: rstRcvd ?? this.rstRcvd,
+      showComment: showComment ?? this.showComment,
+      comment: comment ?? this.comment,
       showContest: showContest ?? this.showContest,
       contestSrx: contestSrx ?? this.contestSrx,
       contestStx: contestStx ?? this.contestStx,
@@ -186,6 +198,8 @@ class NewLogEntryState extends Equatable {
         callsign: callsign,
         rstSent: rstSent,
         rstRcvd: rstRcvd,
+        showComment: showComment,
+        comment: comment,
         showContest: showContest,
         contestSrx: contestSrx,
         contestStx: contestStx,
@@ -211,6 +225,8 @@ class NewLogEntryState extends Equatable {
         callsign,
         rstSent,
         rstRcvd,
+        showComment,
+        comment,
         showContest,
         contestSrx,
         contestStx,
@@ -224,14 +240,15 @@ class NewLogEntryState extends Equatable {
         timeOff: DateTime.parse('${dateOff.value}T${timeOff.value}Z'),
         mode: mode,
         subMode: subMode,
-        rstSent: rstSent,
-        rstReceived: rstRcvd,
+        rstSent: rstSent.isNotEmpty ? rstSent : null,
+        rstReceived: rstRcvd.isNotEmpty ? rstRcvd : null,
         frequency: NewLogEntryCubit.tryParseFreq(frequency.value),
         frequencyRx: NewLogEntryCubit.tryParseFreq(frequencyRx.value),
         power: int.tryParse(power),
+        comment: comment.isNotEmpty ? comment : null,
         srx: int.tryParse(contestSrx),
         stx: int.tryParse(contestStx),
-        srxString: contestSrxString.isEmpty ? null : contestSrxString,
-        stxString: contestStxString.isEmpty ? null : contestStxString,
+        srxString: contestSrxString.isNotEmpty ? contestSrxString : null,
+        stxString: contestStxString.isNotEmpty ? contestStxString : null,
       );
 }
