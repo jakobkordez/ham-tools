@@ -598,6 +598,51 @@ class _ShowCommentButton extends StatelessWidget {
       );
 }
 
+class _ShowSotaButton extends StatelessWidget {
+  const _ShowSotaButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => TextButton.icon(
+        onPressed: () => context.read<NewLogEntryCubit>().setShowSota(true),
+        icon: const Icon(Icons.add),
+        label: const Text('SOTA'),
+      );
+}
+
+class _SotaRefInput extends StatelessWidget {
+  const _SotaRefInput({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => _FieldUpdater(
+        getValue: (state) => state.sotaRef.value,
+        builder: (context, controller) => TextFormField(
+          controller: controller,
+          onChanged: context.read<NewLogEntryCubit>().setSotaRef,
+          decoration: const InputDecoration(
+            labelText: 'SOTA Reference',
+          ),
+          onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
+        ),
+      );
+}
+
+class _MySotaRefInput extends StatelessWidget {
+  const _MySotaRefInput({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => _FieldUpdater(
+        getValue: (state) => state.mySotaRef.value,
+        builder: (context, controller) => TextFormField(
+          controller: controller,
+          onChanged: context.read<NewLogEntryCubit>().setMySotaRef,
+          decoration: const InputDecoration(
+            labelText: 'My SOTA Reference',
+          ),
+          onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
+        ),
+      );
+}
+
 class _ShowContestButton extends StatelessWidget {
   const _ShowContestButton({Key? key}) : super(key: key);
 

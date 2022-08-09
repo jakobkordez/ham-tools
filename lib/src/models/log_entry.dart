@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
@@ -13,8 +15,8 @@ class LogEntry extends Equatable {
   static final freqFormat = NumberFormat(r'#.000#');
 
   // Server data
-  final String? id;
-  final String? ownerId;
+  final String id;
+  final String ownerId;
   final DateTime? createdAt;
 
   /// The contacted station's Callsign
@@ -23,12 +25,12 @@ class LogEntry extends Equatable {
   /// The logging operator's callsign
   /// - if [stationCall] is absent, [operatorCall] shall be treated as both the
   /// logging station's callsign and the logging operator's callsign
-  final String? operatorCall;
+  final String operatorCall;
 
   /// The logging station's callsign (the callsign used over the air)
   /// - if [stationCall] is absent, [operatorCall] shall be treated as both the
   /// logging station's callsign and the logging operator's callsign
-  final String? stationCall;
+  final String stationCall;
 
   final DateTime timeOn;
   final DateTime timeOff;
@@ -36,75 +38,97 @@ class LogEntry extends Equatable {
   final int frequencyRx;
   final Mode mode;
   final SubMode? subMode;
-  final int? power;
-  final String? rstSent;
-  final String? rstReceived;
+  final int power;
+  final String rstSent;
+  final String rstReceived;
 
   /// The contacted station's grid square
-  final String? gridsquare;
+  final String gridsquare;
 
   /// The contacted station's operator's name
-  final String? name;
-  final String? comment;
+  final String name;
+  final String comment;
 
   // SOTA
-  final String? sotaRef;
-  final String? mySotaRef;
+  final String sotaRef;
+  final String mySotaRef;
 
   // Contest fields
   /// Contest ID
-  final String? contestId;
+  final String contestId;
 
   /// Contest serial number received
-  final int? srx;
+  final int srx;
 
   /// Contest serial number sent
-  final int? stx;
+  final int stx;
 
   /// Contest information received
-  final String? srxString;
+  final String srxString;
 
   /// Contest information sent
-  final String? stxString;
+  final String stxString;
 
-  // TODO Fields: CHECK, CLASS, PRECEDENCE
+  // TODO Contest Fields: CHECK, CLASS, PRECEDENCE
 
   LogEntry({
-    this.id,
-    this.ownerId,
-    this.createdAt,
+    String? id,
+    String? ownerId,
+    DateTime? createdAt,
     required String callsign,
-    this.operatorCall,
-    this.stationCall,
+    String? operatorCall,
+    String? stationCall,
     required DateTime timeOn,
     DateTime? timeOff,
     int? frequency,
     Band? band,
     int? frequencyRx,
     Band? bandRx,
-    required this.mode,
-    this.subMode,
+    required Mode mode,
+    SubMode? subMode,
     int? power,
-    required this.rstSent,
-    required this.rstReceived,
-    this.gridsquare,
-    this.name,
-    this.comment,
-    this.sotaRef,
-    this.mySotaRef,
-    this.contestId,
-    this.srx,
-    this.stx,
-    this.srxString,
-    this.stxString,
-  })  : assert(frequency != null || band != null),
-        callsign = callsign.toUpperCase(),
-        timeOn = timeOn.toUtc(),
-        timeOff = (timeOff ?? timeOn).toUtc(),
-        frequency = frequency ?? band!.lowerBound,
-        frequencyRx =
-            frequencyRx ?? bandRx?.lowerBound ?? frequency ?? band!.lowerBound,
-        power = power?.isNegative == true ? null : power;
+    String? rstSent,
+    String? rstReceived,
+    String? gridsquare,
+    String? name,
+    String? comment,
+    String? sotaRef,
+    String? mySotaRef,
+    String? contestId,
+    int? srx,
+    int? stx,
+    String? srxString,
+    String? stxString,
+  }) : this._raw(
+          id: id ?? '',
+          ownerId: ownerId ?? '',
+          createdAt: createdAt,
+          callsign: callsign.toUpperCase(),
+          operatorCall: operatorCall ?? '',
+          stationCall: stationCall ?? '',
+          timeOn: timeOn.toUtc(),
+          timeOff: (timeOff ?? timeOn).toUtc(),
+          frequency: frequency ?? band!.lowerBound,
+          frequencyRx: frequencyRx ??
+              bandRx?.lowerBound ??
+              frequency ??
+              band!.lowerBound,
+          mode: mode,
+          subMode: subMode,
+          power: max(0, power ?? 0),
+          rstSent: rstSent ?? '',
+          rstReceived: rstReceived ?? '',
+          gridsquare: gridsquare ?? '',
+          name: name ?? '',
+          comment: comment ?? '',
+          sotaRef: sotaRef ?? '',
+          mySotaRef: mySotaRef ?? '',
+          contestId: contestId ?? '',
+          srx: max(0, srx ?? 0),
+          stx: max(0, stx ?? 0),
+          srxString: srxString ?? '',
+          stxString: stxString ?? '',
+        );
 
   bool get isSplit => frequency != frequencyRx || band != bandRx;
 
@@ -156,27 +180,27 @@ class LogEntry extends Equatable {
         if (subMode != null) 'SUBMODE': subMode!.name,
         'QSO_DATE': Adif.dateFormat.format(timeOn),
         'TIME_ON': Adif.timeFormat.format(timeOn),
-        if (operatorCall != null) 'OPERATOR': operatorCall!,
-        if (stationCall != null) 'STATION_CALLSIGN': stationCall!,
+        if (operatorCall.isNotEmpty) 'OPERATOR': operatorCall,
+        if (stationCall.isNotEmpty) 'STATION_CALLSIGN': stationCall,
         if (frequencyRx != frequency) 'FREQ_RX': '${frequencyRx / 1000000}',
         if (bandRx != band) 'BAND_RX': bandRx!.name,
         if (timeOff.compareTo(timeOn) != 0)
           'QSO_DATE_OFF': Adif.dateFormat.format(timeOff),
         if (timeOff.compareTo(timeOn) != 0)
           'TIME_OFF': Adif.timeFormat.format(timeOff),
-        if (rstSent?.isNotEmpty == true) 'RST_SENT': rstSent!,
-        if (rstReceived?.isNotEmpty == true) 'RST_RCVD': rstReceived!,
-        if (gridsquare?.isNotEmpty == true) 'GRIDSQUARE': gridsquare!,
-        if (power != null) 'TX_PWR': '$power',
-        if (name?.isNotEmpty == true) 'NAME': name!,
-        if (comment?.isNotEmpty == true) 'COMMENT': comment!,
-        if (sotaRef?.isNotEmpty == true) 'SOTA_REF': sotaRef!,
-        if (mySotaRef?.isNotEmpty == true) 'MY_SOTA_REF': mySotaRef!,
-        if (contestId != null) 'CONTEST_ID': contestId!,
-        if (srx != null) 'SRX': '$srx',
-        if (stx != null) 'STX': '$stx',
-        if (srxString != null) 'SRX_STRING': srxString!,
-        if (stxString != null) 'STX_STRING': stxString!,
+        if (rstSent.isNotEmpty == true) 'RST_SENT': rstSent,
+        if (rstReceived.isNotEmpty == true) 'RST_RCVD': rstReceived,
+        if (gridsquare.isNotEmpty == true) 'GRIDSQUARE': gridsquare,
+        if (power > 0) 'TX_PWR': '$power',
+        if (name.isNotEmpty == true) 'NAME': name,
+        if (comment.isNotEmpty == true) 'COMMENT': comment,
+        if (sotaRef.isNotEmpty == true) 'SOTA_REF': sotaRef,
+        if (mySotaRef.isNotEmpty == true) 'MY_SOTA_REF': mySotaRef,
+        if (contestId.isNotEmpty) 'CONTEST_ID': contestId,
+        if (srx > 0) 'SRX': '$srx',
+        if (stx > 0) 'STX': '$stx',
+        if (srxString.isNotEmpty) 'SRX_STRING': srxString,
+        if (stxString.isNotEmpty) 'STX_STRING': stxString,
       };
 
   factory LogEntry.fromAdiMap(
@@ -197,7 +221,7 @@ class LogEntry extends Equatable {
     return LogEntry(
       id: id,
       ownerId: ownerId,
-      createdAt: createdAt,
+      createdAt: createdAt?.toUtc(),
       callsign: adi['CALL']!.toUpperCase(),
       operatorCall: adi['OPERATOR'],
       stationCall: adi['STATION_CALLSIGN'],
@@ -234,7 +258,7 @@ class LogEntry extends Equatable {
         id: json['_id'],
         ownerId: json['owner'],
         createdAt: json['created_at'] != null
-            ? DateTime.parse(json['created_at'])
+            ? DateTime.parse(json['created_at']).toUtc()
             : null,
       );
 
@@ -266,36 +290,57 @@ class LogEntry extends Equatable {
     required this.stxString,
   });
 
-  LogEntry copyWithServerInfo({
-    required String? id,
-    required String? ownerId,
-    required DateTime? createdAt,
+  LogEntry copyWith({
+    String? id,
+    String? ownerId,
+    DateTime? createdAt,
+    String? callsign,
+    String? operatorCall,
+    String? stationCall,
+    DateTime? timeOn,
+    DateTime? timeOff,
+    int? frequency,
+    int? frequencyRx,
+    Mode? mode,
+    int? power,
+    String? rstSent,
+    String? rstReceived,
+    String? gridsquare,
+    String? name,
+    String? comment,
+    String? sotaRef,
+    String? mySotaRef,
+    String? contestId,
+    String? srxString,
+    String? stxString,
+    int? srx,
+    int? stx,
   }) =>
-      LogEntry._raw(
-        id: id,
-        ownerId: ownerId,
-        createdAt: createdAt?.toUtc(),
-        callsign: callsign,
-        operatorCall: operatorCall,
-        stationCall: stationCall,
-        timeOn: timeOn,
-        timeOff: timeOff,
-        frequency: frequency,
-        frequencyRx: frequencyRx,
-        mode: mode,
+      LogEntry(
+        id: id ?? this.id,
+        ownerId: ownerId ?? this.ownerId,
+        callsign: callsign ?? this.callsign,
+        operatorCall: operatorCall ?? this.operatorCall,
+        stationCall: stationCall ?? this.stationCall,
+        timeOn: timeOn ?? this.timeOn,
+        timeOff: timeOff ?? this.timeOff,
+        frequency: frequency ?? this.frequency,
+        frequencyRx: frequencyRx ?? this.frequencyRx,
+        mode: mode ?? this.mode,
+        power: power ?? this.power,
+        rstSent: rstSent ?? this.rstSent,
+        rstReceived: rstReceived ?? this.rstReceived,
+        gridsquare: gridsquare ?? this.gridsquare,
+        name: name ?? this.name,
+        comment: comment ?? this.comment,
+        sotaRef: sotaRef ?? this.sotaRef,
+        mySotaRef: mySotaRef ?? this.mySotaRef,
+        contestId: contestId ?? this.contestId,
+        srx: srx ?? this.srx,
+        stx: stx ?? this.stx,
+        srxString: srxString ?? this.srxString,
+        stxString: stxString ?? this.stxString,
+        createdAt: createdAt,
         subMode: subMode,
-        power: power,
-        rstSent: rstSent,
-        rstReceived: rstReceived,
-        gridsquare: gridsquare,
-        name: name,
-        comment: comment,
-        sotaRef: sotaRef,
-        mySotaRef: mySotaRef,
-        contestId: contestId,
-        srx: srx,
-        stx: stx,
-        srxString: srxString,
-        stxString: stxString,
       );
 }

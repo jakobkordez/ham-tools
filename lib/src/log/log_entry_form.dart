@@ -37,12 +37,14 @@ class LogEntryForm extends StatelessWidget {
                         previous.hasTimeOff != current.hasTimeOff ||
                         previous.split != current.split ||
                         previous.showContest != current.showContest ||
-                        previous.showComment != current.showComment,
+                        previous.showComment != current.showComment ||
+                        previous.showSota != current.showSota,
                     builder: (context, state) {
                       final hasTimeOff = state.hasTimeOff;
                       final split = state.split;
                       final showContest = state.showContest;
                       final showComment = state.showComment;
+                      final showSota = state.showSota;
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,6 +147,15 @@ class LogEntryForm extends StatelessWidget {
                               SizedBox(width: 100, child: _RstRecvInput()),
                             ],
                           ),
+                          if (showSota) ...[
+                            const SizedBox(height: 15),
+                            _Wrap(
+                              children: const [
+                                SizedBox(width: 150, child: _SotaRefInput()),
+                                SizedBox(width: 150, child: _MySotaRefInput()),
+                              ],
+                            ),
+                          ],
                           if (showContest) ...[
                             const SizedBox(height: 15),
                             Focus(
@@ -184,6 +195,7 @@ class LogEntryForm extends StatelessWidget {
                           const SizedBox(height: 25),
                           _Wrap(
                             children: [
+                              if (!showSota) const _ShowSotaButton(),
                               if (!showContest) const _ShowContestButton(),
                               if (!showComment) const _ShowCommentButton(),
                             ],

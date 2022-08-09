@@ -77,12 +77,12 @@ class DataSource extends DataTableSource {
         ],
       )),
       DataCell(Text(
-        e.name ?? '',
+        e.name,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         softWrap: true,
       )),
-      DataCell(Text(e.comment ?? '')),
+      DataCell(Text(e.comment)),
     ]);
   }
 

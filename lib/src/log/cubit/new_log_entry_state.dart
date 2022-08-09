@@ -24,6 +24,11 @@ class NewLogEntryState extends Equatable {
   final bool showComment;
   final String comment;
 
+  // SOTA
+  final bool showSota;
+  final SotaRefInput sotaRef;
+  final SotaRefInput mySotaRef;
+
   // Contest
   final bool showContest;
   // final String contest;
@@ -50,6 +55,8 @@ class NewLogEntryState extends Equatable {
     String? rstSent,
     String? rstRcvd,
     String? comment,
+    String? sotaRef,
+    String? mySotaRef,
     int? srx,
     int? stx,
     String? srxString,
@@ -83,6 +90,12 @@ class NewLogEntryState extends Equatable {
       rstRcvd: rstRcvd,
       showComment: comment?.isNotEmpty ?? false,
       comment: comment ?? '',
+      showSota: sotaRef?.isNotEmpty == true || mySotaRef?.isNotEmpty == true,
+      sotaRef:
+          sotaRef == null ? SotaRefInput.pure() : SotaRefInput.dirty(sotaRef),
+      mySotaRef: mySotaRef == null
+          ? SotaRefInput.pure()
+          : SotaRefInput.dirty(mySotaRef),
       showContest: srx != null ||
           stx != null ||
           srxString?.isNotEmpty == true ||
@@ -113,6 +126,9 @@ class NewLogEntryState extends Equatable {
     required this.rstRcvd,
     required this.showComment,
     required this.comment,
+    required this.showSota,
+    required this.sotaRef,
+    required this.mySotaRef,
     required this.showContest,
     required this.contestSrx,
     required this.contestStx,
@@ -137,6 +153,9 @@ class NewLogEntryState extends Equatable {
     String? rstRcvd,
     bool? showComment,
     String? comment,
+    bool? showSota,
+    SotaRefInput? sotaRef,
+    SotaRefInput? mySotaRef,
     bool? showContest,
     String? contestSrx,
     String? contestStx,
@@ -169,6 +188,9 @@ class NewLogEntryState extends Equatable {
       rstRcvd: rstRcvd ?? this.rstRcvd,
       showComment: showComment ?? this.showComment,
       comment: comment ?? this.comment,
+      showSota: showSota ?? this.showSota,
+      sotaRef: sotaRef ?? this.sotaRef,
+      mySotaRef: mySotaRef ?? this.mySotaRef,
       showContest: showContest ?? this.showContest,
       contestSrx: contestSrx ?? this.contestSrx,
       contestStx: contestStx ?? this.contestStx,
@@ -200,6 +222,9 @@ class NewLogEntryState extends Equatable {
         rstRcvd: rstRcvd,
         showComment: showComment,
         comment: comment,
+        showSota: showSota,
+        sotaRef: sotaRef,
+        mySotaRef: mySotaRef,
         showContest: showContest,
         contestSrx: contestSrx,
         contestStx: contestStx,
@@ -227,6 +252,9 @@ class NewLogEntryState extends Equatable {
         rstRcvd,
         showComment,
         comment,
+        showSota,
+        sotaRef,
+        mySotaRef,
         showContest,
         contestSrx,
         contestStx,
@@ -246,6 +274,8 @@ class NewLogEntryState extends Equatable {
         frequencyRx: NewLogEntryCubit.tryParseFreq(frequencyRx.value),
         power: int.tryParse(power),
         comment: comment.isNotEmpty ? comment : null,
+        sotaRef: sotaRef.value.isNotEmpty ? sotaRef.value : null,
+        mySotaRef: mySotaRef.value.isNotEmpty ? mySotaRef.value : null,
         srx: int.tryParse(contestSrx),
         stx: int.tryParse(contestStx),
         srxString: contestSrxString.isNotEmpty ? contestSrxString : null,

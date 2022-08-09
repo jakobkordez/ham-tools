@@ -119,9 +119,7 @@ class ServerRepository extends Repository {
   @override
   Future<LogEntry> addLogEntry(LogEntry entry) async {
     if (!isAuthenticated) {
-      localRepo.addLogEntry(entry.copyWithServerInfo(
-        id: null,
-        ownerId: null,
+      localRepo.addLogEntry(entry.copyWith(
         createdAt: DateTime.now().toUtc(),
       ));
       throw Exception('Not authenticated');
@@ -134,9 +132,7 @@ class ServerRepository extends Repository {
       );
     } catch (e) {
       debugPrint(e.toString());
-      localRepo.addLogEntry(entry.copyWithServerInfo(
-        id: null,
-        ownerId: null,
+      localRepo.addLogEntry(entry.copyWith(
         createdAt: DateTime.now().toUtc(),
       ));
       throw Exception('Failed to add log entry');

@@ -6,6 +6,7 @@ import '../bloc/log_bloc.dart';
 import '../models/callsign_input.dart';
 import '../models/date_input.dart';
 import '../models/frequency_input.dart';
+import '../models/sota_ref_input.dart';
 import '../models/time_input.dart';
 
 part 'new_log_entry_state.dart';
@@ -22,7 +23,8 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
                 subMode: last.subMode,
                 frequencyRx: last.frequencyRx,
                 power: last.power,
-                stx: last.stx != null ? last.stx! + 1 : null,
+                mySotaRef: last.mySotaRef,
+                stx: last.stx > 0 ? last.stx + 1 : null,
                 stxString: last.stxString,
               ));
 
@@ -35,7 +37,8 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
       subMode: e.subMode,
       frequencyRx: e.frequencyRx,
       power: e.power,
-      stx: e.stx != null ? e.stx! + 1 : null,
+      mySotaRef: e.mySotaRef,
+      stx: e.stx > 0 ? e.stx + 1 : null,
       stxString: e.stxString,
     ));
   }
@@ -148,6 +151,18 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
   void setRstRecv(String value) => emit(state.copyWith(rstRcvd: value));
 
   void setPower(String value) => emit(state.copyWith(power: value));
+
+  void setShowSota(bool value) => emit(state.copyWith(
+        showSota: value,
+        sotaRef: value ? null : SotaRefInput.pure(),
+        mySotaRef: value ? null : SotaRefInput.pure(),
+      ));
+
+  void setSotaRef(String value) =>
+      emit(state.copyWith(sotaRef: SotaRefInput.dirty(value)));
+
+  void setMySotaRef(String value) =>
+      emit(state.copyWith(mySotaRef: SotaRefInput.dirty(value)));
 
   void setShowContest(bool value) => emit(state.copyWith(
         showContest: value,
