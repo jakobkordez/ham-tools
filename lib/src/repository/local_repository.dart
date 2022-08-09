@@ -5,6 +5,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../models/log_entry.dart';
+import '../models/server/server_settings.dart';
 import 'repository.dart';
 
 class LocalRepository implements Repository {
@@ -42,9 +43,10 @@ class LocalRepository implements Repository {
     if (!(await _storage.ready)) throw Exception('Storage error');
 
     return ((_storage.getItem('qsos') as List?)
-            ?.cast<Map<String, dynamic>>()
-            .map((e) => e.map((key, value) => MapEntry(key, value.toString())))
-            .map((e) => LogEntry.fromAdiMap(e))
+            ?.map((e) => LogEntry.fromAdiMap((e as Map).cast()))
+            .where((e) =>
+                (after?.isBefore(e.timeOn) ?? true) &&
+                (before?.isAfter(e.timeOn) ?? true))
             .toList()
           ?..sort((a, b) => b.timeOn.compareTo(a.timeOn))) ??
         [];
@@ -57,5 +59,24 @@ class LocalRepository implements Repository {
     final last = (_storage.getItem('last_qso') as Map?)?.cast<String, String>();
     if (last == null) return null;
     return LogEntry.fromAdiMap(last);
+  }
+
+  Future<ServerSettings?> getServerSettings() async {
+    if (!(await _storage.ready)) throw Exception('Storage error');
+
+    final json = _storage.getItem('server_settings') as Map?;
+
+    if (json == null) return null;
+    return ServerSettings.fromJson(json.cast());
+  }
+
+  Future<void> setServerSettings(ServerSettings? settings) async {
+    if (!(await _storage.ready)) throw Exception('Storage error');
+
+    if (settings == null) {
+      await _storage.deleteItem('server_settings');
+    } else {
+      await _storage.setItem('server_settings', settings.toJson());
+    }
   }
 }

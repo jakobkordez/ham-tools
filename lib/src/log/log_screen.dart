@@ -8,7 +8,15 @@ class LogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Log Book')),
+        appBar: AppBar(
+          title: const Text('Log Book'),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.pushNamed(context, '/settings'),
+              icon: const Icon(Icons.settings),
+            ),
+          ],
+        ),
         body: ListView(
           padding: const EdgeInsets.all(15),
           children: [

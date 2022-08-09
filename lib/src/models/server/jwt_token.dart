@@ -11,7 +11,8 @@ class JwtToken {
     final parts = value.split('.');
     if (parts.length != 3) throw Exception('Invalid JWT token');
 
-    final payload = json.decode(utf8.decode(base64.decode(parts[1])));
+    final payload =
+        json.decode(utf8.decode(base64.decode(base64.normalize(parts[1]))));
     userId = payload['user_id'];
     iat = payload['iat'];
     exp = payload['exp'];

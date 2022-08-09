@@ -20,4 +20,13 @@ extension RoleUtil on Role {
         return 'user';
     }
   }
+
+  String get label {
+    switch (this) {
+      case Role.admin:
+        return 'Administrator';
+      case Role.user:
+        return 'User';
+    }
+  }
 }
