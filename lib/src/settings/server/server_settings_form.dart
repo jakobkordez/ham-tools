@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../models/server/role.dart';
-import '../repository/server_repository.dart';
+import '../../models/server/role.dart';
+import '../../repository/server_repository.dart';
+import '../settings_card.dart';
 import 'cubit/server_settings_cubit.dart';
 
 class ServerSettingsForm extends StatelessWidget {
   const ServerSettingsForm({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => BlocProvider(
-        create: (context) =>
-            ServerSettingsCubit(serverRepo: context.read<ServerRepository>()),
-        child: const _ServerSettingsForm(),
+  Widget build(BuildContext context) => SettingsCard(
+        title: const Text('Server'),
+        child: BlocProvider(
+          create: (context) =>
+              ServerSettingsCubit(serverRepo: context.read<ServerRepository>()),
+          child: const _ServerSettingsForm(),
+        ),
       );
 }
 

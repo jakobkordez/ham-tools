@@ -7,7 +7,9 @@ abstract class LogEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LogFetched extends LogEvent {}
+class LogFetched extends LogEvent {
+  const LogFetched();
+}
 
 class LogEntryAdded extends LogEvent {
   final LogEntry entry;

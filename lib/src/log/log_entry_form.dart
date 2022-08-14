@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formz/formz.dart';
 
+import '../components/field_controller.dart';
 import '../models/log_entry.dart';
 import '../repository/repository.dart';
 import '../utils/text_input_formatters.dart';
@@ -28,188 +29,196 @@ class LogEntryForm extends StatelessWidget {
                 child: Center(child: CircularProgressIndicator()),
               )
             : BlocProvider(
-                create: (context) =>
-                    NewLogEntryCubit(context.read<LogBloc>(), snap.data),
-                child: Padding(
-                  padding: const EdgeInsets.all(25),
-                  child: BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
-                    buildWhen: (previous, current) =>
-                        previous.hasTimeOff != current.hasTimeOff ||
-                        previous.split != current.split ||
-                        previous.showContest != current.showContest ||
-                        previous.showComment != current.showComment ||
-                        previous.showSota != current.showSota,
-                    builder: (context, state) {
-                      final hasTimeOff = state.hasTimeOff;
-                      final split = state.split;
-                      final showContest = state.showContest;
-                      final showComment = state.showComment;
-                      final showSota = state.showSota;
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _Wrap(
-                            children: const [
-                              SizedBox(width: 120, child: _DateOnInput()),
-                              SizedBox(width: 80, child: _TimeOnInput()),
-                              _TimeOnUpdater(),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              Checkbox(
-                                value: hasTimeOff,
-                                onChanged: context
-                                    .read<NewLogEntryCubit>()
-                                    .setHasTimeOff,
-                              ),
-                              const SizedBox(width: 5),
-                              const Text('Seperate time off'),
-                            ],
-                          ),
-                          if (hasTimeOff)
-                            _Wrap(
-                              children: const [
-                                SizedBox(width: 120, child: _DateOffInput()),
-                                SizedBox(width: 80, child: _TimeOffInput()),
-                                _TimeOffUpdater(),
-                              ],
-                            ),
-                          const SizedBox(height: 10),
-                          _Hide(
-                            // TODO Remove
-                            initiallyHidden: kDebugMode,
-                            title: const Text('Frequency'),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                _Wrap(
-                                  children: [
-                                    const SizedBox(
-                                        width: 120, child: _BandInput()),
-                                    const SizedBox(
-                                      width: 200,
-                                      child: _FrequencyInput(),
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: const [
-                                        _SplitCheckbox(),
-                                        SizedBox(width: 5),
-                                        Text('Split'),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                split
-                                    ? Padding(
-                                        padding: const EdgeInsets.only(top: 8),
-                                        child: _Wrap(
-                                          children: const [
-                                            SizedBox(
-                                              width: 120,
-                                              child: _BandRxInput(),
-                                            ),
-                                            SizedBox(
-                                              width: 200,
-                                              child: _FrequencyRxInput(),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    : const SizedBox.shrink(),
-                              ],
-                            ),
-                          ),
-                          _Hide(
-                            // TODO Remove
-                            initiallyHidden: kDebugMode,
-                            title: const Text('Mode & Power'),
-                            child: _Wrap(
-                              children: const [
-                                SizedBox(width: 100, child: _ModeInput()),
-                                SizedBox(width: 150, child: _SubModeInput()),
-                                SizedBox(width: 100, child: _PowerInput()),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          _Wrap(
-                            spacing: 20,
-                            children: const [
-                              SizedBox(width: 200, child: _CallsignInput()),
-                              SizedBox(width: 100, child: _RstSentInput()),
-                              SizedBox(width: 100, child: _RstRecvInput()),
-                            ],
-                          ),
-                          if (showSota) ...[
-                            const SizedBox(height: 15),
-                            _Wrap(
-                              children: const [
-                                SizedBox(width: 150, child: _SotaRefInput()),
-                                SizedBox(width: 150, child: _MySotaRefInput()),
-                              ],
-                            ),
-                          ],
-                          if (showContest) ...[
-                            const SizedBox(height: 15),
-                            Focus(
-                              descendantsAreFocusable: false,
-                              skipTraversal: true,
-                              child: _Divider(
-                                icon: const Icon(Icons.close),
-                                onPressed: () => context
-                                    .read<NewLogEntryCubit>()
-                                    .setShowContest(false),
-                                label: const Text('Contest'),
-                              ),
-                            ),
-                            _Wrap(
-                              children: const [
-                                SizedBox(
-                                  width: 150,
-                                  child: _ContestStxStringInput(),
-                                ),
-                                SizedBox(width: 150, child: _ContestStxInput()),
-                              ],
-                            ),
-                            _Wrap(
-                              children: const [
-                                SizedBox(
-                                  width: 150,
-                                  child: _ContestSrxStringInput(),
-                                ),
-                                SizedBox(width: 150, child: _ContestSrxInput()),
-                              ],
-                            ),
-                          ],
-                          if (showComment) ...[
-                            const SizedBox(height: 15),
-                            const _CommentInput(),
-                          ],
-                          const SizedBox(height: 25),
-                          _Wrap(
-                            children: [
-                              if (!showSota) const _ShowSotaButton(),
-                              if (!showContest) const _ShowContestButton(),
-                              if (!showComment) const _ShowCommentButton(),
-                            ],
-                          ),
-                          const Align(
-                            alignment: Alignment.centerRight,
-                            child: _SubmitButton(),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                create: (context) => NewLogEntryCubit(
+                  context.read<LogBloc>(),
+                  snap.data,
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(25),
+                  child: _LogEntryForm(),
                 ),
               ),
+      );
+}
+
+class _LogEntryForm extends StatelessWidget {
+  const _LogEntryForm({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+        buildWhen: (previous, current) =>
+            previous.hasTimeOff != current.hasTimeOff ||
+            previous.split != current.split ||
+            previous.showContest != current.showContest ||
+            previous.showComment != current.showComment ||
+            previous.showSota != current.showSota ||
+            previous.mode != current.mode,
+        builder: (context, state) {
+          final hasTimeOff = state.hasTimeOff;
+          final split = state.split;
+          final showContest = state.showContest;
+          final showComment = state.showComment;
+          final showSota = state.showSota;
+          final hasSubMode = state.mode.subModes.isNotEmpty;
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _Wrap(
+                children: const [
+                  SizedBox(width: 120, child: _DateOnInput()),
+                  SizedBox(width: 80, child: _TimeOnInput()),
+                  _TimeOnUpdater(),
+                ],
+              ),
+              const SizedBox(height: 5),
+              Row(
+                children: [
+                  Checkbox(
+                    value: hasTimeOff,
+                    onChanged: context.read<NewLogEntryCubit>().setHasTimeOff,
+                  ),
+                  const SizedBox(width: 5),
+                  const Text('Seperate time off'),
+                ],
+              ),
+              if (hasTimeOff)
+                _Wrap(
+                  children: const [
+                    SizedBox(width: 120, child: _DateOffInput()),
+                    SizedBox(width: 80, child: _TimeOffInput()),
+                    _TimeOffUpdater(),
+                  ],
+                ),
+              const SizedBox(height: 10),
+              _Hide(
+                // TODO Remove
+                initiallyHidden: kDebugMode,
+                title: const Text('Frequency'),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _Wrap(
+                      crossAxisAlignment: WrapCrossAlignment.end,
+                      children: [
+                        const SizedBox(width: 120, child: _BandInput()),
+                        const SizedBox(
+                          width: 200,
+                          child: _FrequencyInput(),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: const [
+                            _SplitCheckbox(),
+                            SizedBox(width: 5),
+                            Text('Split'),
+                          ],
+                        ),
+                      ],
+                    ),
+                    split
+                        ? Padding(
+                            padding: const EdgeInsets.only(top: 8),
+                            child: _Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.end,
+                              children: const [
+                                SizedBox(
+                                  width: 120,
+                                  child: _BandRxInput(),
+                                ),
+                                SizedBox(
+                                  width: 200,
+                                  child: _FrequencyRxInput(),
+                                ),
+                              ],
+                            ),
+                          )
+                        : const SizedBox.shrink(),
+                  ],
+                ),
+              ),
+              _Hide(
+                // TODO Remove
+                initiallyHidden: kDebugMode,
+                title: const Text('Mode & Power'),
+                child: _Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.end,
+                  children: [
+                    const SizedBox(width: 100, child: _ModeInput()),
+                    if (hasSubMode)
+                      const SizedBox(width: 150, child: _SubModeInput()),
+                    const SizedBox(width: 100, child: _PowerInput()),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              _Wrap(
+                children: const [
+                  SizedBox(width: 200, child: _CallsignInput()),
+                  SizedBox(width: 100, child: _RstSentInput()),
+                  SizedBox(width: 100, child: _RstRecvInput()),
+                ],
+              ),
+              if (showSota) ...[
+                const SizedBox(height: 20),
+                _Wrap(
+                  children: const [
+                    SizedBox(width: 150, child: _SotaRefInput()),
+                    SizedBox(width: 150, child: _MySotaRefInput()),
+                  ],
+                ),
+              ],
+              if (showContest) ...[
+                const SizedBox(height: 20),
+                _Wrap(
+                  children: const [
+                    SizedBox(
+                      width: 150,
+                      child: _ContestStxStringInput(),
+                    ),
+                    SizedBox(width: 150, child: _ContestStxInput()),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                _Wrap(
+                  children: const [
+                    SizedBox(
+                      width: 150,
+                      child: _ContestSrxStringInput(),
+                    ),
+                    SizedBox(width: 150, child: _ContestSrxInput()),
+                  ],
+                ),
+              ],
+              if (showComment) ...[
+                const SizedBox(height: 20),
+                const _CommentInput(),
+              ],
+              const SizedBox(height: 25),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Expanded(
+                    child: _Wrap(
+                      children: const [
+                        _ShowSotaButton(),
+                        _ShowContestButton(),
+                        _ShowCommentButton(),
+                      ],
+                    ),
+                  ),
+                  const Align(
+                    alignment: Alignment.centerRight,
+                    child: _SubmitButton(),
+                  ),
+                ],
+              )
+            ],
+          );
+        },
       );
 }
 

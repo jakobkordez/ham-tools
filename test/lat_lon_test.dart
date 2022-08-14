@@ -22,19 +22,33 @@ void main() {
     expect(res.angle, 180);
   });
 
-  test('fromGridSquare 4', () {
-    final res = LatLon.parseGridSquare('JN76');
+  group('fromGridSquare', () {
+    test('2', () {
+      final res = LatLon.parseGridSquare('JN');
 
-    expect(res, isNotNull);
-    expect(res!.lat, 46);
-    expect(res.lon, 14);
-  });
+      expect(res.lat, 40);
+      expect(res.lon, 0);
+    });
 
-  test('fromGridSquare 6', () {
-    final res = LatLon.parseGridSquare('JN76db');
+    test('4', () {
+      final res = LatLon.parseGridSquare('JN76');
 
-    expect(res, isNotNull);
-    expect(res!.lat, closeTo(46.042, 0.001));
-    expect(res.lon, closeTo(14.25, 0.001));
+      expect(res.lat, 46);
+      expect(res.lon, 14);
+    });
+
+    test('6', () {
+      final res = LatLon.parseGridSquare('JN76db');
+
+      expect(res.lat, closeTo(46.042, 0.001));
+      expect(res.lon, closeTo(14.25, 0.001));
+    });
+
+    test('8', () {
+      final res = LatLon.parseGridSquare('JN76db65');
+
+      expect(res.lat, closeTo(46.0625, 0.0001));
+      expect(res.lon, closeTo(14.3, 0.0001));
+    });
   });
 }

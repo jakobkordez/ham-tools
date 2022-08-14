@@ -24,3 +24,11 @@ Suggestions are welcome!
   - [ ] QTH
 - [x] ADI to QSO stats (Band & Mode)
 - [ ] ADI to Cabrillo converter (In Progress)
+
+# How to build
+
+Before building some files need to be generated
+
+```bash
+flutter pub run build_runner build
+```

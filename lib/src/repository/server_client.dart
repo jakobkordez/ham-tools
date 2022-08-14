@@ -2,13 +2,16 @@ import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 
 import '../models/log_entry.dart';
+import '../models/profile.dart';
 import '../models/server/dto/create_log_entry_dto.dart';
+import '../models/server/dto/create_profile_dto.dart';
 import '../models/server/dto/create_user_dto.dart';
 import '../models/server/dto/login_dto.dart';
 import '../models/server/dto/login_response.dart';
 import '../models/server/dto/refresh_response.dart';
 import '../models/server/dto/refresh_token_dto.dart';
 import '../models/server/dto/update_log_entry.dart';
+import '../models/server/dto/update_profile_dto.dart';
 import '../models/server/dto/update_user_dto.dart';
 import '../models/server/user.dart';
 
@@ -105,6 +108,35 @@ abstract class ServerClient {
 
   @DELETE('/log/{id}')
   Future<void> deleteLogEntry(
+    @Header('Authorization') String token,
+    @Path('id') String id,
+  );
+
+  // Profiles
+  @POST('/profiles')
+  Future<Profile> createProfile(
+    @Header('Authorization') String token,
+    @Body() CreateProfileDto profile,
+  );
+
+  @GET('/profiles')
+  Future<List<Profile>> getProfiles(@Header('Authorization') String token);
+
+  @GET('/profiles/{id}')
+  Future<Profile> getProfile(
+    @Header('Authorization') String token,
+    @Path('id') String id,
+  );
+
+  @PATCH('/profiles/{id}')
+  Future<Profile> updateProfile(
+    @Header('Authorization') String token,
+    @Path('id') String id,
+    @Body() UpdateProfileDto profile,
+  );
+
+  @DELETE('/profiles/{id}')
+  Future<void> deleteProfile(
     @Header('Authorization') String token,
     @Path('id') String id,
   );

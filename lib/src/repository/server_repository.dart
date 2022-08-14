@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
+import '../models/profile.dart';
+import '../models/server/dto/create_profile_dto.dart';
 import '../models/server/jwt_token.dart';
 import '../models/log_entry.dart';
 import '../models/server/dto/create_log_entry_dto.dart';
@@ -90,14 +92,19 @@ class ServerRepository extends Repository {
   Future<void> logout() async {
     if (!isAuthenticated) return;
 
-    await _client!.logout(
-      await _getAccessToken(),
-      RefreshTokenDto(_refreshToken!.value),
-    );
-    localRepo.setServerSettings(null);
+    try {
+      await _client!.logout(
+        await _getAccessToken(),
+        RefreshTokenDto(_refreshToken!.value),
+      );
+      localRepo.setServerSettings(null);
 
-    _refreshToken = null;
-    _accessToken = null;
+      _refreshToken = null;
+      _accessToken = null;
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception('Logout failed');
+    }
   }
 
   Future<String> _getAccessToken([bool refresh = false]) async {
@@ -160,6 +167,42 @@ class ServerRepository extends Repository {
     } catch (e) {
       debugPrint(e.toString());
       throw Exception('Failed to get log entries');
+    }
+  }
+
+  @override
+  Future<void> addProfile(CreateProfileDto profile) async {
+    if (!isAuthenticated) throw Exception('Not authenticated');
+
+    try {
+      await _client!.createProfile(await _getAccessToken(), profile);
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception('Failed to create profile');
+    }
+  }
+
+  @override
+  Future<void> deleteProfile(String id) async {
+    if (!isAuthenticated) throw Exception('Not authenticated');
+
+    try {
+      await _client!.deleteProfile(await _getAccessToken(), id);
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception('Failed to delete profile');
+    }
+  }
+
+  @override
+  Future<List<Profile>> getProfiles() async {
+    if (!isAuthenticated) throw Exception('Not authenticated');
+
+    try {
+      return await _client!.getProfiles(await _getAccessToken());
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception('Failed to get profiles');
     }
   }
 }

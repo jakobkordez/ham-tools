@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'server_settings_form.dart';
+import 'profiles/profiles_settings_form.dart';
+import 'server/server_settings_form.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -11,46 +12,9 @@ class SettingsScreen extends StatelessWidget {
         body: ListView(
           padding: const EdgeInsets.all(20),
           children: const [
-            _SettingsCard(
-              title: Text('Server'),
-              body: ServerSettingsForm(),
-            ),
+            ServerSettingsForm(),
+            ProfilesSettingsForm(),
           ],
-        ),
-      );
-}
-
-class _SettingsCard extends StatelessWidget {
-  final Widget title;
-  final Widget body;
-
-  const _SettingsCard({
-    super.key,
-    required this.title,
-    required this.body,
-  });
-
-  @override
-  Widget build(BuildContext context) => Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 800),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  DefaultTextStyle(
-                    style: Theme.of(context).textTheme.titleLarge!,
-                    child: title,
-                  ),
-                  const Divider(),
-                  body,
-                ],
-              ),
-            ),
-          ),
         ),
       );
 }

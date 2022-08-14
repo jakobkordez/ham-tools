@@ -16,8 +16,7 @@ class LogDemo extends StatelessWidget {
             ? RepositoryProvider<Repository>.value(
                 value: snapshot.data!,
                 child: BlocProvider(
-                  create: (context) =>
-                      LogBloc(context.read<Repository>())..add(LogFetched()),
+                  create: (context) => LogBloc(context.read<Repository>()),
                   child: const LogScreen(),
                 ),
               )

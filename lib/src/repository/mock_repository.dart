@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import '../models/log_entry.dart';
+import '../models/profile.dart';
+import '../models/server/dto/create_profile_dto.dart';
 import 'repository.dart';
 
 class MockRepository implements Repository {
@@ -51,4 +53,44 @@ class MockRepository implements Repository {
     if (_log.isEmpty) return null;
     return _log.first;
   }
+
+  final List<Profile> _profiles = [
+    const Profile(
+      profileName: 'Default',
+      callsign: 'S52KJ',
+      name: 'Jakob K',
+      dxcc: 499,
+      cqZone: 15,
+      ituZone: 28,
+      gridsquare: 'JN76',
+    ),
+  ];
+
+  @override
+  Future<void> addProfile(CreateProfileDto profile) async {
+    final lastId =
+        _profiles.isEmpty ? 0 : (int.tryParse(_profiles.last.id ?? '') ?? 0);
+
+    _profiles.add(Profile(
+      id: '${lastId + 1}',
+      profileName: profile.profileName,
+      callsign: profile.callsign,
+      dxcc: profile.dxcc,
+      cqZone: profile.cqZone,
+      ituZone: profile.ituZone,
+      name: profile.name,
+      gridsquare: profile.gridsquare,
+      qth: profile.qth,
+      state: profile.state,
+      country: profile.country,
+    ));
+  }
+
+  @override
+  Future<void> deleteProfile(String id) async {
+    _profiles.removeWhere((p) => p.id == id);
+  }
+
+  @override
+  Future<List<Profile>> getProfiles() => Future(() => _profiles);
 }

@@ -17,7 +17,7 @@ class AzimuthalMapScreen extends StatefulWidget {
 
 class _AzimuthalMapScreenState extends State<AzimuthalMapScreen> {
   final _controller = TextEditingController(text: 'JN76');
-  LatLon? center = LatLon.parseGridSquare('JN76')!;
+  LatLon? center = LatLon.parseGridSquare('JN76');
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -84,7 +84,7 @@ class _AzimuthalMapScreenState extends State<AzimuthalMapScreen> {
       );
 
   void submit() {
-    final loc = LatLon.parseGridSquare(_controller.text);
+    final loc = LatLon.tryParseGridSquare(_controller.text);
     if (loc != center) {
       setState(() {
         center = loc;

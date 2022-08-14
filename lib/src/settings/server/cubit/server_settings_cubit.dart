@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../models/server/user.dart';
-import '../../repository/server_repository.dart';
+import '../../../models/server/user.dart';
+import '../../../repository/server_repository.dart';
 
 part 'server_settings_state.dart';
 

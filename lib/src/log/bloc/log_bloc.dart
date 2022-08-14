@@ -22,7 +22,9 @@ class LogBloc extends Bloc<LogEvent, LogState> {
     on<LogEntryAdded>((event, emit) async {
       await repository.addLogEntry(event.entry);
 
-      add(LogFetched());
+      add(const LogFetched());
     });
+
+    add(const LogFetched());
   }
 }

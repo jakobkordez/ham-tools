@@ -242,7 +242,6 @@ class _BandInput extends StatelessWidget {
         builder: (context, state) => DropdownButtonFormField<Band>(
           decoration: const InputDecoration(
             labelText: 'Band',
-            border: OutlineInputBorder(),
           ),
           dropdownColor: Colors.white,
           value: state.band,
@@ -303,7 +302,6 @@ class _BandRxInput extends StatelessWidget {
         builder: (context, state) => DropdownButtonFormField<Band>(
           decoration: const InputDecoration(
             labelText: 'Receive Band',
-            border: OutlineInputBorder(),
           ),
           dropdownColor: Colors.white,
           value: state.bandRx,
@@ -354,7 +352,6 @@ class _ModeInput extends StatelessWidget {
         builder: (context, state) => DropdownButtonFormField<Mode>(
           decoration: const InputDecoration(
             labelText: 'Mode',
-            border: OutlineInputBorder(),
           ),
           dropdownColor: Colors.white,
           value: state.mode,
@@ -382,12 +379,13 @@ class _SubModeInput extends StatelessWidget {
             : DropdownButtonFormField<SubMode>(
                 decoration: InputDecoration(
                   labelText: 'Submode',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    onPressed: () =>
-                        context.read<NewLogEntryCubit>().setSubMode(null),
-                    icon: const Icon(Icons.clear),
-                  ),
+                  suffixIcon: state.subMode != null
+                      ? IconButton(
+                          onPressed: () =>
+                              context.read<NewLogEntryCubit>().setSubMode(null),
+                          icon: const Icon(Icons.clear),
+                        )
+                      : null,
                 ),
                 dropdownColor: Colors.white,
                 value: state.subMode,
@@ -468,29 +466,6 @@ class _RstSentInput extends StatelessWidget {
       );
 }
 
-class _RstSentButton extends StatelessWidget {
-  const _RstSentButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) =>
-      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
-        buildWhen: (previous, current) => previous.mode != current.mode,
-        builder: (context, state) {
-          final def = state.mode.defaultReport;
-          if (def == null) return const SizedBox.shrink();
-
-          return Focus(
-            descendantsAreFocusable: false,
-            skipTraversal: true,
-            child: ElevatedButton(
-              onPressed: () => context.read<NewLogEntryCubit>().setRstSent(def),
-              child: Text(def),
-            ),
-          );
-        },
-      );
-}
-
 class _RstRecvInput extends StatelessWidget {
   const _RstRecvInput({Key? key}) : super(key: key);
 
@@ -525,36 +500,13 @@ class _RstRecvInput extends StatelessWidget {
       );
 }
 
-class _RstRecvButton extends StatelessWidget {
-  const _RstRecvButton({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) =>
-      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
-        buildWhen: (previous, current) => previous.mode != current.mode,
-        builder: (context, state) {
-          final def = state.mode.defaultReport;
-          if (def == null) return const SizedBox.shrink();
-
-          return Focus(
-            descendantsAreFocusable: false,
-            skipTraversal: true,
-            child: ElevatedButton(
-              onPressed: () => context.read<NewLogEntryCubit>().setRstRecv(def),
-              child: Text(def),
-            ),
-          );
-        },
-      );
-}
-
-class _QthInput extends StatelessWidget {
-  const _QthInput({Key? key}) : super(key: key);
+class _GridsquareInput extends StatelessWidget {
+  const _GridsquareInput({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => TextFormField(
         decoration: const InputDecoration(
-          labelText: 'QTH',
+          labelText: 'Grid',
         ),
       );
 }
@@ -591,9 +543,9 @@ class _ShowCommentButton extends StatelessWidget {
   const _ShowCommentButton({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => TextButton.icon(
-        onPressed: () => context.read<NewLogEntryCubit>().setShowComment(true),
-        icon: const Icon(Icons.add),
+  Widget build(BuildContext context) => _ShowButton(
+        getValue: (state) => state.showComment,
+        setter: context.read<NewLogEntryCubit>().setShowComment,
         label: const Text('Comment'),
       );
 }
@@ -602,9 +554,9 @@ class _ShowSotaButton extends StatelessWidget {
   const _ShowSotaButton({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => TextButton.icon(
-        onPressed: () => context.read<NewLogEntryCubit>().setShowSota(true),
-        icon: const Icon(Icons.add),
+  Widget build(BuildContext context) => _ShowButton(
+        getValue: (state) => state.showSota,
+        setter: context.read<NewLogEntryCubit>().setShowSota,
         label: const Text('SOTA'),
       );
 }
@@ -647,9 +599,9 @@ class _ShowContestButton extends StatelessWidget {
   const _ShowContestButton({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => TextButton.icon(
-        onPressed: () => context.read<NewLogEntryCubit>().setShowContest(true),
-        icon: const Icon(Icons.add),
+  Widget build(BuildContext context) => _ShowButton(
+        getValue: (state) => state.showContest,
+        setter: context.read<NewLogEntryCubit>().setShowContest,
         label: const Text('Contest'),
       );
 }
@@ -732,45 +684,32 @@ class _SubmitButton extends StatelessWidget {
       );
 }
 
-class _FieldUpdater extends StatefulWidget {
-  final String Function(NewLogEntryState state) getValue;
-  final Widget Function(BuildContext context, TextEditingController controller)
-      builder;
+class _ShowButton extends StatelessWidget {
+  final Widget label;
+  final bool Function(NewLogEntryState state) getValue;
+  final void Function(bool value) setter;
 
-  const _FieldUpdater({
+  const _ShowButton({
+    super.key,
+    required this.label,
     required this.getValue,
-    required this.builder,
+    required this.setter,
   });
 
   @override
-  State<_FieldUpdater> createState() => _FieldUpdaterState();
-}
-
-class _FieldUpdaterState extends State<_FieldUpdater> {
-  final _controller = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.text = widget.getValue(context.read<NewLogEntryCubit>().state);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) =>
-      BlocListener<NewLogEntryCubit, NewLogEntryState>(
-        listenWhen: (p, c) => widget.getValue(p) != widget.getValue(c),
-        listener: (context, state) {
-          final v = widget.getValue(state);
-          if (_controller.text != v) {
-            _controller.text = v;
-          }
+      BlocBuilder<NewLogEntryCubit, NewLogEntryState>(
+        builder: (context, state) {
+          final value = getValue(state);
+
+          return TextButton.icon(
+            onPressed: () => setter(!value),
+            icon: value ? const Icon(Icons.remove) : const Icon(Icons.add),
+            label: label,
+            style: value ? TextButton.styleFrom(primary: Colors.grey) : null,
+          );
         },
-        child: widget.builder(context, _controller),
       );
 }
+
+typedef _FieldUpdater = FieldController<NewLogEntryCubit, NewLogEntryState>;

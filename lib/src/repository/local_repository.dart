@@ -5,6 +5,8 @@ import 'package:localstorage/localstorage.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../models/log_entry.dart';
+import '../models/profile.dart';
+import '../models/server/dto/create_profile_dto.dart';
 import '../models/server/server_settings.dart';
 import 'repository.dart';
 
@@ -78,5 +80,61 @@ class LocalRepository implements Repository {
     } else {
       await _storage.setItem('server_settings', settings.toJson());
     }
+  }
+
+  @override
+  Future<void> addProfile(CreateProfileDto profile) async {
+    if (!(await _storage.ready)) throw Exception('Storage error');
+
+    final profiles = (_storage.getItem('profiles') as List?)
+            ?.map((e) => Profile.fromJson(e))
+            .toList() ??
+        [];
+
+    final lastId =
+        profiles.isEmpty ? 0 : (int.tryParse(profiles.last.id ?? '') ?? 0);
+
+    profiles.add(Profile(
+      id: '${lastId + 1}',
+      profileName: profile.profileName,
+      callsign: profile.callsign,
+      dxcc: profile.dxcc,
+      cqZone: profile.cqZone,
+      ituZone: profile.ituZone,
+      name: profile.name,
+      gridsquare: profile.gridsquare,
+      qth: profile.qth,
+      state: profile.state,
+      country: profile.country,
+    ));
+
+    await _storage.setItem(
+      'profiles',
+      ((_storage.getItem('profiles') as List?) ?? [])..add(profile.toJson()),
+    );
+  }
+
+  @override
+  Future<void> deleteProfile(String id) async {
+    if (!(await _storage.ready)) throw Exception('Storage error');
+
+    final profiles = (_storage.getItem('profiles') as List?)
+            ?.map((e) => Profile.fromJson(e))
+            .toList() ??
+        [];
+
+    profiles.removeWhere((e) => e.id == id);
+
+    await _storage.setItem('profiles', profiles);
+  }
+
+  @override
+  Future<List<Profile>> getProfiles() async {
+    if (!(await _storage.ready)) throw Exception('Storage error');
+
+    return (_storage.getItem('profiles') as List?)
+            ?.map((e) => Profile.fromJson((e)))
+            .toList() ??
+        [];
   }
 }
