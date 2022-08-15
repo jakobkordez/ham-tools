@@ -17,10 +17,9 @@ class LogScreen extends StatelessWidget {
             ),
           ],
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(15),
-          children: [
-            Card(
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final newEntry = Card(
               clipBehavior: Clip.antiAlias,
               elevation: 3,
               child: Column(
@@ -40,10 +39,43 @@ class LogScreen extends StatelessWidget {
                   const LogEntryForm(),
                 ],
               ),
-            ),
-            const SizedBox(height: 15),
-            const LogTable(),
-          ],
+            );
+
+            if (constraints.maxWidth < 1000) {
+              return ListView(
+                padding: const EdgeInsets.all(15),
+                children: [
+                  newEntry,
+                  const SizedBox(height: 15),
+                  const LogTable(),
+                ],
+              );
+            }
+
+            return Padding(
+              padding: const EdgeInsets.all(15),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: SingleChildScrollView(
+                      primary: false,
+                      child: newEntry,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  const Expanded(
+                    flex: 2,
+                    child: SingleChildScrollView(
+                      primary: false,
+                      child: LogTable(),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       );
 }

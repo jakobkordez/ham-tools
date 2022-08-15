@@ -243,6 +243,7 @@ class _BandInput extends StatelessWidget {
           decoration: const InputDecoration(
             labelText: 'Band',
           ),
+          isExpanded: true,
           dropdownColor: Colors.white,
           value: state.band,
           onChanged: context.read<NewLogEntryCubit>().setBand,
