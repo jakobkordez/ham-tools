@@ -71,6 +71,16 @@ class LogEntry extends Equatable {
 
   // TODO Contest Fields: CHECK, CLASS, PRECEDENCE
 
+  // MY_? fields
+  final String myCity;
+  final String myCountry;
+  final int myCqZone;
+  final int myDxcc;
+  final String myGridsquare;
+  final int myItuZone;
+  final String myName;
+  final String myState;
+
   LogEntry({
     String? id,
     String? ownerId,
@@ -99,6 +109,14 @@ class LogEntry extends Equatable {
     int? stx,
     String? srxString,
     String? stxString,
+    String? myCity,
+    String? myCountry,
+    int? myCqZone,
+    int? myDxcc,
+    String? myGridsquare,
+    int? myItuZone,
+    String? myName,
+    String? myState,
   }) : this._raw(
           id: id ?? '',
           ownerId: ownerId ?? '',
@@ -128,6 +146,14 @@ class LogEntry extends Equatable {
           stx: max(0, stx ?? 0),
           srxString: srxString ?? '',
           stxString: stxString ?? '',
+          myCity: myCity ?? '',
+          myCountry: myCountry ?? '',
+          myCqZone: myCqZone ?? -1,
+          myDxcc: myDxcc ?? -1,
+          myGridsquare: myGridsquare ?? '',
+          myItuZone: myItuZone ?? -1,
+          myName: myName ?? '',
+          myState: myState ?? '',
         );
 
   bool get isSplit => frequency != frequencyRx || band != bandRx;
@@ -170,6 +196,14 @@ class LogEntry extends Equatable {
         stx,
         srxString,
         stxString,
+        myCity,
+        myCountry,
+        myCqZone,
+        myDxcc,
+        myGridsquare,
+        myItuZone,
+        myName,
+        myState,
       ];
 
   Map<String, String> toAdiMap() => {
@@ -201,6 +235,14 @@ class LogEntry extends Equatable {
         if (stx > 0) 'STX': '$stx',
         if (srxString.isNotEmpty) 'SRX_STRING': srxString,
         if (stxString.isNotEmpty) 'STX_STRING': stxString,
+        if (myCity.isNotEmpty) 'MY_CITY': myCity,
+        if (myCountry.isNotEmpty) 'MY_COUNTRY': myCountry,
+        if (myCqZone > 0) 'MY_CQ_ZONE': '$myCqZone',
+        if (myDxcc >= 0) 'MY_DXCC': '$myDxcc',
+        if (myGridsquare.isNotEmpty) 'MY_GRIDSQUARE': myGridsquare,
+        if (myItuZone > 0) 'MY_ITU_ZONE': '$myItuZone',
+        if (myName.isNotEmpty) 'MY_NAME': myName,
+        if (myState.isNotEmpty) 'MY_STATE': myState,
       };
 
   factory LogEntry.fromAdiMap(
@@ -250,6 +292,16 @@ class LogEntry extends Equatable {
       stx: adi['STX'] != null ? int.parse(adi['STX']!) : null,
       srxString: adi['SRX_STRING'],
       stxString: adi['STX_STRING'],
+      myCity: adi['MY_CITY'],
+      myCountry: adi['MY_COUNTRY'],
+      myCqZone:
+          adi['MY_CQ_ZONE'] != null ? int.parse(adi['MY_CQ_ZONE']!) : null,
+      myDxcc: adi['MY_DXCC'] != null ? int.parse(adi['MY_DXCC']!) : null,
+      myGridsquare: adi['MY_GRIDSQUARE'],
+      myItuZone:
+          adi['MY_ITU_ZONE'] != null ? int.parse(adi['MY_ITU_ZONE']!) : null,
+      myName: adi['MY_NAME'],
+      myState: adi['MY_STATE'],
     );
   }
 
@@ -288,6 +340,14 @@ class LogEntry extends Equatable {
     required this.stx,
     required this.srxString,
     required this.stxString,
+    required this.myCity,
+    required this.myCountry,
+    required this.myCqZone,
+    required this.myDxcc,
+    required this.myGridsquare,
+    required this.myItuZone,
+    required this.myName,
+    required this.myState,
   });
 
   LogEntry copyWith({
@@ -315,6 +375,14 @@ class LogEntry extends Equatable {
     String? stxString,
     int? srx,
     int? stx,
+    String? myCity,
+    String? myCountry,
+    int? myCqZone,
+    int? myDxcc,
+    String? myGridsquare,
+    int? myItuZone,
+    String? myName,
+    String? myState,
   }) =>
       LogEntry(
         id: id ?? this.id,
@@ -342,5 +410,13 @@ class LogEntry extends Equatable {
         stxString: stxString ?? this.stxString,
         createdAt: createdAt,
         subMode: subMode,
+        myCity: myCity ?? this.myCity,
+        myCountry: myCountry ?? this.myCountry,
+        myCqZone: myCqZone ?? this.myCqZone,
+        myDxcc: myDxcc ?? this.myDxcc,
+        myGridsquare: myGridsquare ?? this.myGridsquare,
+        myItuZone: myItuZone ?? this.myItuZone,
+        myName: myName ?? this.myName,
+        myState: myState ?? this.myState,
       );
 }

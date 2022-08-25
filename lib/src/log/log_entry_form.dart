@@ -6,7 +6,6 @@ import 'package:formz/formz.dart';
 
 import '../components/field_controller.dart';
 import '../models/log_entry.dart';
-import '../repository/repository.dart';
 import '../utils/text_input_formatters.dart';
 import 'bloc/log_bloc.dart';
 import 'circle_timer.dart';
@@ -21,23 +20,34 @@ class LogEntryForm extends StatelessWidget {
   const LogEntryForm({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => FutureBuilder<LogEntry?>(
-        future: context.read<Repository>().getLastLogEntry(),
-        builder: (context, snap) => snap.connectionState != ConnectionState.done
-            ? const Padding(
-                padding: EdgeInsets.all(20),
-                child: Center(child: CircularProgressIndicator()),
-              )
-            : BlocProvider(
-                create: (context) => NewLogEntryCubit(
-                  context.read<LogBloc>(),
-                  snap.data,
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(25),
-                  child: _LogEntryForm(),
-                ),
+  Widget build(BuildContext context) => Card(
+        clipBehavior: Clip.antiAlias,
+        elevation: 3,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 18,
+                horizontal: 20,
               ),
+              color: Colors.grey.shade200,
+              child: Text(
+                'New entry',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+            ),
+            BlocProvider(
+              create: (context) => NewLogEntryCubit(
+                context.read<LogBloc>(),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(25),
+                child: _LogEntryForm(),
+              ),
+            ),
+          ],
+        ),
       );
 }
 
@@ -141,8 +151,6 @@ class _LogEntryFormSmall extends StatelessWidget {
           ],
           const SizedBox(height: 10),
           _Hide(
-            // TODO Remove
-            initiallyHidden: kDebugMode,
             title: const Text('Frequency'),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -181,8 +189,6 @@ class _LogEntryFormSmall extends StatelessWidget {
             ),
           ),
           _Hide(
-            // TODO Remove
-            initiallyHidden: kDebugMode,
             title: const Text('Mode & Power'),
             child: _Wrap(
               crossAxisAlignment: WrapCrossAlignment.end,
@@ -305,8 +311,6 @@ class _LogEntryFormLarge extends StatelessWidget {
             ),
           const SizedBox(height: 10),
           _Hide(
-            // TODO Remove
-            initiallyHidden: kDebugMode,
             title: const Text('Frequency'),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -353,8 +357,6 @@ class _LogEntryFormLarge extends StatelessWidget {
             ),
           ),
           _Hide(
-            // TODO Remove
-            initiallyHidden: kDebugMode,
             title: const Text('Mode & Power'),
             child: _Wrap(
               crossAxisAlignment: WrapCrossAlignment.end,
@@ -450,7 +452,8 @@ class _Hide extends StatefulWidget {
     Key? key,
     required this.title,
     required this.child,
-    this.initiallyHidden = false,
+    // TODO: Remove
+    this.initiallyHidden = kDebugMode,
   }) : super(key: key);
 
   @override

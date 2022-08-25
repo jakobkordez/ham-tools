@@ -19,35 +19,13 @@ class LogScreen extends StatelessWidget {
         ),
         body: LayoutBuilder(
           builder: (context, constraints) {
-            final newEntry = Card(
-              clipBehavior: Clip.antiAlias,
-              elevation: 3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 18,
-                      horizontal: 20,
-                    ),
-                    color: Colors.grey.shade200,
-                    child: Text(
-                      'New entry',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ),
-                  const LogEntryForm(),
-                ],
-              ),
-            );
-
             if (constraints.maxWidth < 1000) {
               return ListView(
                 padding: const EdgeInsets.all(15),
-                children: [
-                  newEntry,
-                  const SizedBox(height: 15),
-                  const LogTable(),
+                children: const [
+                  LogEntryForm(),
+                  SizedBox(height: 15),
+                  LogTable(),
                 ],
               );
             }
@@ -56,16 +34,16 @@ class LogScreen extends StatelessWidget {
               padding: const EdgeInsets.all(15),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: const [
                   Expanded(
                     flex: 1,
                     child: SingleChildScrollView(
                       primary: false,
-                      child: newEntry,
+                      child: LogEntryForm(),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  const Expanded(
+                  SizedBox(width: 10),
+                  Expanded(
                     flex: 2,
                     child: SingleChildScrollView(
                       primary: false,

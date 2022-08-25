@@ -31,16 +31,40 @@ class NewLogEntryState extends Equatable {
 
   // Contest
   final bool showContest;
-  // final String contest;
+  // TODO final String contest;
   final String contestSrx;
   final String contestStx;
   final String contestSrxString;
   final String contestStxString;
 
+  // Sender info
+  final String stationCallsign;
+  final String operatorCallsign;
+  final String myName;
+  final String myCity;
+  final String myState;
+  final String myCountry;
+  final String myDxcc;
+  final String myGridsquare;
+  final String myCqZone;
+  final String myItuZone;
+  // TODO final String myIota;
+
   late final Band? band =
       BandUtil.getBand(NewLogEntryCubit.tryParseFreq(frequency.value) ?? -1);
   late final Band? bandRx =
       BandUtil.getBand(NewLogEntryCubit.tryParseFreq(frequencyRx.value) ?? -1);
+
+  factory NewLogEntryState.fromLast(LogEntry e) => NewLogEntryState(
+        frequency: e.frequency,
+        mode: e.mode,
+        subMode: e.subMode,
+        frequencyRx: e.frequencyRx,
+        power: e.power > 0 ? e.power : null,
+        mySotaRef: e.mySotaRef,
+        stx: e.stx > 0 ? e.stx + 1 : null,
+        stxString: e.stxString,
+      );
 
   factory NewLogEntryState({
     bool autoTime = true,
@@ -61,6 +85,7 @@ class NewLogEntryState extends Equatable {
     int? stx,
     String? srxString,
     String? stxString,
+    Profile? profile,
   }) {
     frequency ??= Band.hf40m.lowerBound;
     mode ??= Mode.ssb;
@@ -104,6 +129,17 @@ class NewLogEntryState extends Equatable {
       contestStx: '${stx ?? ''}',
       contestSrxString: srxString ?? '',
       contestStxString: stxString ?? '',
+      stationCallsign: profile?.callsign ?? '',
+      myCity: profile?.qth ?? '',
+      myState: profile?.state ?? '',
+      myCountry: profile?.country ?? '',
+      myDxcc: '${profile?.dxcc ?? ''}',
+      myGridsquare: profile?.gridsquare ?? '',
+      myCqZone: '${profile?.cqZone ?? ''}',
+      myItuZone: '${profile?.ituZone ?? ''}',
+      myName: profile?.name ?? '',
+      // TODO Operator
+      operatorCallsign: '',
     );
   }
 
@@ -134,6 +170,16 @@ class NewLogEntryState extends Equatable {
     required this.contestStx,
     required this.contestSrxString,
     required this.contestStxString,
+    required this.stationCallsign,
+    required this.operatorCallsign,
+    required this.myName,
+    required this.myCity,
+    required this.myState,
+    required this.myCountry,
+    required this.myDxcc,
+    required this.myGridsquare,
+    required this.myCqZone,
+    required this.myItuZone,
   });
 
   NewLogEntryState copyWith({
@@ -161,6 +207,16 @@ class NewLogEntryState extends Equatable {
     String? contestStx,
     String? contestSrxString,
     String? contestStxString,
+    String? stationCallsign,
+    String? operatorCallsign,
+    String? myName,
+    String? myCity,
+    String? myState,
+    String? myCountry,
+    String? myDxcc,
+    String? myGridsquare,
+    String? myCqZone,
+    String? myItuZone,
   }) {
     final newSplit = split ?? this.split;
     final newFreq = frequency ?? this.frequency;
@@ -196,6 +252,16 @@ class NewLogEntryState extends Equatable {
       contestStx: contestStx ?? this.contestStx,
       contestSrxString: contestSrxString ?? this.contestSrxString,
       contestStxString: contestStxString ?? this.contestStxString,
+      stationCallsign: stationCallsign ?? this.stationCallsign,
+      operatorCallsign: operatorCallsign ?? this.operatorCallsign,
+      myName: myName ?? this.myName,
+      myCity: myCity ?? this.myCity,
+      myState: myState ?? this.myState,
+      myCountry: myCountry ?? this.myCountry,
+      myDxcc: myDxcc ?? this.myDxcc,
+      myGridsquare: myGridsquare ?? this.myGridsquare,
+      myCqZone: myCqZone ?? this.myCqZone,
+      myItuZone: myItuZone ?? this.myItuZone,
     );
   }
 
@@ -230,6 +296,16 @@ class NewLogEntryState extends Equatable {
         contestStx: contestStx,
         contestSrxString: contestSrxString,
         contestStxString: contestStxString,
+        stationCallsign: stationCallsign,
+        operatorCallsign: operatorCallsign,
+        myName: myName,
+        myCity: myCity,
+        myState: myState,
+        myCountry: myCountry,
+        myDxcc: myDxcc,
+        myGridsquare: myGridsquare,
+        myCqZone: myCqZone,
+        myItuZone: myItuZone,
       );
 
   @override
@@ -260,6 +336,16 @@ class NewLogEntryState extends Equatable {
         contestStx,
         contestSrxString,
         contestStxString,
+        stationCallsign,
+        operatorCallsign,
+        myName,
+        myCity,
+        myState,
+        myCountry,
+        myDxcc,
+        myGridsquare,
+        myCqZone,
+        myItuZone,
       ];
 
   LogEntry asLogEntry() => LogEntry(
@@ -280,5 +366,15 @@ class NewLogEntryState extends Equatable {
         stx: int.tryParse(contestStx),
         srxString: contestSrxString.isNotEmpty ? contestSrxString : null,
         stxString: contestStxString.isNotEmpty ? contestStxString : null,
+        stationCall: stationCallsign.isNotEmpty ? stationCallsign : null,
+        operatorCall: operatorCallsign.isNotEmpty ? operatorCallsign : null,
+        myName: myName.isNotEmpty ? myName : null,
+        myCity: myCity.isNotEmpty ? myCity : null,
+        myState: myState.isNotEmpty ? myState : null,
+        myCountry: myCountry.isNotEmpty ? myCountry : null,
+        myDxcc: int.tryParse(myDxcc),
+        myGridsquare: myGridsquare.isNotEmpty ? myGridsquare : null,
+        myCqZone: int.tryParse(myCqZone),
+        myItuZone: int.tryParse(myItuZone),
       );
 }

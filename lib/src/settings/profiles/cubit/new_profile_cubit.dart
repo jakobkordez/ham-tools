@@ -3,7 +3,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../models/dxcc_entity.dart';
-import '../../../models/profile.dart';
 import '../../../models/server/dto/create_profile_dto.dart';
 import 'profiles_cubit.dart';
 

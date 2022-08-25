@@ -304,6 +304,7 @@ class _BandRxInput extends StatelessWidget {
           decoration: const InputDecoration(
             labelText: 'Receive Band',
           ),
+          isExpanded: true,
           dropdownColor: Colors.white,
           value: state.bandRx,
           onChanged: context.read<NewLogEntryCubit>().setBandRx,
@@ -354,6 +355,7 @@ class _ModeInput extends StatelessWidget {
           decoration: const InputDecoration(
             labelText: 'Mode',
           ),
+          isExpanded: true,
           dropdownColor: Colors.white,
           value: state.mode,
           onChanged: context.read<NewLogEntryCubit>().setMode,
@@ -388,6 +390,7 @@ class _SubModeInput extends StatelessWidget {
                         )
                       : null,
                 ),
+                isExpanded: true,
                 dropdownColor: Colors.white,
                 value: state.subMode,
                 onChanged: context.read<NewLogEntryCubit>().setSubMode,

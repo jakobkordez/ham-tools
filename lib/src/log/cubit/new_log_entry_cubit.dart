@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/log_entry.dart';
+import '../../models/profile.dart';
 import '../bloc/log_bloc.dart';
 import '../models/callsign_input.dart';
 import '../models/date_input.dart';
@@ -14,33 +15,15 @@ part 'new_log_entry_state.dart';
 class NewLogEntryCubit extends Cubit<NewLogEntryState> {
   final LogBloc logBloc;
 
-  NewLogEntryCubit(this.logBloc, [LogEntry? last])
-      : super(last == null
+  NewLogEntryCubit(this.logBloc)
+      : super(logBloc.state.logEntries.isEmpty
             ? NewLogEntryState()
-            : NewLogEntryState(
-                frequency: last.frequency,
-                mode: last.mode,
-                subMode: last.subMode,
-                frequencyRx: last.frequencyRx,
-                power: last.power > 0 ? last.power : null,
-                mySotaRef: last.mySotaRef,
-                stx: last.stx > 0 ? last.stx + 1 : null,
-                stxString: last.stxString,
-              ));
+            : NewLogEntryState.fromLast(logBloc.state.logEntries.first));
 
   void submit() {
     final e = state.asLogEntry();
     logBloc.add(LogEntryAdded(e));
-    emit(NewLogEntryState(
-      frequency: e.frequency,
-      mode: e.mode,
-      subMode: e.subMode,
-      frequencyRx: e.frequencyRx,
-      power: e.power > 0 ? e.power : null,
-      mySotaRef: e.mySotaRef,
-      stx: e.stx > 0 ? e.stx + 1 : null,
-      stxString: e.stxString,
-    ));
+    emit(NewLogEntryState.fromLast(e));
   }
 
   static int? tryParseFreq(String value) {
@@ -188,4 +171,24 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
       ));
 
   void setComment(String value) => emit(state.copyWith(comment: value));
+
+  void setMyCity(String value) => emit(state.copyWith(myCity: value));
+
+  void setMyCountry(String value) => emit(state.copyWith(myCountry: value));
+
+  void setMyName(String value) => emit(state.copyWith(myName: value));
+
+  void setMyState(String value) => emit(state.copyWith(myState: value));
+
+  void setMyDxcc(String value) => emit(state.copyWith(myDxcc: value));
+
+  void setMyCqZone(String value) => emit(state.copyWith(myCqZone: value));
+
+  void setMyItuZone(String value) => emit(state.copyWith(myItuZone: value));
+
+  void setMyGridsquare(String value) =>
+      emit(state.copyWith(myGridsquare: value));
+
+  void setStationCallsign(String value) =>
+      emit(state.copyWith(stationCallsign: value));
 }
