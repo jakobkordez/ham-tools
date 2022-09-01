@@ -29,9 +29,8 @@ class LogEntryForm extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(
                 vertical: 18,
-                horizontal: 20,
+                horizontal: 24,
               ),
-              color: Colors.grey.shade200,
               child: Text(
                 'New entry',
                 style: Theme.of(context).textTheme.headlineSmall,
@@ -510,14 +509,12 @@ class _Divider extends StatelessWidget {
             visualDensity: VisualDensity.compact,
             splashRadius: 20,
             iconSize: 20,
-            color: Colors.grey,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
             icon: icon,
             onPressed: onPressed,
           ),
           DefaultTextStyle(
-            style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: Colors.grey.shade700,
-                ),
+            style: Theme.of(context).textTheme.labelMedium!,
             child: label,
           ),
           const SizedBox(width: 10),

@@ -3,15 +3,22 @@ import '../models/profile.dart';
 import '../models/server/dto/create_profile_dto.dart';
 
 abstract class Repository {
-  Future<List<LogEntry>> getLogEntries({DateTime? after, DateTime? before});
+  Future<List<LogEntry>> getLogEntries({
+    bool? all,
+    String? cursorId,
+    DateTime? cursorDate,
+    int? limit,
+  });
 
-  Future<void> addLogEntry(LogEntry entry);
+  Future<int> getLogEntriesCount({bool? all});
+
+  Future<LogEntry> addLogEntry(LogEntry entry);
 
   Future<LogEntry?> getLastLogEntry();
 
   Future<List<Profile>> getProfiles();
 
-  Future<void> addProfile(CreateProfileDto profile);
+  Future<Profile> addProfile(CreateProfileDto profile);
 
   Future<void> deleteProfile(String id);
 }

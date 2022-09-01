@@ -260,6 +260,17 @@ class LogEntry extends Equatable {
     final dateOff = adi['QSO_DATE_OFF'] ?? date;
     final timeOff = adi['TIME_OFF'] ?? time;
 
+    Mode? mode = ModeUtil.tryParse(adi['MODE']!);
+    SubMode? subMode;
+    if (mode == null) {
+      subMode = SubModeUtil.tryParse(adi['MODE']!);
+      if (subMode == null) {
+        throw FormatException('Invalid mode: ${adi['MODE']}');
+      }
+      mode = Mode.values.firstWhere((m) => m.subModes.contains(subMode));
+    }
+    subMode ??= SubModeUtil.tryParse(adi['SUBMODE']);
+
     return LogEntry(
       id: id,
       ownerId: ownerId,
@@ -277,8 +288,8 @@ class LogEntry extends Equatable {
       bandRx: BandUtil.tryParse(adi['BAND_RX']),
       timeOn: DateTime.parse('${date}T${time}Z'),
       timeOff: DateTime.parse('${dateOff}T${timeOff}Z'),
-      mode: ModeUtil.tryParse(adi['MODE']!)!,
-      subMode: SubModeUtil.tryParse(adi['SUBMODE']),
+      mode: mode,
+      subMode: subMode,
       power: adi['TX_PWR'] != null ? int.parse(adi['TX_PWR']!) : null,
       rstSent: adi['RST_SENT'],
       rstReceived: adi['RST_RCVD'],

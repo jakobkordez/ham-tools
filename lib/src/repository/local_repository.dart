@@ -8,6 +8,7 @@ import '../models/log_entry.dart';
 import '../models/profile.dart';
 import '../models/server/dto/create_profile_dto.dart';
 import '../models/server/server_settings.dart';
+import '../utils/log_entry_list_util.dart';
 import 'repository.dart';
 
 class LocalRepository implements Repository {
@@ -28,7 +29,7 @@ class LocalRepository implements Repository {
   }
 
   @override
-  Future<void> addLogEntry(LogEntry entry) async {
+  Future<LogEntry> addLogEntry(LogEntry entry) async {
     if (!(await _storage.ready)) throw Exception('Storage error');
 
     await _storage.setItem(
@@ -37,21 +38,37 @@ class LocalRepository implements Repository {
     );
 
     await _storage.setItem('last_qso', entry.toAdiMap());
+    return entry;
   }
 
   @override
-  Future<List<LogEntry>> getLogEntries(
-      {DateTime? after, DateTime? before}) async {
+  Future<int> getLogEntriesCount({bool? all}) async {
     if (!(await _storage.ready)) throw Exception('Storage error');
 
-    return ((_storage.getItem('qsos') as List?)
-            ?.map((e) => LogEntry.fromAdiMap((e as Map).cast()))
-            .where((e) =>
-                (after?.isBefore(e.timeOn) ?? true) &&
-                (before?.isAfter(e.timeOn) ?? true))
-            .toList()
-          ?..sort((a, b) => b.timeOn.compareTo(a.timeOn))) ??
-        [];
+    return (_storage.getItem('qsos') as List?)?.length ?? 0;
+  }
+
+  @override
+  Future<List<LogEntry>> getLogEntries({
+    bool? all,
+    String? cursorId,
+    DateTime? cursorDate,
+    int? limit,
+  }) async {
+    if (!(await _storage.ready)) throw Exception('Storage error');
+
+    var t = (_storage.getItem('qsos') as List?)
+        ?.map((e) => LogEntry.fromAdiMap((e as Map).cast()))
+        .toList();
+    if (t == null) return [];
+
+    t.sortByTime();
+
+    Iterable<LogEntry> s = t;
+    if (cursorId != null) s = s.where((e) => e.id.compareTo(cursorId) < 0);
+    if (cursorDate != null) s = s.where((e) => e.timeOn.isBefore(cursorDate));
+    if (limit != null) s = s.take(limit);
+    return s.toList();
   }
 
   @override
@@ -83,7 +100,7 @@ class LocalRepository implements Repository {
   }
 
   @override
-  Future<void> addProfile(CreateProfileDto profile) async {
+  Future<Profile> addProfile(CreateProfileDto profile) async {
     if (!(await _storage.ready)) throw Exception('Storage error');
 
     final profiles = (_storage.getItem('profiles') as List?)
@@ -94,7 +111,7 @@ class LocalRepository implements Repository {
     final lastId =
         profiles.isEmpty ? 0 : (int.tryParse(profiles.last.id ?? '') ?? 0);
 
-    profiles.add(Profile(
+    final p = Profile(
       id: '${lastId + 1}',
       profileName: profile.profileName,
       callsign: profile.callsign,
@@ -106,12 +123,16 @@ class LocalRepository implements Repository {
       qth: profile.qth,
       state: profile.state,
       country: profile.country,
-    ));
+    );
+
+    profiles.add(p);
 
     await _storage.setItem(
       'profiles',
       ((_storage.getItem('profiles') as List?) ?? [])..add(profile.toJson()),
     );
+
+    return p;
   }
 
   @override

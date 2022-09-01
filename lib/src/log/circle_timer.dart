@@ -50,7 +50,8 @@ class _CircleTimerState extends State<CircleTimer> {
               duration: const Duration(seconds: 1),
               tween: Tween(begin: now / 60, end: (now + 1) / 60),
               builder: (context, value, _) => CircularProgressIndicator(
-                backgroundColor: Colors.grey.shade300,
+                backgroundColor:
+                    Theme.of(context).colorScheme.onSurface.withOpacity(0.15),
                 value: value,
               ),
             );

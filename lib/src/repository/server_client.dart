@@ -6,6 +6,7 @@ import '../models/profile.dart';
 import '../models/server/dto/create_log_entry_dto.dart';
 import '../models/server/dto/create_profile_dto.dart';
 import '../models/server/dto/create_user_dto.dart';
+import '../models/server/dto/delete_log_entries_dto.dart';
 import '../models/server/dto/login_dto.dart';
 import '../models/server/dto/login_response.dart';
 import '../models/server/dto/refresh_response.dart';
@@ -85,12 +86,19 @@ abstract class ServerClient {
     @Body() List<CreateLogEntryDto> logEntries,
   );
 
+  @GET('/log/count')
+  Future<String> getLogEntriesCount(
+    @Header('Authorization') String token, {
+    @Query('all') bool? all,
+  });
+
   @GET('/log')
   Future<List<LogEntry>> getLogEntries(
     @Header('Authorization') String token, {
     @Query('all') bool? all,
-    @Query('after') String? after,
-    @Query('before') String? before,
+    @Query('cursorId') String? cursorId,
+    @Query('cursorDate') String? cursorDate,
+    @Query('limit') int? limit,
   });
 
   @GET('/log/{id}')
@@ -110,6 +118,12 @@ abstract class ServerClient {
   Future<void> deleteLogEntry(
     @Header('Authorization') String token,
     @Path('id') String id,
+  );
+
+  @DELETE('/log')
+  Future<void> deleteLogEntries(
+    @Header('Authorization') String token,
+    @Body() DeleteLogEntriesDto logEntries,
   );
 
   // Profiles

@@ -150,10 +150,25 @@ class ServerRepository extends Repository {
   Future<LogEntry?> getLastLogEntry() => localRepo.getLastLogEntry();
 
   @override
+  Future<int> getLogEntriesCount({bool? all}) async {
+    if (!isAuthenticated) return localRepo.getLogEntriesCount(all: all);
+
+    try {
+      final r =
+          await _client!.getLogEntriesCount(await _getAccessToken(), all: all);
+      return int.parse(r);
+    } catch (e) {
+      debugPrint(e.toString());
+      throw Exception('Failed to get log entries');
+    }
+  }
+
+  @override
   Future<List<LogEntry>> getLogEntries({
-    DateTime? after,
-    DateTime? before,
-    bool all = false,
+    bool? all,
+    String? cursorId,
+    DateTime? cursorDate,
+    int? limit,
   }) async {
     if (!isAuthenticated) throw Exception('Not authenticated');
 
@@ -161,8 +176,9 @@ class ServerRepository extends Repository {
       return _client!.getLogEntries(
         await _getAccessToken(),
         all: all,
-        after: after?.toIso8601String(),
-        before: before?.toIso8601String(),
+        cursorId: cursorId,
+        cursorDate: cursorDate?.toIso8601String(),
+        limit: limit,
       );
     } catch (e) {
       debugPrint(e.toString());
@@ -171,11 +187,11 @@ class ServerRepository extends Repository {
   }
 
   @override
-  Future<void> addProfile(CreateProfileDto profile) async {
+  Future<Profile> addProfile(CreateProfileDto profile) async {
     if (!isAuthenticated) throw Exception('Not authenticated');
 
     try {
-      await _client!.createProfile(await _getAccessToken(), profile);
+      return await _client!.createProfile(await _getAccessToken(), profile);
     } catch (e) {
       debugPrint(e.toString());
       throw Exception('Failed to create profile');

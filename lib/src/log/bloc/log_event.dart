@@ -8,7 +8,22 @@ abstract class LogEvent extends Equatable {
 }
 
 class LogFetched extends LogEvent {
-  const LogFetched();
+  final int from;
+  final int to;
+
+  const LogFetched(this.from, this.to);
+
+  @override
+  List<Object?> get props => [from, to];
+}
+
+class LogRefreshed extends LogEvent {
+  final int? to;
+
+  const LogRefreshed([this.to]);
+
+  @override
+  List<Object?> get props => [to];
 }
 
 class LogEntryAdded extends LogEvent {
