@@ -1,22 +1,23 @@
-import 'dart:math';
-
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 
 import '../utils/adif.dart';
+import 'qsl_enum.dart';
 
 part 'band.dart';
 part 'mode.dart';
 
-class LogEntry extends Equatable {
+class LogEntry extends UnmodifiableMapView<String, String> with EquatableMixin {
   static final dateFormat = DateFormat('yyyy-MM-dd');
   static final timeFormat = DateFormat('HHmm');
   static final freqFormat = NumberFormat(r'#.000#');
 
+  static final invalidDate = DateTime.utc(0);
+
   // Server data
-  final String id;
-  final String ownerId;
+  final String? id;
+  final String? ownerId;
   final DateTime? createdAt;
 
   /// The contacted station's Callsign
@@ -25,12 +26,12 @@ class LogEntry extends Equatable {
   /// The logging operator's callsign
   /// - if [stationCall] is absent, [operatorCall] shall be treated as both the
   /// logging station's callsign and the logging operator's callsign
-  final String operatorCall;
+  final String? operatorCall;
 
   /// The logging station's callsign (the callsign used over the air)
   /// - if [stationCall] is absent, [operatorCall] shall be treated as both the
   /// logging station's callsign and the logging operator's callsign
-  final String stationCall;
+  final String? stationCall;
 
   final DateTime timeOn;
   final DateTime timeOff;
@@ -38,48 +39,56 @@ class LogEntry extends Equatable {
   final int frequencyRx;
   final Mode mode;
   final SubMode? subMode;
-  final int power;
-  final String rstSent;
-  final String rstReceived;
+  final int? power;
+  final String? rstSent;
+  final String? rstReceived;
 
   /// The contacted station's grid square
-  final String gridsquare;
+  final String? gridsquare;
 
   /// The contacted station's operator's name
-  final String name;
-  final String comment;
+  final String? name;
+
+  /// Single line comment of QSO
+  final String? comment;
 
   // SOTA
-  final String sotaRef;
-  final String mySotaRef;
+  final String? sotaRef;
+  final String? mySotaRef;
 
   // Contest fields
   /// Contest ID
-  final String contestId;
+  final String? contestId;
 
   /// Contest serial number received
-  final int srx;
+  final int? srx;
 
   /// Contest serial number sent
-  final int stx;
+  final int? stx;
 
   /// Contest information received
-  final String srxString;
+  final String? srxString;
 
   /// Contest information sent
-  final String stxString;
+  final String? stxString;
 
   // TODO Contest Fields: CHECK, CLASS, PRECEDENCE
 
   // MY_? fields
-  final String myCity;
-  final String myCountry;
-  final int myCqZone;
-  final int myDxcc;
-  final String myGridsquare;
-  final int myItuZone;
-  final String myName;
-  final String myState;
+  final String? myCity;
+  final String? myCountry;
+  final int? myCqZone;
+  final int? myDxcc;
+  final String? myGridsquare;
+  final int? myItuZone;
+  final String? myName;
+  final String? myState;
+
+  // QSL
+  final QslRcvd? qslRcvd;
+  final QslSent? qslSent;
+  final DateTime? qslRcvdDate;
+  final DateTime? qslSentDate;
 
   LogEntry({
     String? id,
@@ -90,10 +99,8 @@ class LogEntry extends Equatable {
     String? stationCall,
     required DateTime timeOn,
     DateTime? timeOff,
-    int? frequency,
-    Band? band,
+    required int frequency,
     int? frequencyRx,
-    Band? bandRx,
     required Mode mode,
     SubMode? subMode,
     int? power,
@@ -117,46 +124,51 @@ class LogEntry extends Equatable {
     int? myItuZone,
     String? myName,
     String? myState,
+    QslRcvd? qslRcvd,
+    QslSent? qslSent,
+    DateTime? qslRcvdDate,
+    DateTime? qslSentDate,
+    Map<String, String>? otherFields,
   }) : this._raw(
-          id: id ?? '',
-          ownerId: ownerId ?? '',
-          createdAt: createdAt,
+          id: id?.emptyToNull,
+          ownerId: ownerId?.emptyToNull,
+          createdAt: createdAt?.year == 0 ? null : createdAt?.toUtc(),
           callsign: callsign.toUpperCase(),
-          operatorCall: operatorCall ?? '',
-          stationCall: stationCall ?? '',
+          operatorCall: operatorCall?.emptyToNull,
+          stationCall: stationCall?.emptyToNull,
           timeOn: timeOn.toUtc(),
           timeOff: (timeOff ?? timeOn).toUtc(),
-          frequency: frequency ?? band!.lowerBound,
-          frequencyRx: frequencyRx ??
-              bandRx?.lowerBound ??
-              frequency ??
-              band!.lowerBound,
+          frequency: frequency,
+          frequencyRx: frequencyRx ?? frequency,
           mode: mode,
-          subMode: subMode,
-          power: max(0, power ?? 0),
-          rstSent: rstSent ?? '',
-          rstReceived: rstReceived ?? '',
-          gridsquare: gridsquare ?? '',
-          name: name ?? '',
-          comment: comment ?? '',
-          sotaRef: sotaRef ?? '',
-          mySotaRef: mySotaRef ?? '',
-          contestId: contestId ?? '',
-          srx: max(0, srx ?? 0),
-          stx: max(0, stx ?? 0),
-          srxString: srxString ?? '',
-          stxString: stxString ?? '',
-          myCity: myCity ?? '',
-          myCountry: myCountry ?? '',
-          myCqZone: myCqZone ?? -1,
-          myDxcc: myDxcc ?? -1,
-          myGridsquare: myGridsquare ?? '',
-          myItuZone: myItuZone ?? -1,
-          myName: myName ?? '',
-          myState: myState ?? '',
+          subMode: subMode == SubMode.none ? null : subMode,
+          power: power?.betweenOrNull(min: 1),
+          rstSent: rstSent?.emptyToNull,
+          rstReceived: rstReceived?.emptyToNull,
+          gridsquare: gridsquare?.emptyToNull,
+          name: name?.emptyToNull,
+          comment: comment?.emptyToNull,
+          sotaRef: sotaRef?.emptyToNull,
+          mySotaRef: mySotaRef?.emptyToNull,
+          contestId: contestId?.emptyToNull,
+          srx: srx?.betweenOrNull(min: 1),
+          stx: stx?.betweenOrNull(min: 1),
+          srxString: srxString?.emptyToNull,
+          stxString: stxString?.emptyToNull,
+          myCity: myCity?.emptyToNull,
+          myCountry: myCountry?.emptyToNull,
+          myCqZone: myCqZone?.betweenOrNull(min: 1),
+          myDxcc: myDxcc?.betweenOrNull(min: 0),
+          myGridsquare: myGridsquare?.emptyToNull,
+          myItuZone: myItuZone?.betweenOrNull(min: 1),
+          myName: myName?.emptyToNull,
+          myState: myState?.emptyToNull,
+          qslRcvd: qslRcvd,
+          qslSent: qslSent,
+          qslRcvdDate: qslRcvdDate,
+          qslSentDate: qslSentDate,
+          otherFields: otherFields,
         );
-
-  bool get isSplit => frequency != frequencyRx || band != bandRx;
 
   String get dateOnString => dateFormat.format(timeOn);
   String get timeOnString => timeFormat.format(timeOn);
@@ -171,6 +183,7 @@ class LogEntry extends Equatable {
 
   @override
   List<Object?> get props => [
+        this,
         id,
         ownerId,
         createdAt,
@@ -204,46 +217,59 @@ class LogEntry extends Equatable {
         myItuZone,
         myName,
         myState,
+        qslRcvd,
+        qslSent,
+        qslRcvdDate,
+        qslSentDate,
       ];
 
-  Map<String, String> toAdiMap() => {
+  Map<String, String> toAdiMap() => <String, String?>{
+        ...this,
         'CALL': callsign,
         'FREQ': '${frequency / 1000000}',
-        if (band != null) 'BAND': band!.name,
+        'BAND': band?.name,
         'MODE': mode.name,
-        if (subMode != null) 'SUBMODE': subMode!.name,
+        'SUBMODE': subMode?.name,
         'QSO_DATE': Adif.dateFormat.format(timeOn),
         'TIME_ON': Adif.timeFormat.format(timeOn),
-        if (operatorCall.isNotEmpty) 'OPERATOR': operatorCall,
-        if (stationCall.isNotEmpty) 'STATION_CALLSIGN': stationCall,
-        if (frequencyRx != frequency) 'FREQ_RX': '${frequencyRx / 1000000}',
-        if (bandRx != band) 'BAND_RX': bandRx!.name,
-        if (timeOff.compareTo(timeOn) != 0)
-          'QSO_DATE_OFF': Adif.dateFormat.format(timeOff),
-        if (timeOff.compareTo(timeOn) != 0)
-          'TIME_OFF': Adif.timeFormat.format(timeOff),
-        if (rstSent.isNotEmpty == true) 'RST_SENT': rstSent,
-        if (rstReceived.isNotEmpty == true) 'RST_RCVD': rstReceived,
-        if (gridsquare.isNotEmpty == true) 'GRIDSQUARE': gridsquare,
-        if (power > 0) 'TX_PWR': '$power',
-        if (name.isNotEmpty == true) 'NAME': name,
-        if (comment.isNotEmpty == true) 'COMMENT': comment,
-        if (sotaRef.isNotEmpty == true) 'SOTA_REF': sotaRef,
-        if (mySotaRef.isNotEmpty == true) 'MY_SOTA_REF': mySotaRef,
-        if (contestId.isNotEmpty) 'CONTEST_ID': contestId,
-        if (srx > 0) 'SRX': '$srx',
-        if (stx > 0) 'STX': '$stx',
-        if (srxString.isNotEmpty) 'SRX_STRING': srxString,
-        if (stxString.isNotEmpty) 'STX_STRING': stxString,
-        if (myCity.isNotEmpty) 'MY_CITY': myCity,
-        if (myCountry.isNotEmpty) 'MY_COUNTRY': myCountry,
-        if (myCqZone > 0) 'MY_CQ_ZONE': '$myCqZone',
-        if (myDxcc >= 0) 'MY_DXCC': '$myDxcc',
-        if (myGridsquare.isNotEmpty) 'MY_GRIDSQUARE': myGridsquare,
-        if (myItuZone > 0) 'MY_ITU_ZONE': '$myItuZone',
-        if (myName.isNotEmpty) 'MY_NAME': myName,
-        if (myState.isNotEmpty) 'MY_STATE': myState,
-      };
+        'OPERATOR': operatorCall,
+        'STATION_CALLSIGN': stationCall,
+        'FREQ_RX': frequencyRx != frequency ? '${frequencyRx / 1000000}' : null,
+        'BAND_RX': frequencyRx != frequency ? bandRx?.name : null,
+        'QSO_DATE_OFF': timeOff.compareTo(timeOn) != 0
+            ? Adif.dateFormat.format(timeOff)
+            : null,
+        'TIME_OFF': timeOff.compareTo(timeOn) != 0
+            ? Adif.timeFormat.format(timeOff)
+            : null,
+        'RST_SENT': rstSent,
+        'RST_RCVD': rstReceived,
+        'GRIDSQUARE': gridsquare,
+        'TX_PWR': power?.toString(),
+        'NAME': name,
+        'COMMENT': comment,
+        'SOTA_REF': sotaRef,
+        'MY_SOTA_REF': mySotaRef,
+        'CONTEST_ID': contestId,
+        'SRX': srx?.toString(),
+        'STX': stx?.toString(),
+        'SRX_STRING': srxString,
+        'STX_STRING': stxString,
+        'MY_CITY': myCity,
+        'MY_COUNTRY': myCountry,
+        'MY_CQ_ZONE': myCqZone?.toString(),
+        'MY_DXCC': myDxcc?.toString(),
+        'MY_GRIDSQUARE': myGridsquare,
+        'MY_ITU_ZONE': myItuZone?.toString(),
+        'MY_NAME': myName,
+        'MY_STATE': myState,
+        'QSL_RCVD': qslRcvd?.name,
+        'QSL_SENT': qslSent?.name,
+        'QSLRDATE':
+            qslRcvdDate != null ? Adif.dateFormat.format(qslRcvdDate!) : null,
+        'QSLSDATE':
+            qslSentDate != null ? Adif.dateFormat.format(qslSentDate!) : null,
+      }.filterNulls();
 
   factory LogEntry.fromAdiMap(
     Map<String, String> adi, {
@@ -278,19 +304,15 @@ class LogEntry extends Equatable {
       callsign: adi['CALL']!.toUpperCase(),
       operatorCall: adi['OPERATOR'],
       stationCall: adi['STATION_CALLSIGN'],
-      frequency: adi['FREQ'] != null
-          ? (double.parse(adi['FREQ']!) * 1000000).toInt()
-          : null,
-      band: BandUtil.tryParse(adi['BAND']),
-      frequencyRx: adi['FREQ_RX'] != null
-          ? (double.parse(adi['FREQ_RX']!) * 1000000).toInt()
-          : null,
-      bandRx: BandUtil.tryParse(adi['BAND_RX']),
+      frequency:
+          adi['FREQ']?.tryParseFreq ?? adi['BAND']!.tryParseBand!.lowerBound,
+      frequencyRx: adi['FREQ_RX']?.tryParseFreq ??
+          adi['BAND_RX']?.tryParseBand!.lowerBound,
       timeOn: DateTime.parse('${date}T${time}Z'),
       timeOff: DateTime.parse('${dateOff}T${timeOff}Z'),
       mode: mode,
       subMode: subMode,
-      power: adi['TX_PWR'] != null ? int.parse(adi['TX_PWR']!) : null,
+      power: adi['TX_PWR']?.tryParseInt,
       rstSent: adi['RST_SENT'],
       rstReceived: adi['RST_RCVD'],
       gridsquare: adi['GRIDSQUARE'],
@@ -299,20 +321,23 @@ class LogEntry extends Equatable {
       sotaRef: adi['SOTA_REF'],
       mySotaRef: adi['MY_SOTA_REF'],
       contestId: adi['CONTEST_ID'],
-      srx: adi['SRX'] != null ? int.parse(adi['SRX']!) : null,
-      stx: adi['STX'] != null ? int.parse(adi['STX']!) : null,
+      srx: adi['SRX']?.tryParseInt,
+      stx: adi['STX']?.tryParseInt,
       srxString: adi['SRX_STRING'],
       stxString: adi['STX_STRING'],
       myCity: adi['MY_CITY'],
       myCountry: adi['MY_COUNTRY'],
-      myCqZone:
-          adi['MY_CQ_ZONE'] != null ? int.parse(adi['MY_CQ_ZONE']!) : null,
-      myDxcc: adi['MY_DXCC'] != null ? int.parse(adi['MY_DXCC']!) : null,
+      myCqZone: adi['MY_CQ_ZONE']?.tryParseInt,
+      myDxcc: adi['MY_DXCC']?.tryParseInt,
       myGridsquare: adi['MY_GRIDSQUARE'],
-      myItuZone:
-          adi['MY_ITU_ZONE'] != null ? int.parse(adi['MY_ITU_ZONE']!) : null,
+      myItuZone: adi['MY_ITU_ZONE']?.tryParseInt,
       myName: adi['MY_NAME'],
       myState: adi['MY_STATE'],
+      qslRcvd: QslRcvd.fromName(adi['QSL_RCVD']),
+      qslSent: QslSent.fromName(adi['QSL_SENT']),
+      qslRcvdDate: adi['QSLRDATE']?.tryParseDate,
+      qslSentDate: adi['QSLSDATE']?.tryParseDate,
+      otherFields: adi,
     );
   }
 
@@ -325,7 +350,7 @@ class LogEntry extends Equatable {
             : null,
       );
 
-  const LogEntry._raw({
+  LogEntry._raw({
     required this.id,
     required this.ownerId,
     required this.createdAt,
@@ -359,7 +384,12 @@ class LogEntry extends Equatable {
     required this.myItuZone,
     required this.myName,
     required this.myState,
-  });
+    required this.qslRcvd,
+    required this.qslSent,
+    required this.qslRcvdDate,
+    required this.qslSentDate,
+    required Map<String, String>? otherFields,
+  }) : super(Map.unmodifiable(otherFields ?? const <String, String>{}));
 
   LogEntry copyWith({
     String? id,
@@ -373,6 +403,7 @@ class LogEntry extends Equatable {
     int? frequency,
     int? frequencyRx,
     Mode? mode,
+    SubMode? subMode,
     int? power,
     String? rstSent,
     String? rstReceived,
@@ -394,10 +425,16 @@ class LogEntry extends Equatable {
     int? myItuZone,
     String? myName,
     String? myState,
+    QslRcvd? qslRcvd,
+    QslSent? qslSent,
+    DateTime? qslRcvdDate,
+    DateTime? qslSentDate,
+    Map<String, String>? otherFields,
   }) =>
       LogEntry(
         id: id ?? this.id,
         ownerId: ownerId ?? this.ownerId,
+        createdAt: createdAt ?? this.createdAt,
         callsign: callsign ?? this.callsign,
         operatorCall: operatorCall ?? this.operatorCall,
         stationCall: stationCall ?? this.stationCall,
@@ -419,8 +456,7 @@ class LogEntry extends Equatable {
         stx: stx ?? this.stx,
         srxString: srxString ?? this.srxString,
         stxString: stxString ?? this.stxString,
-        createdAt: createdAt,
-        subMode: subMode,
+        subMode: subMode ?? this.subMode,
         myCity: myCity ?? this.myCity,
         myCountry: myCountry ?? this.myCountry,
         myCqZone: myCqZone ?? this.myCqZone,
@@ -429,5 +465,48 @@ class LogEntry extends Equatable {
         myItuZone: myItuZone ?? this.myItuZone,
         myName: myName ?? this.myName,
         myState: myState ?? this.myState,
+        qslRcvd: qslRcvd ?? this.qslRcvd,
+        qslSent: qslSent ?? this.qslSent,
+        qslRcvdDate: qslRcvdDate ?? this.qslRcvdDate,
+        qslSentDate: qslSentDate ?? this.qslSentDate,
+        otherFields: otherFields == null ? this : (copy()..addAll(otherFields)),
       );
+
+  @override
+  String toString() =>
+      '$dateOnString $timeOnString $callsign ${band?.name ?? '?'} ${subMode?.name ?? mode.name}';
+}
+
+extension on String {
+  String? get emptyToNull => isNotEmpty ? this : null;
+
+  int? get tryParseInt => int.tryParse(this);
+
+  int? get tryParseFreq {
+    final v = double.tryParse(this);
+    if (v == null) return null;
+    return (v * 1000000).toInt();
+  }
+
+  Band? get tryParseBand => BandUtil.tryParse(this);
+
+  DateTime? get tryParseDate => DateTime.tryParse('${this}T00Z');
+}
+
+extension on int {
+  int? betweenOrNull({int? min, int? max}) {
+    if (min != null && this < min) return null;
+    if (max != null && this > max) return null;
+    return this;
+  }
+}
+
+extension on Map<String, String> {
+  Map<String, String> copy() => Map.of(this);
+}
+
+extension on Map<String, String?> {
+  Map<String, String> filterNulls() => Map.fromEntries(entries
+      .where((e) => e.value != null)
+      .map((e) => MapEntry(e.key, e.value as String)));
 }

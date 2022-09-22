@@ -17,6 +17,7 @@ extension on LogEntry {
   int compareTo(LogEntry other) {
     final t = other.timeOn.compareTo(timeOn);
     if (t != 0) return t;
-    return other.id.compareTo(id);
+    if (id == null || other.id == null) return 0;
+    return other.id!.compareTo(id!);
   }
 }

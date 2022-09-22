@@ -106,8 +106,8 @@ class DataSource extends DataTableSource {
       selected: selected?.contains(e.id) ?? false,
       onSelectChanged: onSelectChanged != null
           ? (value) {
-              if (value == null) return;
-              onSelectChanged!(e.id, value);
+              if (e.id == null || value == null) return;
+              onSelectChanged!(e.id!, value);
             }
           : null,
       onLongPress: () {},
@@ -141,12 +141,12 @@ class DataSource extends DataTableSource {
           ],
         )),
         DataCell(Text(
-          e.name,
+          e.name ?? '',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           softWrap: true,
         )),
-        DataCell(Text(e.comment)),
+        DataCell(Text(e.comment ?? '')),
       ],
     );
   }

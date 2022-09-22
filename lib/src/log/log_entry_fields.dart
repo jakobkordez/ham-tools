@@ -359,7 +359,7 @@ class _ModeInput extends StatelessWidget {
           dropdownColor: Colors.white,
           value: state.mode,
           onChanged: context.read<NewLogEntryCubit>().setMode,
-          items: ModeUtil.topModes
+          items: Mode.values
               .map((e) => DropdownMenuItem(
                     value: e,
                     child: Text(e.name),

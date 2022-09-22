@@ -3,7 +3,7 @@ import 'package:ham_tools/src/models/log_entry.dart';
 
 void main() {
   test('Check all SubModes', () {
-    final submodes = <SubMode>{};
+    final submodes = <SubMode>{SubMode.none};
     for (final mode in Mode.values) {
       for (final submode in mode.subModes) {
         expect(submode, isNot(isIn(submodes)));
@@ -25,7 +25,7 @@ void main() {
   });
 
   test('Check SubMode parsing', () {
-    final submodes = <SubMode>{};
+    final submodes = <SubMode>{SubMode.none};
     for (final s in _subModeStrings) {
       final sm = SubModeUtil.tryParse(s);
       expect(sm, isNotNull, reason: 'SubModeUtil.tryParse($s)');

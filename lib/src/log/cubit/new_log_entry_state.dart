@@ -60,9 +60,9 @@ class NewLogEntryState extends Equatable {
         mode: e.mode,
         subMode: e.subMode,
         frequencyRx: e.frequencyRx,
-        power: e.power > 0 ? e.power : null,
+        power: e.power != null && e.power! > 0 ? e.power : null,
         mySotaRef: e.mySotaRef,
-        stx: e.stx > 0 ? e.stx + 1 : null,
+        stx: e.stx != null && e.stx! > 0 ? e.stx! + 1 : null,
         stxString: e.stxString,
       );
 
@@ -356,7 +356,7 @@ class NewLogEntryState extends Equatable {
         subMode: subMode,
         rstSent: rstSent.isNotEmpty ? rstSent : null,
         rstReceived: rstRcvd.isNotEmpty ? rstRcvd : null,
-        frequency: NewLogEntryCubit.tryParseFreq(frequency.value),
+        frequency: NewLogEntryCubit.tryParseFreq(frequency.value)!,
         frequencyRx: NewLogEntryCubit.tryParseFreq(frequencyRx.value),
         power: int.tryParse(power),
         comment: comment.isNotEmpty ? comment : null,

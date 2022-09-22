@@ -10,7 +10,7 @@ void main() {
         timeOn: DateTime.now(),
         callsign: 'S52KJ',
         mode: Mode.cw,
-        band: Band.hf40m,
+        frequency: Band.hf40m.lowerBound,
       );
       final list = <LogEntry>[];
 
@@ -25,7 +25,7 @@ void main() {
         timeOn: DateTime(2022, 1, 1, 12, 1),
         callsign: 'S52KJ',
         mode: Mode.cw,
-        band: Band.hf40m,
+        frequency: Band.hf40m.lowerBound,
       );
       final orig = <LogEntry>[
         e.copyWith(timeOn: DateTime(2022, 1, 1, 12, 0)),
@@ -43,7 +43,7 @@ void main() {
         timeOn: DateTime(2022, 1, 1, 12, 0),
         callsign: 'S52KJ',
         mode: Mode.cw,
-        band: Band.hf40m,
+        frequency: Band.hf40m.lowerBound,
       );
       final orig = <LogEntry>[
         e.copyWith(timeOn: DateTime(2022, 1, 1, 12, 1)),
@@ -61,7 +61,7 @@ void main() {
         timeOn: DateTime(2022, 1, 1, 12, 1),
         callsign: 'S52KJ',
         mode: Mode.cw,
-        band: Band.hf40m,
+        frequency: Band.hf40m.lowerBound,
       );
       final orig = <LogEntry>[
         e.copyWith(timeOn: DateTime(2022, 1, 1, 12, 2)),
@@ -80,7 +80,7 @@ void main() {
         timeOn: DateTime(2022, 1, 1, 12, 1),
         callsign: 'S52KJ',
         mode: Mode.cw,
-        band: Band.hf40m,
+        frequency: Band.hf40m.lowerBound,
       );
       final orig = <LogEntry>[
         e.copyWith(id: '1'),
@@ -98,7 +98,7 @@ void main() {
         timeOn: DateTime(2022, 1, 1, 12, 1),
         callsign: 'S52KJ',
         mode: Mode.cw,
-        band: Band.hf40m,
+        frequency: Band.hf40m.lowerBound,
       );
       final orig = <LogEntry>[
         e.copyWith(id: '2'),
@@ -116,7 +116,7 @@ void main() {
         timeOn: DateTime(2022, 1, 1, 12, 1),
         callsign: 'S52KJ',
         mode: Mode.cw,
-        band: Band.hf40m,
+        frequency: Band.hf40m.lowerBound,
       );
       final orig = <LogEntry>[
         e.copyWith(id: '3'),
@@ -145,7 +145,7 @@ void main() {
         timeOn: DateTime(2022, 1, 1, 12, 1),
         callsign: 'S52KJ',
         mode: Mode.cw,
-        band: Band.hf40m,
+        frequency: Band.hf40m.lowerBound,
       );
 
       final list = <LogEntry>[e];
@@ -161,7 +161,7 @@ void main() {
         timeOn: DateTime(2022, 1, 1, 12, 1),
         callsign: 'S52KJ',
         mode: Mode.cw,
-        band: Band.hf40m,
+        frequency: Band.hf40m.lowerBound,
       );
       final orig = <LogEntry>[
         e.copyWith(id: '2'),

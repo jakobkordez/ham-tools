@@ -7,7 +7,7 @@ void main() {
       final entry = LogEntry(
         callsign: 's52kj',
         timeOn: DateTime.utc(2022, 1, 2, 3, 4),
-        band: Band.hf40m,
+        frequency: Band.hf40m.lowerBound,
         mode: Mode.ssb,
       );
 
@@ -94,7 +94,7 @@ void main() {
       expect(entry.timeOff, DateTime.utc(2022, 08, 08, 18, 58));
       expect(entry.name, 'PEDRO GUTIERREZ GUERRA');
       expect(entry.stationCall, 'S52KJ');
-      expect(entry.operatorCall, '');
+      expect(entry.operatorCall, isNull);
       expect(entry.power, 20);
       expect(entry.rstSent, '-13');
       expect(entry.rstReceived, '-10');

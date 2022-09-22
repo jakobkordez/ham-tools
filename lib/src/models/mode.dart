@@ -400,6 +400,9 @@ extension ModeUtil on Mode {
 }
 
 enum SubMode {
+  /// none
+  none,
+
   /// AMTORFEC
   amtorfec,
 
@@ -707,6 +710,8 @@ extension SubModeUtil on SubMode {
 
   String get name {
     switch (this) {
+      case SubMode.none:
+        return '__NONE__';
       case SubMode.amtorfec:
         return 'AMTORFEC';
       case SubMode.asci:

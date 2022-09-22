@@ -65,8 +65,12 @@ class LocalRepository implements Repository {
     t.sortByTime();
 
     Iterable<LogEntry> s = t;
-    if (cursorId != null) s = s.where((e) => e.id.compareTo(cursorId) < 0);
-    if (cursorDate != null) s = s.where((e) => e.timeOn.isBefore(cursorDate));
+    if (cursorDate != null && cursorId != null) {
+      s = s.where((e) {
+        if (e.timeOn.isBefore(cursorDate)) return true;
+        return (e.id ?? '0').compareTo(cursorId) < 0;
+      });
+    }
     if (limit != null) s = s.take(limit);
     return s.toList();
   }
