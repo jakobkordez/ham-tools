@@ -145,6 +145,12 @@ class HomeScreen extends StatelessWidget {
                             onTap: () =>
                                 Navigator.pushNamed(context, '/adi2cbr'),
                           ),
+                        if (kDebugMode)
+                          _LinkCard(
+                            title: const Text('Log demo'),
+                            onTap: () =>
+                                Navigator.pushNamed(context, '/logdemo'),
+                          ),
                       ],
                     ),
                   ),
