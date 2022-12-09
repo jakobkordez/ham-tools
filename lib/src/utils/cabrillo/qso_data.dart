@@ -20,4 +20,7 @@ class CabrilloQsoData {
     this.exchangeReceived = const [],
     this.transmitterId,
   });
+
+  @override
+  String toString() => '$time $callsignReceived';
 }

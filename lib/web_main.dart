@@ -30,7 +30,7 @@ class WebApp extends StatelessWidget {
           '/azmap': (_) => const AzimuthalMapScreen(),
           '/cylmap': (_) => const CylindricalMapScreen(),
           '/stats': (_) => const StatsScreen(),
-          '/adi2cab': (_) => const AdiToCabrilloScreen(),
+          '/adi2cbr': (_) => const AdiToCabrilloScreen(),
           '/logdemo': (_) => const LogDemo(),
         },
       );
@@ -143,7 +143,7 @@ class HomeScreen extends StatelessWidget {
                           _LinkCard(
                             title: const Text('ADI to Cabrillo'),
                             onTap: () =>
-                                Navigator.pushNamed(context, '/adi2cab'),
+                                Navigator.pushNamed(context, '/adi2cbr'),
                           ),
                       ],
                     ),

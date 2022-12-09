@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'categories/band.dart';
 import 'categories/mode.dart';
 import 'categories/operator.dart';
@@ -124,10 +126,15 @@ class CabrilloHeader {
 
     wrln('CALLSIGN', callsign);
 
-    final contestF = contest
-        ?.replaceAll(RegExp(r'[^A-Z0-9\-]+'), '')
-        .substring(0, maxContestLength);
-    wrln('CONTEST', contestF);
+    if (contest != null) {
+      if (contest!.length > maxContestLength) {
+        print('WARN: Contest name too long');
+      }
+      if (contest!.contains(RegExp(r'[^A-Z0-9-]'))) {
+        print('WARN: Contest name contains invalid characters');
+      }
+    }
+    wrln('CONTEST', contest);
 
     if (assisted != null) {
       sb.writeln('CATEGORY-ASSISTED: ${assisted! ? '' : 'NON-'}ASSISTED');
@@ -150,13 +157,13 @@ class CabrilloHeader {
     wrln('GRID-LOCATOR', gridLocator);
     wrln('LOCATION', location);
 
-    wrln('NAME', name?.substring(0, maxNameLength));
+    wrln('NAME', name?.substring(0, min(maxNameLength, name!.length)));
 
     if (address != null) {
       const addressMaxLen = maxAddressLineLen - 'ADDRESS: '.length;
       final addr = address!
           .split(RegExp(r'[\n\r]+'))
-          .map((e) => e.substring(0, addressMaxLen))
+          .map((e) => e.substring(0, min(addressMaxLen, e.length)))
           .take(maxAddressLines);
       for (final a in addr) {
         wrln('ADDRESS', a);
@@ -191,7 +198,7 @@ class CabrilloHeader {
     const soapboxMaxLen = maxSoapboxLineLen - 'SOAPBOX: '.length;
     final sbox = soapBox
         .split(RegExp(r'[\n\r]'))
-        .map((e) => e.substring(0, soapboxMaxLen));
+        .map((e) => e.substring(0, min(soapboxMaxLen, e.length)));
     for (final s in sbox) {
       wrln('SOAPBOX', s);
     }

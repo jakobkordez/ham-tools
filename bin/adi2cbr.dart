@@ -23,9 +23,29 @@ void main(List<String> args) {
       callsignReceived: e['CALL']!,
       exchangeReceived: [e['RST_RCVD']!, e['SRX_STRING']!],
     );
-  }).toList();
+  }).toList()
+    ..sort((a, b) {
+      if (a.date != b.date) return a.date.compareTo(b.date);
+      return a.time.compareTo(b.time);
+    });
 
-  File(args[1]).writeAsStringSync(Cabrillo.encodeCabrillo(qsos));
+  final header = CabrilloHeader();
+  header.callsign = qsos.first.callsignSent;
+  header.operator = CabrilloCategoryOperator.singleOp;
+  header.contest = 'KV prvenstvo ZRS';
+  header.band = CabrilloCategoryBand.hf80m;
+  header.mode = CabrilloCategoryMode.mixed;
+  header.power = CabrilloCategoryPower.qrp;
+  header.operators = [header.callsign!];
+  header.overlay = CabrilloCategoryOverlay.rookie;
+  header.claimedScore = 0;
+  header.name = 'Jakob Kordež';
+  header.address = 'Polhov Gradec 125\n1355 Polhov Gradec';
+  header.email = 'jakobkordez1999@gmail.com';
+
+  File(args[1]).writeAsStringSync(
+    Cabrillo.encodeCabrillo(qsos, header: header),
+  );
 }
 
 String _encodeMode(String mode) {

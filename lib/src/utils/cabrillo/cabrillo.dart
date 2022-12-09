@@ -24,10 +24,22 @@ class Cabrillo {
 
     // HEADER
     sb.writeln('START-OF-LOG: 3.0');
-    sb.write(header.toString());
+    if (header != null) sb.write(header.toString());
 
     // QSO DATA
     final tab = List.generate(entries.length, (_) => <String>[]);
+    for (var i = 0; i < entries.length; i++) {
+      final e = entries[i];
+      tab[i].add(e.frequency);
+      tab[i].add(e.mode!);
+      tab[i].add(e.date);
+      tab[i].add(e.time);
+      tab[i].add(e.callsignSent);
+      tab[i].addAll(e.exchangeSent);
+      tab[i].add(e.callsignReceived);
+      tab[i].addAll(e.exchangeReceived);
+      if (e.transmitterId != null) tab[i].add(e.transmitterId.toString());
+    }
 
     const w = [5, 2, 10, 4, 13, 3, 6, 13, 3, 6];
 
