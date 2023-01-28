@@ -56,7 +56,7 @@ class _CallsignLookupState extends State<CallsignLookup> {
               textAlignVertical: TextAlignVertical.center,
               decoration: InputDecoration(
                 hintText: 'Enter callsign...',
-                hintStyle: textTheme.headline4,
+                hintStyle: textTheme.headlineMedium,
                 border: InputBorder.none,
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.clear),
@@ -66,7 +66,8 @@ class _CallsignLookupState extends State<CallsignLookup> {
                   }),
                 ),
               ),
-              style: textTheme.headline4!.copyWith(fontFamily: 'RobotoMono'),
+              style:
+                  textTheme.headlineMedium!.copyWith(fontFamily: 'RobotoMono'),
             ),
           ),
           if (secDxcc != null)
@@ -93,7 +94,7 @@ class _CallsignLookupState extends State<CallsignLookup> {
                       Flexible(
                         child: Text(
                           '/${e.suffix}',
-                          style: textTheme.headline5?.copyWith(
+                          style: textTheme.headlineSmall?.copyWith(
                             color: Colors.blue.shade800,
                             fontFamily: 'RobotoMono',
                           ),
@@ -151,7 +152,7 @@ class _DxccView extends StatelessWidget {
                 const SizedBox(width: 15),
                 Text(
                   dxcc.name,
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
               ],
             ),

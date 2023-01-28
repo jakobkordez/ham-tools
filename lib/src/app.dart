@@ -46,8 +46,10 @@ class App extends StatelessWidget {
             ),
             darkTheme: ThemeData(
               inputDecorationTheme: _inputDecorationTheme,
-              toggleableActiveColor: Colors.deepPurple.shade300,
-              colorScheme: const ColorScheme.dark(),
+              colorScheme: ColorScheme.dark(
+                primary: Colors.purple.shade300,
+                secondary: Colors.purple.shade300,
+              ),
             ),
           ),
         ),

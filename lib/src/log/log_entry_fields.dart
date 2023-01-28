@@ -35,7 +35,7 @@ class _CallsignInputState extends State<_CallsignInput> {
             decoration: InputDecoration(
               labelText: 'Callsign',
               labelStyle: TextStyle(
-                fontFamily: Theme.of(context).textTheme.bodyText2?.fontFamily,
+                fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
               ),
               errorText: state.callsign.status == FormzInputStatus.invalid
                   ? 'Callsign cannot be empty'
@@ -694,7 +694,6 @@ class _ShowButton extends StatelessWidget {
   final void Function(bool value) setter;
 
   const _ShowButton({
-    super.key,
     required this.label,
     required this.getValue,
     required this.setter,
@@ -710,7 +709,9 @@ class _ShowButton extends StatelessWidget {
             onPressed: () => setter(!value),
             icon: value ? const Icon(Icons.remove) : const Icon(Icons.add),
             label: label,
-            style: value ? TextButton.styleFrom(primary: Colors.grey) : null,
+            style: value
+                ? TextButton.styleFrom(foregroundColor: Colors.grey)
+                : null,
           );
         },
       );

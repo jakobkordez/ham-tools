@@ -107,7 +107,6 @@ class _LogEntryFormSmall extends StatelessWidget {
   final bool showComment;
 
   const _LogEntryFormSmall({
-    super.key,
     required this.hasTimeOff,
     required this.split,
     required this.hasSubMode,
@@ -269,7 +268,6 @@ class _LogEntryFormLarge extends StatelessWidget {
   final bool showComment;
 
   const _LogEntryFormLarge({
-    super.key,
     required this.hasTimeOff,
     required this.split,
     required this.hasSubMode,
@@ -437,9 +435,10 @@ class _Wrap extends Wrap {
   _Wrap({
     super.children,
     super.crossAxisAlignment = WrapCrossAlignment.center,
-    super.runSpacing = 8,
-    super.spacing = 10,
-  });
+  }) : super(
+          runSpacing: 8,
+          spacing: 10,
+        );
 }
 
 class _Hide extends StatefulWidget {
@@ -495,7 +494,6 @@ class _Divider extends StatelessWidget {
   final VoidCallback onPressed;
 
   const _Divider({
-    super.key,
     required this.icon,
     required this.label,
     required this.onPressed,

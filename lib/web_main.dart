@@ -7,6 +7,7 @@ import 'src/components/utc_clock.dart';
 import 'src/log/log_demo.dart';
 import 'src/map/azimuthal_map_screen.dart';
 import 'src/map/cylindrical_map_screen.dart';
+import 'src/qsl/qsl_screen.dart';
 import 'src/stats/stats_screen.dart';
 
 void main() => runApp(const WebApp());
@@ -32,6 +33,7 @@ class WebApp extends StatelessWidget {
           '/stats': (_) => const StatsScreen(),
           '/adi2cbr': (_) => const AdiToCabrilloScreen(),
           '/logdemo': (_) => const LogDemo(),
+          '/qslcsv': (_) => const QslScreen(),
         },
       );
 }
@@ -150,6 +152,12 @@ class HomeScreen extends StatelessWidget {
                             title: const Text('Log demo'),
                             onTap: () =>
                                 Navigator.pushNamed(context, '/logdemo'),
+                          ),
+                        if (kDebugMode)
+                          _LinkCard(
+                            title: const Text('QSL - ADI to CSV'),
+                            onTap: () =>
+                                Navigator.pushNamed(context, '/qslcsv'),
                           ),
                       ],
                     ),
