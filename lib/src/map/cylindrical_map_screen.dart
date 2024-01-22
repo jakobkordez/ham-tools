@@ -4,7 +4,7 @@ import '../models/lat_lon.dart';
 import 'cylindrical_map.dart';
 
 class CylindricalMapScreen extends StatelessWidget {
-  const CylindricalMapScreen({Key? key}) : super(key: key);
+  const CylindricalMapScreen({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(

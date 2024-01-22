@@ -3,7 +3,7 @@ import 'package:formz/formz.dart';
 enum SotaRefInputError { invalid }
 
 class SotaRefInput extends FormzInput<String, SotaRefInputError> {
-  SotaRefInput.pure() : super.pure('');
+  const SotaRefInput.pure() : super.pure('');
   const SotaRefInput.dirty(super.value) : super.dirty();
 
   static final _regex = RegExp(r'^[A-Z0-9]+/[A-Z]+\-\d+$');

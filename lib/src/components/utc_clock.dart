@@ -5,7 +5,7 @@ import 'package:timer_builder/timer_builder.dart';
 class UtcClock extends StatelessWidget {
   final _format = DateFormat.Hm();
 
-  UtcClock({Key? key}) : super(key: key);
+  UtcClock({super.key});
 
   @override
   Widget build(BuildContext context) => TimerBuilder.periodic(

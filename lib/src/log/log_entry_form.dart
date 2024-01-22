@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formz/formz.dart';
 
 import '../components/field_controller.dart';
 import '../models/log_entry.dart';
@@ -17,7 +16,7 @@ import 'models/time_input.dart';
 part 'log_entry_fields.dart';
 
 class LogEntryForm extends StatelessWidget {
-  const LogEntryForm({Key? key}) : super(key: key);
+  const LogEntryForm({super.key});
 
   @override
   Widget build(BuildContext context) => Card(
@@ -51,7 +50,7 @@ class LogEntryForm extends StatelessWidget {
 }
 
 class _LogEntryForm extends StatelessWidget {
-  const _LogEntryForm({Key? key}) : super(key: key);
+  const _LogEntryForm();
 
   @override
   Widget build(BuildContext context) =>
@@ -119,8 +118,8 @@ class _LogEntryFormSmall extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Wrap(
-            children: const [
+          const _Wrap(
+            children: [
               SizedBox(width: 120, child: _DateOnInput()),
               SizedBox(width: 80, child: _TimeOnInput()),
               _TimeOnUpdater(),
@@ -139,8 +138,8 @@ class _LogEntryFormSmall extends StatelessWidget {
           ),
           if (hasTimeOff) ...[
             const SizedBox(height: 5),
-            _Wrap(
-              children: const [
+            const _Wrap(
+              children: [
                 SizedBox(width: 120, child: _DateOffInput()),
                 SizedBox(width: 80, child: _TimeOffInput()),
                 _TimeOffUpdater(),
@@ -154,19 +153,19 @@ class _LogEntryFormSmall extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Row(
+                const Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: const [
+                  children: [
                     Expanded(flex: 2, child: _BandInput()),
                     SizedBox(width: 10),
                     Expanded(flex: 3, child: _FrequencyInput()),
                   ],
                 ),
                 const SizedBox(height: 8),
-                Row(
+                const Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
+                  children: [
                     _SplitCheckbox(),
                     SizedBox(width: 5),
                     Text('Split'),
@@ -174,9 +173,9 @@ class _LogEntryFormSmall extends StatelessWidget {
                 ),
                 if (split) ...[
                   const SizedBox(height: 8),
-                  Row(
+                  const Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
-                    children: const [
+                    children: [
                       Expanded(flex: 2, child: _BandRxInput()),
                       SizedBox(width: 10),
                       Expanded(flex: 3, child: _FrequencyRxInput()),
@@ -201,8 +200,8 @@ class _LogEntryFormSmall extends StatelessWidget {
           const SizedBox(height: 10),
           const _CallsignInput(),
           const SizedBox(height: 10),
-          Row(
-            children: const [
+          const Row(
+            children: [
               Expanded(child: _RstSentInput()),
               SizedBox(width: 10),
               Expanded(child: _RstRecvInput()),
@@ -216,16 +215,16 @@ class _LogEntryFormSmall extends StatelessWidget {
           ],
           if (showContest) ...[
             const SizedBox(height: 20),
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Expanded(child: _ContestStxStringInput()),
                 SizedBox(width: 10),
                 Expanded(child: _ContestStxInput()),
               ],
             ),
             const SizedBox(height: 8),
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Expanded(child: _ContestSrxStringInput()),
                 SizedBox(width: 10),
                 Expanded(child: _ContestSrxInput()),
@@ -237,19 +236,19 @@ class _LogEntryFormSmall extends StatelessWidget {
             const _CommentInput(),
           ],
           const SizedBox(height: 25),
-          Row(
+          const Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: _Wrap(
-                  children: const [
+                  children: [
                     _ShowSotaButton(),
                     _ShowContestButton(),
                     _ShowCommentButton(),
                   ],
                 ),
               ),
-              const Align(
+              Align(
                 alignment: Alignment.centerRight,
                 child: _SubmitButton(),
               ),
@@ -280,8 +279,8 @@ class _LogEntryFormLarge extends StatelessWidget {
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _Wrap(
-            children: const [
+          const _Wrap(
+            children: [
               SizedBox(width: 120, child: _DateOnInput()),
               SizedBox(width: 80, child: _TimeOnInput()),
               _TimeOnUpdater(),
@@ -299,8 +298,8 @@ class _LogEntryFormLarge extends StatelessWidget {
             ],
           ),
           if (hasTimeOff)
-            _Wrap(
-              children: const [
+            const _Wrap(
+              children: [
                 SizedBox(width: 120, child: _DateOffInput()),
                 SizedBox(width: 80, child: _TimeOffInput()),
                 _TimeOffUpdater(),
@@ -313,18 +312,18 @@ class _LogEntryFormLarge extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _Wrap(
+                const _Wrap(
                   crossAxisAlignment: WrapCrossAlignment.end,
                   children: [
-                    const SizedBox(width: 120, child: _BandInput()),
-                    const SizedBox(
+                    SizedBox(width: 120, child: _BandInput()),
+                    SizedBox(
                       width: 200,
                       child: _FrequencyInput(),
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      children: const [
+                      children: [
                         _SplitCheckbox(),
                         SizedBox(width: 5),
                         Text('Split'),
@@ -333,11 +332,11 @@ class _LogEntryFormLarge extends StatelessWidget {
                   ],
                 ),
                 split
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 8),
+                    ? const Padding(
+                        padding: EdgeInsets.only(top: 8),
                         child: _Wrap(
                           crossAxisAlignment: WrapCrossAlignment.end,
-                          children: const [
+                          children: [
                             SizedBox(
                               width: 120,
                               child: _BandRxInput(),
@@ -366,8 +365,9 @@ class _LogEntryFormLarge extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          _Wrap(
-            children: const [
+          const _Wrap(
+            crossAxisAlignment: WrapCrossAlignment.start,
+            children: [
               SizedBox(width: 200, child: _CallsignInput()),
               SizedBox(width: 100, child: _RstSentInput()),
               SizedBox(width: 100, child: _RstRecvInput()),
@@ -375,8 +375,8 @@ class _LogEntryFormLarge extends StatelessWidget {
           ),
           if (showSota) ...[
             const SizedBox(height: 20),
-            _Wrap(
-              children: const [
+            const _Wrap(
+              children: [
                 SizedBox(width: 150, child: _SotaRefInput()),
                 SizedBox(width: 150, child: _MySotaRefInput()),
               ],
@@ -384,8 +384,8 @@ class _LogEntryFormLarge extends StatelessWidget {
           ],
           if (showContest) ...[
             const SizedBox(height: 20),
-            _Wrap(
-              children: const [
+            const _Wrap(
+              children: [
                 SizedBox(
                   width: 150,
                   child: _ContestStxStringInput(),
@@ -394,8 +394,8 @@ class _LogEntryFormLarge extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            _Wrap(
-              children: const [
+            const _Wrap(
+              children: [
                 SizedBox(
                   width: 150,
                   child: _ContestSrxStringInput(),
@@ -409,19 +409,19 @@ class _LogEntryFormLarge extends StatelessWidget {
             const _CommentInput(),
           ],
           const SizedBox(height: 25),
-          Row(
+          const Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Expanded(
                 child: _Wrap(
-                  children: const [
+                  children: [
                     _ShowSotaButton(),
                     _ShowContestButton(),
                     _ShowCommentButton(),
                   ],
                 ),
               ),
-              const Align(
+              Align(
                 alignment: Alignment.centerRight,
                 child: _SubmitButton(),
               ),
@@ -432,7 +432,7 @@ class _LogEntryFormLarge extends StatelessWidget {
 }
 
 class _Wrap extends Wrap {
-  _Wrap({
+  const _Wrap({
     super.children,
     super.crossAxisAlignment = WrapCrossAlignment.center,
   }) : super(
@@ -447,12 +447,12 @@ class _Hide extends StatefulWidget {
   final bool initiallyHidden;
 
   const _Hide({
-    Key? key,
     required this.title,
     required this.child,
     // TODO: Remove
+    // ignore: unused_element
     this.initiallyHidden = kDebugMode,
-  }) : super(key: key);
+  });
 
   @override
   State<_Hide> createState() => _HideState();

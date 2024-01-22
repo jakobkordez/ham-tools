@@ -7,10 +7,10 @@ class DxccList extends StatelessWidget {
   final List<DxccEntity> entities;
 
   const DxccList({
-    Key? key,
+    super.key,
     required this.entities,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => ListView.separated(

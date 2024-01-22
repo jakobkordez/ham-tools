@@ -6,7 +6,7 @@ import 'log_entry_form.dart';
 import 'log_table.dart';
 
 class LogScreen extends StatelessWidget {
-  const LogScreen({Key? key}) : super(key: key);
+  const LogScreen({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -43,11 +43,11 @@ class LogScreen extends StatelessWidget {
               );
             }
 
-            return Padding(
-              padding: const EdgeInsets.all(15),
+            return const Padding(
+              padding: EdgeInsets.all(15),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Expanded(
                     flex: 1,
                     child: SingleChildScrollView(

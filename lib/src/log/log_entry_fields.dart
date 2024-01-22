@@ -1,7 +1,7 @@
 part of 'log_entry_form.dart';
 
 class _CallsignInput extends StatefulWidget {
-  const _CallsignInput({Key? key}) : super(key: key);
+  const _CallsignInput();
 
   @override
   State<_CallsignInput> createState() => _CallsignInputState();
@@ -37,9 +37,8 @@ class _CallsignInputState extends State<_CallsignInput> {
               labelStyle: TextStyle(
                 fontFamily: Theme.of(context).textTheme.bodyMedium?.fontFamily,
               ),
-              errorText: state.callsign.status == FormzInputStatus.invalid
-                  ? 'Callsign cannot be empty'
-                  : null,
+              errorText:
+                  state.callsign.isNotValid ? 'Callsign cannot be empty' : null,
             ),
             style: const TextStyle(fontFamily: 'RobotoMono'),
             onFieldSubmitted: (_) => context.read<NewLogEntryCubit>().submit(),
@@ -49,7 +48,7 @@ class _CallsignInputState extends State<_CallsignInput> {
 }
 
 class _DateOnInput extends StatelessWidget {
-  const _DateOnInput({Key? key}) : super(key: key);
+  const _DateOnInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -73,7 +72,7 @@ class _DateOnInput extends StatelessWidget {
 }
 
 class _TimeOnInput extends StatelessWidget {
-  const _TimeOnInput({Key? key}) : super(key: key);
+  const _TimeOnInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -97,7 +96,7 @@ class _TimeOnInput extends StatelessWidget {
 }
 
 class _TimeOnUpdater extends StatelessWidget {
-  const _TimeOnUpdater({Key? key}) : super(key: key);
+  const _TimeOnUpdater();
 
   @override
   Widget build(BuildContext context) =>
@@ -131,7 +130,7 @@ class _TimeOnUpdater extends StatelessWidget {
 }
 
 class _TimeOffUpdater extends StatelessWidget {
-  const _TimeOffUpdater({Key? key}) : super(key: key);
+  const _TimeOffUpdater();
 
   @override
   Widget build(BuildContext context) =>
@@ -165,7 +164,7 @@ class _TimeOffUpdater extends StatelessWidget {
 }
 
 class _TimeOnNowButton extends StatelessWidget {
-  const _TimeOnNowButton({Key? key}) : super(key: key);
+  const _TimeOnNowButton();
 
   @override
   Widget build(BuildContext context) => ElevatedButton(
@@ -175,7 +174,7 @@ class _TimeOnNowButton extends StatelessWidget {
 }
 
 class _DateOffInput extends StatelessWidget {
-  const _DateOffInput({Key? key}) : super(key: key);
+  const _DateOffInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -199,7 +198,7 @@ class _DateOffInput extends StatelessWidget {
 }
 
 class _TimeOffInput extends StatelessWidget {
-  const _TimeOffInput({Key? key}) : super(key: key);
+  const _TimeOffInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -223,7 +222,7 @@ class _TimeOffInput extends StatelessWidget {
 }
 
 class _TimeOffNowButton extends StatelessWidget {
-  const _TimeOffNowButton({Key? key}) : super(key: key);
+  const _TimeOffNowButton();
 
   @override
   Widget build(BuildContext context) => ElevatedButton(
@@ -233,7 +232,7 @@ class _TimeOffNowButton extends StatelessWidget {
 }
 
 class _BandInput extends StatelessWidget {
-  const _BandInput({Key? key}) : super(key: key);
+  const _BandInput();
 
   @override
   Widget build(BuildContext context) =>
@@ -258,7 +257,7 @@ class _BandInput extends StatelessWidget {
 }
 
 class _FrequencyInput extends StatelessWidget {
-  const _FrequencyInput({Key? key}) : super(key: key);
+  const _FrequencyInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -294,7 +293,7 @@ class _FrequencyInput extends StatelessWidget {
 }
 
 class _BandRxInput extends StatelessWidget {
-  const _BandRxInput({Key? key}) : super(key: key);
+  const _BandRxInput();
 
   @override
   Widget build(BuildContext context) =>
@@ -319,7 +318,7 @@ class _BandRxInput extends StatelessWidget {
 }
 
 class _FrequencyRxInput extends StatelessWidget {
-  const _FrequencyRxInput({Key? key}) : super(key: key);
+  const _FrequencyRxInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -345,7 +344,7 @@ class _FrequencyRxInput extends StatelessWidget {
 }
 
 class _ModeInput extends StatelessWidget {
-  const _ModeInput({Key? key}) : super(key: key);
+  const _ModeInput();
 
   @override
   Widget build(BuildContext context) =>
@@ -370,7 +369,7 @@ class _ModeInput extends StatelessWidget {
 }
 
 class _SubModeInput extends StatelessWidget {
-  const _SubModeInput({Key? key}) : super(key: key);
+  const _SubModeInput();
 
   @override
   Widget build(BuildContext context) =>
@@ -405,7 +404,7 @@ class _SubModeInput extends StatelessWidget {
 }
 
 class _SplitCheckbox extends StatelessWidget {
-  const _SplitCheckbox({Key? key}) : super(key: key);
+  const _SplitCheckbox();
 
   @override
   Widget build(BuildContext context) =>
@@ -419,7 +418,7 @@ class _SplitCheckbox extends StatelessWidget {
 }
 
 class _PowerInput extends StatelessWidget {
-  const _PowerInput({Key? key}) : super(key: key);
+  const _PowerInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -437,7 +436,7 @@ class _PowerInput extends StatelessWidget {
 }
 
 class _RstSentInput extends StatelessWidget {
-  const _RstSentInput({Key? key}) : super(key: key);
+  const _RstSentInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -471,7 +470,7 @@ class _RstSentInput extends StatelessWidget {
 }
 
 class _RstRecvInput extends StatelessWidget {
-  const _RstRecvInput({Key? key}) : super(key: key);
+  const _RstRecvInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -505,7 +504,7 @@ class _RstRecvInput extends StatelessWidget {
 }
 
 class _GridsquareInput extends StatelessWidget {
-  const _GridsquareInput({Key? key}) : super(key: key);
+  const _GridsquareInput();
 
   @override
   Widget build(BuildContext context) => TextFormField(
@@ -516,7 +515,7 @@ class _GridsquareInput extends StatelessWidget {
 }
 
 class _NameInput extends StatelessWidget {
-  const _NameInput({Key? key}) : super(key: key);
+  const _NameInput();
 
   @override
   Widget build(BuildContext context) => TextFormField(
@@ -527,7 +526,7 @@ class _NameInput extends StatelessWidget {
 }
 
 class _CommentInput extends StatelessWidget {
-  const _CommentInput({Key? key}) : super(key: key);
+  const _CommentInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -544,7 +543,7 @@ class _CommentInput extends StatelessWidget {
 }
 
 class _ShowCommentButton extends StatelessWidget {
-  const _ShowCommentButton({Key? key}) : super(key: key);
+  const _ShowCommentButton();
 
   @override
   Widget build(BuildContext context) => _ShowButton(
@@ -555,7 +554,7 @@ class _ShowCommentButton extends StatelessWidget {
 }
 
 class _ShowSotaButton extends StatelessWidget {
-  const _ShowSotaButton({Key? key}) : super(key: key);
+  const _ShowSotaButton();
 
   @override
   Widget build(BuildContext context) => _ShowButton(
@@ -566,7 +565,7 @@ class _ShowSotaButton extends StatelessWidget {
 }
 
 class _SotaRefInput extends StatelessWidget {
-  const _SotaRefInput({Key? key}) : super(key: key);
+  const _SotaRefInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -583,7 +582,7 @@ class _SotaRefInput extends StatelessWidget {
 }
 
 class _MySotaRefInput extends StatelessWidget {
-  const _MySotaRefInput({Key? key}) : super(key: key);
+  const _MySotaRefInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -600,7 +599,7 @@ class _MySotaRefInput extends StatelessWidget {
 }
 
 class _ShowContestButton extends StatelessWidget {
-  const _ShowContestButton({Key? key}) : super(key: key);
+  const _ShowContestButton();
 
   @override
   Widget build(BuildContext context) => _ShowButton(
@@ -611,7 +610,7 @@ class _ShowContestButton extends StatelessWidget {
 }
 
 class _ContestSrxInput extends StatelessWidget {
-  const _ContestSrxInput({Key? key}) : super(key: key);
+  const _ContestSrxInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -628,7 +627,7 @@ class _ContestSrxInput extends StatelessWidget {
 }
 
 class _ContestStxInput extends StatelessWidget {
-  const _ContestStxInput({Key? key}) : super(key: key);
+  const _ContestStxInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -645,7 +644,7 @@ class _ContestStxInput extends StatelessWidget {
 }
 
 class _ContestSrxStringInput extends StatelessWidget {
-  const _ContestSrxStringInput({Key? key}) : super(key: key);
+  const _ContestSrxStringInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -662,7 +661,7 @@ class _ContestSrxStringInput extends StatelessWidget {
 }
 
 class _ContestStxStringInput extends StatelessWidget {
-  const _ContestStxStringInput({Key? key}) : super(key: key);
+  const _ContestStxStringInput();
 
   @override
   Widget build(BuildContext context) => _FieldUpdater(
@@ -679,7 +678,7 @@ class _ContestStxStringInput extends StatelessWidget {
 }
 
 class _SubmitButton extends StatelessWidget {
-  const _SubmitButton({Key? key}) : super(key: key);
+  const _SubmitButton();
 
   @override
   Widget build(BuildContext context) => ElevatedButton(

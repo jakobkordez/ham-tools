@@ -5,7 +5,7 @@ import '../../cubit/settings_cubit.dart';
 import '../settings_card.dart';
 
 class GeneralSettingsForm extends StatelessWidget {
-  const GeneralSettingsForm({Key? key}) : super(key: key);
+  const GeneralSettingsForm({super.key});
 
   @override
   Widget build(BuildContext context) => SettingsCard(

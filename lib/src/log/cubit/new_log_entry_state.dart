@@ -109,17 +109,18 @@ class NewLogEntryState extends Equatable {
       frequencyRx: FrequencyInput.pure(frequencyRx ?? frequency),
       power: '${power ?? ''}',
       callsign: callsign == null
-          ? CallsignInput.pure()
+          ? const CallsignInput.pure()
           : CallsignInput.dirty(callsign),
       rstSent: rstSent,
       rstRcvd: rstRcvd,
       showComment: comment?.isNotEmpty ?? false,
       comment: comment ?? '',
       showSota: sotaRef?.isNotEmpty == true || mySotaRef?.isNotEmpty == true,
-      sotaRef:
-          sotaRef == null ? SotaRefInput.pure() : SotaRefInput.dirty(sotaRef),
+      sotaRef: sotaRef == null
+          ? const SotaRefInput.pure()
+          : SotaRefInput.dirty(sotaRef),
       mySotaRef: mySotaRef == null
-          ? SotaRefInput.pure()
+          ? const SotaRefInput.pure()
           : SotaRefInput.dirty(mySotaRef),
       showContest: srx != null ||
           stx != null ||

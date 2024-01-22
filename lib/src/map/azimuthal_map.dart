@@ -11,9 +11,9 @@ class AzimuthalMap extends StatelessWidget {
   final LatLon center;
 
   const AzimuthalMap({
-    Key? key,
+    super.key,
     required this.center,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => Container(

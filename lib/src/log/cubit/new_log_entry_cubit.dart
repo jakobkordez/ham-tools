@@ -137,8 +137,8 @@ class NewLogEntryCubit extends Cubit<NewLogEntryState> {
 
   void setShowSota(bool value) => emit(state.copyWith(
         showSota: value,
-        sotaRef: value ? null : SotaRefInput.pure(),
-        mySotaRef: value ? null : SotaRefInput.pure(),
+        sotaRef: value ? null : const SotaRefInput.pure(),
+        mySotaRef: value ? null : const SotaRefInput.pure(),
       ));
 
   void setSotaRef(String value) =>

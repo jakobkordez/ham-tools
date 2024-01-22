@@ -5,7 +5,7 @@ import 'callsign_lookup.dart';
 class CallsignScreen extends StatelessWidget {
   static const constraints = BoxConstraints(maxWidth: 800);
 
-  const CallsignScreen({Key? key}) : super(key: key);
+  const CallsignScreen({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(

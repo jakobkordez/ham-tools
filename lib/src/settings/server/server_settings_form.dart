@@ -7,7 +7,7 @@ import '../settings_card.dart';
 import 'cubit/server_settings_cubit.dart';
 
 class ServerSettingsForm extends StatelessWidget {
-  const ServerSettingsForm({Key? key}) : super(key: key);
+  const ServerSettingsForm({super.key});
 
   @override
   Widget build(BuildContext context) => SettingsCard(
@@ -21,7 +21,7 @@ class ServerSettingsForm extends StatelessWidget {
 }
 
 class _ServerSettingsForm extends StatelessWidget {
-  const _ServerSettingsForm({Key? key}) : super(key: key);
+  const _ServerSettingsForm();
 
   @override
   Widget build(BuildContext context) => Center(
@@ -90,7 +90,7 @@ class _ServerSettingsForm extends StatelessWidget {
 }
 
 class _ServerUrl extends StatelessWidget {
-  const _ServerUrl({Key? key}) : super(key: key);
+  const _ServerUrl();
 
   @override
   Widget build(BuildContext context) =>
@@ -108,7 +108,7 @@ class _ServerUrl extends StatelessWidget {
 }
 
 class _Username extends StatelessWidget {
-  const _Username({Key? key}) : super(key: key);
+  const _Username();
 
   @override
   Widget build(BuildContext context) =>
@@ -125,7 +125,7 @@ class _Username extends StatelessWidget {
 }
 
 class _Password extends StatelessWidget {
-  const _Password({Key? key}) : super(key: key);
+  const _Password();
 
   @override
   Widget build(BuildContext context) =>
@@ -143,7 +143,7 @@ class _Password extends StatelessWidget {
 }
 
 class _Login extends StatelessWidget {
-  const _Login({Key? key}) : super(key: key);
+  const _Login();
 
   @override
   Widget build(BuildContext context) =>
@@ -160,7 +160,7 @@ class _Login extends StatelessWidget {
 }
 
 class _Logout extends StatelessWidget {
-  const _Logout({Key? key}) : super(key: key);
+  const _Logout();
 
   @override
   Widget build(BuildContext context) => ElevatedButton(

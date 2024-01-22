@@ -9,7 +9,7 @@ import 'cubit/new_profile_cubit.dart';
 import 'cubit/profiles_cubit.dart';
 
 class NewProfileForm extends StatelessWidget {
-  const NewProfileForm({Key? key}) : super(key: key);
+  const NewProfileForm({super.key});
 
   @override
   Widget build(BuildContext context) => BlocProvider(
@@ -19,7 +19,7 @@ class NewProfileForm extends StatelessWidget {
 }
 
 class _NewProfileForm extends StatelessWidget {
-  const _NewProfileForm({Key? key}) : super(key: key);
+  const _NewProfileForm();
 
   @override
   Widget build(BuildContext context) => ListView(

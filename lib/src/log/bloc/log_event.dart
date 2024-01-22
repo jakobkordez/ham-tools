@@ -7,6 +7,15 @@ abstract class LogEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class LogAddQsoStream extends LogEvent {
+  final QsoStream stream;
+
+  const LogAddQsoStream(this.stream);
+
+  @override
+  List<Object?> get props => [stream];
+}
+
 class LogFetched extends LogEvent {
   final int from;
   final int to;

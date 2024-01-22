@@ -9,7 +9,7 @@ import 'azimuthal_map.dart';
 // https://www.evl.uic.edu/pape/data/WDB/
 
 class AzimuthalMapScreen extends StatefulWidget {
-  const AzimuthalMapScreen({Key? key}) : super(key: key);
+  const AzimuthalMapScreen({super.key});
 
   @override
   State<AzimuthalMapScreen> createState() => _AzimuthalMapScreenState();
@@ -84,7 +84,7 @@ class _AzimuthalMapScreenState extends State<AzimuthalMapScreen> {
       );
 
   void submit() {
-    final loc = LatLon.tryParseGridSquare(_controller.text);
+    final loc = LatLon.tryParseGridSquare(_controller.text, center: true);
     if (loc != center) {
       setState(() {
         center = loc;

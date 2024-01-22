@@ -13,7 +13,7 @@ import 'src/stats/stats_screen.dart';
 void main() => runApp(const WebApp());
 
 class WebApp extends StatelessWidget {
-  const WebApp({Key? key}) : super(key: key);
+  const WebApp({super.key});
 
   @override
   Widget build(BuildContext context) => MaterialApp(
@@ -39,7 +39,7 @@ class WebApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -178,11 +178,10 @@ class _LinkCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const _LinkCard({
-    Key? key,
     this.title,
     this.image,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => Card(

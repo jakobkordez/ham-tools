@@ -8,7 +8,7 @@ import 'bloc/log_bloc.dart';
 import 'log_screen.dart';
 
 class LogDemo extends StatelessWidget {
-  const LogDemo({Key? key}) : super(key: key);
+  const LogDemo({super.key});
 
   @override
   Widget build(BuildContext context) => FutureBuilder<Repository>(

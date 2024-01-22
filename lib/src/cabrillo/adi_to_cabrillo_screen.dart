@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubit/adi_to_cab_cubit.dart';
 
 class AdiToCabrilloScreen extends StatelessWidget {
-  const AdiToCabrilloScreen({Key? key}) : super(key: key);
+  const AdiToCabrilloScreen({super.key});
 
   @override
   Widget build(BuildContext context) => Scaffold(

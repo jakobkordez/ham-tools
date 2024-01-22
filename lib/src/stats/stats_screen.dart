@@ -12,7 +12,7 @@ import '../utils/color_util.dart';
 import 'cubit/stats_cubit.dart';
 
 class StatsScreen extends StatelessWidget {
-  const StatsScreen({Key? key}) : super(key: key);
+  const StatsScreen({super.key});
 
   @override
   Widget build(BuildContext context) => BlocProvider(
@@ -75,11 +75,9 @@ class _DataCard extends StatelessWidget {
   final int sum;
 
   _DataCard({
-    Key? key,
     required this.data,
     this.colors,
-  })  : sum = data.values.reduce((a, b) => a + b),
-        super(key: key);
+  }) : sum = data.values.reduce((a, b) => a + b);
 
   @override
   Widget build(BuildContext context) => Card(

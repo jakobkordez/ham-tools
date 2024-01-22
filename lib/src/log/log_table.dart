@@ -9,7 +9,7 @@ import 'cubit/log_table_cubit.dart';
 class LogTable extends StatelessWidget {
   static const headStyle = TextStyle(fontWeight: FontWeight.bold);
 
-  const LogTable({Key? key}) : super(key: key);
+  const LogTable({super.key});
 
   @override
   Widget build(BuildContext context) => BlocProvider(
@@ -24,7 +24,7 @@ class LogTable extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               columnSpacing: 10,
-              dataRowHeight: 30,
+              dataRowMinHeight: 30,
               rowsPerPage: tableState.rowsPerPage,
               columns: const [
                 DataColumn(label: Text('Date', style: LogTable.headStyle)),
@@ -126,8 +126,10 @@ class DataSource extends DataTableSource {
                   ? Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Center(
-                          child:
-                              Image.asset('assets/flags/64/${dxcc.flag}.png')),
+                          child: Image.asset(
+                        'assets/flags/64/${dxcc.flag}.png',
+                        height: 30,
+                      )),
                     )
                   : const SizedBox.shrink(),
             ),

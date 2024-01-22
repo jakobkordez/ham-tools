@@ -11,9 +11,9 @@ class CylindricalMap extends StatelessWidget {
   final LatLon? point;
 
   const CylindricalMap({
-    Key? key,
+    super.key,
     this.point,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) => Container(

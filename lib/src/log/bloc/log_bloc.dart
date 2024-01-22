@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../models/log_entry.dart';
+import '../../models/qso_stream/qso_stream.dart';
 import '../../repository/repository.dart';
 import '../../utils/log_entry_list_util.dart';
 
@@ -13,6 +14,12 @@ class LogBloc extends Bloc<LogEvent, LogState> {
   static const _limit = 60;
 
   LogBloc(Repository repository) : super(const LogState()) {
+    on<LogAddQsoStream>((event, emit) async {
+      event.stream.stream.listen((entry) {
+        add(LogEntryAdded(entry));
+      });
+    });
+
     on<LogRefreshed>((event, emit) async {
       try {
         final count = await repository.getLogEntriesCount();

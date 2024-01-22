@@ -6,7 +6,7 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=3.1.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -15,24 +15,25 @@ dependencies:
   cupertino_icons: ^1.0.2
   equatable: ^2.0.5
   flutter_bloc: ^8.0.1
-  intl: ^0.17.0
+  intl: ^0.19.0
   collection: ^1.15.0
   localstorage: ^4.0.0+1
   timer_builder: ^2.0.0
   path_provider: ^2.0.9
-  file_picker: ^5.0.0
-  fl_chart: ^0.55.0
-  formz: ^0.4.1
-  dio: ^4.0.6
-  retrofit: ^3.0.1+1
+  file_picker: ^6.1.1
+  fl_chart: ^0.66.0
+  formz: ^0.6.1
+  dio: ^5.4.0
+  retrofit: ^4.0.3
+  udp: ^5.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^2.0.1
+  flutter_lints: ^3.0.1
   build_runner: ^2.2.0
-  retrofit_generator: ^4.0.3
+  retrofit_generator: ^8.0.6
 
 flutter:
   uses-material-design: true

@@ -6,7 +6,7 @@ import 'package:timer_builder/timer_builder.dart';
 class CircleTimer extends StatefulWidget {
   final void Function()? onMinute;
 
-  const CircleTimer({Key? key, this.onMinute}) : super(key: key);
+  const CircleTimer({super.key, this.onMinute});
 
   @override
   State<CircleTimer> createState() => _CircleTimerState();

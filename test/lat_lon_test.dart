@@ -50,5 +50,70 @@ void main() {
       expect(res.lat, closeTo(46.0625, 0.0001));
       expect(res.lon, closeTo(14.3, 0.0001));
     });
+
+    test('Bottom edge AA', () {
+      final res = LatLon.parseGridSquare('AA');
+
+      expect(res.lat, -90);
+      expect(res.lon, -180);
+    });
+
+    test('Bottom edge AA00', () {
+      final res = LatLon.parseGridSquare('AA00');
+
+      expect(res.lat, -90);
+      expect(res.lon, -180);
+    });
+
+    test('Top edge RR', () {
+      final res = LatLon.parseGridSquare('RR');
+
+      expect(res.lat, 80);
+      expect(res.lon, 160);
+    });
+
+    test('Top edge RR99', () {
+      final res = LatLon.parseGridSquare('RR99');
+
+      expect(res.lat, 89);
+      expect(res.lon, 178);
+    });
+
+    test('Top edge RR99xx', () {
+      final res = LatLon.parseGridSquare('RR99xx');
+
+      expect(res.lat, closeTo(89 + (2.5 * 23) / 60, 0.001));
+      expect(res.lon, closeTo(178 + (5 * 23) / 60, 0.001));
+    });
+
+    test('Center 2 characters', () {
+      final res = LatLon.parseGridSquare('JN', center: true);
+
+      expect(res.lat, 45);
+      expect(res.lon, 10);
+    });
+
+    test('Center 4 characters', () {
+      final res = LatLon.parseGridSquare('JN76', center: true);
+
+      expect(res.lat, 46.5);
+      expect(res.lon, 15);
+    });
+
+    test('Center 6 characters', () {
+      final res = LatLon.parseGridSquare('JN76db', center: true);
+
+      expect(res.lat, closeTo(46.063, 0.001));
+      expect(res.lon, closeTo(14.292, 0.001));
+    });
+
+    test('Precision', () {
+      final res = LatLon.parseGridSquare('RR99xx99xx99xx99');
+
+      expect(res.lat, closeTo(90, 0.000001));
+      expect(res.lat, isNot(90));
+      expect(res.lon, closeTo(180, 0.000001));
+      expect(res.lon, isNot(180));
+    });
   });
 }

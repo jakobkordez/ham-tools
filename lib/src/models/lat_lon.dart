@@ -3,35 +3,50 @@ import 'dart:math';
 import 'package:equatable/equatable.dart';
 
 class LatLon extends Equatable {
-  static final _gridRe = RegExp(r'^[A-R]{2}(\d\d([A-X]{2})?)*$');
+  static final _gridRe =
+      RegExp(r'^[A-R]{2}(\d\d[A-X]{2})*(\d\d)?$', caseSensitive: false);
 
   final double lat;
   final double lon;
 
   const LatLon(this.lat, this.lon);
 
-  static LatLon parseGridSquare(String value) {
-    final latLon = tryParseGridSquare(value);
+  static LatLon parseGridSquare(String value, {bool center = false}) {
+    final latLon = tryParseGridSquare(value, center: center);
     if (latLon == null) throw FormatException('Invalid grid square: $value');
     return latLon;
   }
 
-  static LatLon? tryParseGridSquare(String value) {
-    value = value.toUpperCase();
-    if (!_gridRe.hasMatch(value)) return null;
-    double lon = -180.0;
-    double lat = -90.0;
+  static LatLon? tryParseGridSquare(String locator, {bool center = false}) {
+    locator = locator.toUpperCase();
+    if (!_gridRe.hasMatch(locator)) return null;
+
     const aInd = 65;
     const zeroInd = 48;
-    lon += (value.codeUnitAt(0) - aInd) * 20;
-    lat += (value.codeUnitAt(1) - aInd) * 10;
+
+    double lon = 0;
+    double lat = 0;
+
     int div = 1;
-    for (int i = 2; i < value.length; i += 2) {
+    for (int i = 0; i < locator.length; i += 2) {
       final sub = i % 4 == 0 ? aInd : zeroInd;
-      lon += (value.codeUnitAt(i) - sub) * 2 / div;
-      lat += (value.codeUnitAt(i + 1) - sub) / div;
-      div *= i % 4 == 0 ? 10 : 24;
+      lon += (locator.codeUnitAt(i) - sub) * 2;
+      lat += (locator.codeUnitAt(i + 1) - sub);
+
+      final mult = i % 4 == 0 ? 10 : 24;
+      div *= mult;
+      lon *= mult;
+      lat *= mult;
     }
+
+    if (center) {
+      lon += locator.length % 4 == 0 ? 24 : 10;
+      lat += locator.length % 4 == 0 ? 12 : 5;
+    }
+
+    lon = (lon / div) * 10 - 180;
+    lat = (lat / div) * 10 - 90;
+
     return LatLon(lat, lon);
   }
 

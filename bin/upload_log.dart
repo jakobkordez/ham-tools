@@ -8,7 +8,7 @@ import 'package:ham_tools/src/utils/adif.dart';
 
 Future<void> main(List<String> args) async {
   const refreshToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjJlYTFlZWZhMWU5OTU4MGQxMGFlNGU2IiwiaWF0IjoxNjYxNzE4ODkzfQ.tRhEiJ7HMIMlzrP7AZ2r1BmlVcz8Zn9MriwAP-gSPlw';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNjQxZjU4Y2I0ZTc2ZmE1NDRlMGNjODZiIiwiaWF0IjoxNjc5ODQzMTQ4fQ.CJhXevOm49XGYQAR1ohyRmOrSfkWqZk955gr-e2zQdY';
 
   final server = ServerClient(Dio());
   final access = await server.refresh(const RefreshTokenDto(refreshToken));

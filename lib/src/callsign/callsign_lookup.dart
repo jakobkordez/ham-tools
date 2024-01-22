@@ -7,7 +7,7 @@ import '../utils/text_input_formatters.dart';
 import 'callsign_editing_controller.dart';
 
 class CallsignLookup extends StatefulWidget {
-  const CallsignLookup({Key? key}) : super(key: key);
+  const CallsignLookup({super.key});
 
   @override
   State<CallsignLookup> createState() => _CallsignLookupState();
@@ -122,7 +122,7 @@ class _DxccView extends StatelessWidget {
   final DxccEntity dxcc;
   final Color? color;
 
-  const _DxccView({Key? key, required this.dxcc, this.color}) : super(key: key);
+  const _DxccView({required this.dxcc, this.color});
 
   @override
   Widget build(BuildContext context) => Container(

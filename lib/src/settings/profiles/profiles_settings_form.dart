@@ -6,7 +6,7 @@ import 'cubit/profiles_cubit.dart';
 import 'new_profile_form.dart';
 
 class ProfilesSettingsForm extends StatelessWidget {
-  const ProfilesSettingsForm({Key? key}) : super(key: key);
+  const ProfilesSettingsForm({super.key});
 
   @override
   Widget build(BuildContext context) => SettingsCard(
@@ -27,7 +27,7 @@ class ProfilesSettingsForm extends StatelessWidget {
 }
 
 class _ProfilesList extends StatelessWidget {
-  const _ProfilesList({Key? key}) : super(key: key);
+  const _ProfilesList();
 
   @override
   Widget build(BuildContext context) =>
